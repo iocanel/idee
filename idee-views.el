@@ -30,7 +30,7 @@
 (require 'magit)
 (require 'treemacs-projectile)
 
-(defvar idee-current-view 'idee-ide-view)
+(setq idee-current-view 'idee-ide-view)
 
 (defun idee-project-open-view()
   "Switches to a traditional IDE view for the buffer. (project tree, main buffer & terminal"
@@ -109,9 +109,19 @@
 ;;
 ;;
 ;; View Mode Helpers
+
+(defun idee-update-tree-state()
+  "Updates the state of the tree switch (in case the winodw has been externally closed)"
+  (if (equal (format "%s" (treemacs--current-visibility)) "visible")
+      (setq idee-tree-enabled t)
+    (setq idee-tree-enabled nil))
+  )
+
+
 (defun idee-toggle-tree ()
   "Toggles the tree"
   (interactive)
+  (idee-update-tree-state)
   (if idee-tree-enabled
       (progn
         (setq idee-tree-enabled nil)      
@@ -121,9 +131,18 @@
       (idee-refresh-view)
       )))
 
+
+(defun idee-update-cli-state()
+  "Updates the state of the cli switch (in case the winodw has been externally closed)"
+  (if (get-buffer-window (format "*eshell %s*" (projectile-project-name)))
+      (setq idee-cli-enabled t)
+    (setq idee-cli-enabled nil))
+  )
+
 (defun idee-toggle-cli ()
   "Toggles the cli"
   (interactive)
+  (idee-update-cli-state)
   (if idee-cli-enabled
       (progn
         (setq idee-cli-enabled nil)      
@@ -137,7 +156,8 @@
 (defun idee-refresh-view ()
   "Refreshes the current view"
   (interactive)
-  (funcall 'idee-current-view)
+  ;(message (format "Current view: %s" idee-current-view))
+  (funcall idee-current-view)
   )
 
 (defun idee-new-empty-buffer()

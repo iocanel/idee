@@ -2,7 +2,7 @@ CASK ?= cask
 EMACS ?= emacs
 EMACS_BATCH = ${CASK} exec ${EMACS} -Q --batch -l package
 
-REPO = github.com/iocanel/eide
+REPO = github.com/iocanel/idee
 
 DEPS_SCRIPT = assets/project-deps.el
 DEPS_PNG = assets/project-deps.png
@@ -11,11 +11,16 @@ CASKDIR = .cask
 SRCS = $(wildcard *.el)
 TARGETS = $(SRCS:.el=.elc)
 
-MAIN_PACKAGE_FILE = eide.el
-EVIL_PACKAGE_FILE = eide-evil.el
+MAIN_PACKAGE_FILE = idee.el
+EVIL_PACKAGE_FILE = idee-evil.el
+ELISP_PACKAGE_FILE = idee-elisp.el
+CLOJURE_PACKAGE_FILE = idee-clojure.el
+GOLANG_PACKAGE_FILE = idee-golang.el
+MAGHANADA_PACKAGE_FILE = idee-meghanada.el
+PYTHON_PACKAGE_FILE = idee-python.el
 
 VERSION := $(shell EMACS=${EMACS} ${CASK} version)
-TAR     := dist/eide-$(VERSION).tar
+TAR     := dist/idee-$(VERSION).tar
 
 
 
@@ -39,13 +44,13 @@ $(TAR) : $(SRCS)
 
 
 help :
-	@echo 'Makefile for eide'
+	@echo 'Makefile for idee'
 	@echo
 	@echo 'Main tasks:'
 	@echo
 	@echo '  build (default) Compile Lisp files.'
 	@echo '  help            Show this usage information.'
-	@echo '  install         Install eide using the Emacs package manager.'
+	@echo '  install         Install idee using the Emacs package manager.'
 	@echo '  test            Run automated test suites.'
 	@echo '  release         Prepare for a GitHub release.'
 	@echo '  clean           Delete generated output files.'
@@ -71,7 +76,7 @@ clean :
 
 
 clean-all: clean
-	rm -rf $(CASKDIR) "~/.emacs.d/elpa/eide-$(VERSION)"
+	rm -rf $(CASKDIR) "~/.emacs.d/elpa/idee-$(VERSION)"
 
 
 release : assert-clean-worktree assert-on-master clean test set-package-version dist git-release github-browse-release
@@ -96,15 +101,29 @@ set-package-version :
 	fi && \
 	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(MAIN_PACKAGE_FILE)" && \
 	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(EVIL_PACKAGE_FILE)" && \
-	sed -i.bak "s/^;; Package-Requires:[^)]*)/;; Package-Requires: ((eide \"$${NEXT}\")/" "$(EVIL_PACKAGE_FILE)"
+	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(ELISP_PACKAGE_FILE)" && \
+	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(CLOJURE_PACKAGE_FILE)" && \
+	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(GOLANG_PACKAGE_FILE)" && \
+	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(MEGHANADA_PACKAGE_FILE)" && \
+	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(PYTHON_PACKAGE_FILE)" && \
+	sed -i.bak "s/^;; Package-Requires:[^)]*)/;; Package-Requires: ((idee \"$${NEXT}\")/" "$(EVIL_PACKAGE_FILE)"
 
 	@rm "$(MAIN_PACKAGE_FILE).bak"
 	@rm "$(EVIL_PACKAGE_FILE).bak"
-
+	@rm "$(ELISP_PACKAGE_FILE).bak"
+	@rm "$(CLOJURE_PACKAGE_FILE).bak"
+	@rm "$(GOLANG_PACKAGE_FILE).bak"
+	@rm "$(MEGHANADA_PACKAGE_FILE).bak"
+	@rm "$(PYTHON_PACKAGE_FILE).bak"
 
 git-release :
 	@git add "$(MAIN_PACKAGE_FILE)"
 	@git add "$(EVIL_PACKAGE_FILE)"
+	@git add "$(ELISP_PACKAGE_FILE)"
+	@git add "$(CLOJURE_PACKAGE_FILE)"
+	@git add "$(GOLANG_PACKAGE_FILE)"
+	@git add "$(MEGHANADA_PACKAGE_FILE)"
+	@git add "$(PYTHON_PACKAGE_FILE)"
 	@export TAG="$$(EMACS=${EMACS} ${CASK} version)"; \
 	git commit --quiet -m "Release $${TAG}" && \
 	git tag "$${TAG}" && \

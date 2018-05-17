@@ -167,11 +167,21 @@
     (setq idee-tab-width 4))
 
   (setq tab-width idee-tab-width)
-  (message (format "Indentaion spaces: %s" idee-tab-width))
+  (idee-set-tab-width)
+  )
+
+(defun idee-set-tab-width ()
+  "Set the tab width."
+  (funcall  (alist-get 'idee-mode-tab-width-function idee-function-alist))
+  (message (format "Indentation spaces: %s" idee-tab-width))
+  )
+
+(defun idee-global-set-tab-width-function(width)
+  (setq standard-indent width)
   )
 
 (defun idee-toggle-use-tabs ()
-  "Toggle between tabs and speacs"
+    "Toggle between tabs and spaces."
   (interactive)
   (if idee-use-tabs
       (setq idee-use-tabs nil)

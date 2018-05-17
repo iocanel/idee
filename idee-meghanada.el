@@ -35,13 +35,30 @@
   (setq idee-function-alist (delq (assoc 'idee-declaration-function idee-function-alist) idee-function-alist))
   (setq idee-function-alist (delq (assoc 'idee-optimize-imports-function idee-function-alist) idee-function-alist))
   (setq idee-function-alist (delq (assoc 'idee-indent-function idee-function-alist) idee-function-alist))
+  (setq idee-function-alist (delq (assoc 'idee-mode-tab-width-function idee-function-alist) idee-function-alist))
   (setq idee-function-alist (delq (assoc 'idee-mode-hydra-function idee-function-alist) idee-function-alist))
 
   (add-to-list 'idee-function-alist '(idee-references-function . meghanada-reference))
   (add-to-list 'idee-function-alist '(idee-declaration-function . meghanada-jump-declaration))
   (add-to-list 'idee-function-alist '(idee-optimize-imports-function . meghanada-optimize-import))
+  (add-to-list 'idee-function-alist '(idee-mode-tab-width-function . meghanada-tab-width))
   (add-to-list 'idee-function-alist '(idee-mode-hydra-function . meghanada-hydra/body))
   )
+
+
+(defun meghanada-tab-width ()
+  "Replace the hook that sets the tab width."
+  (remove-hook 'java-mode-hook 'meghanada-update-tab-width)
+  (add-hook 'java-mode-hook 'meghanada-update-tab-width)
+  (java-mode)
+  (java-mode)
+  )
+
+(defun meghanada-update-tab-width()
+  "Update the tab width for java hook"
+   (setq c-basic-offset idee-tab-width)
+  )
+
 (add-hook 'meghanada-mode-hook 'meghanada-ide)
 
 

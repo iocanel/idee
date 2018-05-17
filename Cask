@@ -1,7 +1,12 @@
 (source gnu)
 (source melpa)
 
-(package-file "eide.el")
+(package-file "idee.el")
+(package-file "idee-clojure.el")
+(package-file "idee-golang.el")
+(package-file "idee-elisp.el")
+(package-file "idee-meghanada.el")
+(package-file "idee-python.el")
 
 (development
 
@@ -10,10 +15,12 @@
  (depends-on "magit")
  (depends-on "projectile")
  (depends-on "treemacs")
- (depends-on "yasnippet")
+ (depends-on "treemacs-projectile")
+ (depends-on "company")
 
  ; Evil
  (depends-on "evil")
+ (depends-on "evil-leader")
  
  ; Clojure
  (depends-on "cider")

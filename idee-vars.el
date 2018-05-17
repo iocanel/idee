@@ -39,7 +39,7 @@
 (defvar idee-use-tabs nil)
 
 ;; View Toggles
-(defvar idee-tree-enabled nil)
+(defvar idee-tree-enabled t)
 (defvar idee-cli-enabled t)
 (defvar idee-repl-enabled t)
 (defvar idee-bottom-buffer-command 'projectile-run-eshell)
@@ -67,6 +67,7 @@
                               (idee-find-variable-function . projectile-find-variable)
                               (idee-test-function . nil)
                               (idee-repl-view-function . nil)
+                              (idee-mode-tab-width-function . idee-global-set-tab-width-function)
                               (idee-mode-hydra-function . nil)))
 
 ;; On Event Command Association List
