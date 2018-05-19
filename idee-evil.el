@@ -29,7 +29,6 @@
 (require 'idee-hydra)
 
 (evil-leader/set-key "i" 'idee-hydra/body)
-(define-key evil-normal-state-map (kbd "C-i") 'meghanada-hydra/body)
 
 (provide 'idee-evil)
 ;;; idee-evil.el ends here
