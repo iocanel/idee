@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'idee-hydra)
+(require 'idee-templates)
 
 
 (provide 'idee)

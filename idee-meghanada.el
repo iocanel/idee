@@ -25,12 +25,30 @@
 ;;; Code:
 
 (require 'idee-vars)
+(require 'idee-header)
 (require 'projectile)
 (require 'meghanada)
 
-(defun meghanada-ide()
+(require 'cc-vars)
+
+(defconst source-main-prefix "src/main/java")
+(defconst source-test-prefix "src/test/java")
+(defconst source-prefix "src")
+(defconst java-prefix "java")
+(defconst test-prefix "test")
+
+(defconst source-directory-list `(,source-main-prefix ,source-test-prefix ,java-prefix ,source-prefix ,test-prefix))
+
+(defconst pom-xml "pom.xml")
+(defconst build-gradle "build.gradle")
+(defconst meghanada-conf ".meghanada.conf")
+
+(defconst idee-meghanada-project-file-list `(,pom-xml ,build-gradle ,meghanada-conf))
+
+(defun idee-meghanada-enable()
   "Enables java bindings"
   (interactive)
+  ;; Clear functions
   (setq idee-function-alist (delq (assoc 'idee-refernces-function idee-function-alist) idee-function-alist))
   (setq idee-function-alist (delq (assoc 'idee-declaration-function idee-function-alist) idee-function-alist))
   (setq idee-function-alist (delq (assoc 'idee-optimize-imports-function idee-function-alist) idee-function-alist))
@@ -38,30 +56,74 @@
   (setq idee-function-alist (delq (assoc 'idee-mode-tab-width-function idee-function-alist) idee-function-alist))
   (setq idee-function-alist (delq (assoc 'idee-mode-hydra-function idee-function-alist) idee-function-alist))
 
+  ;; Set functions
   (add-to-list 'idee-function-alist '(idee-references-function . meghanada-reference))
   (add-to-list 'idee-function-alist '(idee-declaration-function . meghanada-jump-declaration))
   (add-to-list 'idee-function-alist '(idee-optimize-imports-function . meghanada-optimize-import))
-  (add-to-list 'idee-function-alist '(idee-mode-tab-width-function . meghanada-tab-width))
+  (add-to-list 'idee-function-alist '(idee-mode-tab-width-function . idee-meghanada-tab-width))
   (add-to-list 'idee-function-alist '(idee-mode-hydra-function . meghanada-hydra/body))
+
+  ;; Define comment structure
+  (setq idee-comment-above "/**\n")
+  (setq idee-comment-prefix " * ")
+  (setq idee-comment-below "**/")
+  (setq idee-header (idee-read-header))
   )
 
 
-(defun meghanada-tab-width ()
-  "Replace the hook that sets the tab width."
-  (remove-hook 'java-mode-hook 'meghanada-update-tab-width)
-  (add-hook 'java-mode-hook 'meghanada-update-tab-width)
+;;; Formatting
+(defun idee-meghanada-tab-width ()
+  "Replace the hook that set the tab width."
+  (remove-hook 'java-mode-hook 'idee-meghanada-update-tab-width)
+  (add-hook 'java-mode-hook 'idee-meghanada-update-tab-width)
   (java-mode)
   (java-mode)
   )
 
-(defun meghanada-update-tab-width()
+(defun idee-meghanada-update-tab-width()
   "Update the tab width for java hook"
-   (setq c-basic-offset idee-tab-width)
+  (setq c-basic-offset idee-tab-width)
   )
 
-(add-hook 'meghanada-mode-hook 'meghanada-ide)
+;;; Language Functions
+(defun idee-meghanada-package-line()
+  "Return the full package line for the current directory."
+  (let ((pkg (idee-meghanada-package-of default-directory)))
+    (if pkg
+        (concat "package " pkg ";"))
+    )
+  )
 
+(defun idee-meghanada-package-of (f)
+  "Return the package of the specified file F."
+  (let ((relative-path) (module-dir) (source-dir))
+    (setq module-dir (idee-meghanada-find-module-dir f))
+    (setq source-dir (car (seq-filter (lambda (s) (file-exists-p (concat module-dir s))) source-directory-list)))
+    (setq relative-path (substring f (+ (length module-dir) (length source-dir))))
+    (replace-regexp-in-string "^." ""
+                              (replace-regexp-in-string ".$" ""
+                                                        (replace-regexp-in-string "\/" "." relative-path)))
+    )
+  )
 
+(defun idee-meghanada-find-module-dir (f)
+  "Find the directory of the module that owns the source file F."
+  (let ((current-dir f))
+    (while (not (idee-meghanada-module-dirp current-dir))
+      (setq current-dir (file-name-directory (directory-file-name current-dir))))
+    current-dir
+    )
+  )
+
+(defun idee-meghanada-module-dirp (f)
+  "Return true if F is a module directory."
+  (if (seq-filter 'file-exists-p (seq-map (lambda (p) (concat f p)) idee-meghanada-project-file-list))
+      t
+    nil)
+  )
+
+;;; Hook
+(add-hook 'meghanada-mode-hook 'idee-meghanada-enable)
 
 (provide 'idee-meghanada)
 ;;; idee-meghanada.el ends here

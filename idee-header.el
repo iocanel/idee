@@ -24,29 +24,18 @@
 
 ;;; Code:
 
-(provide 'idee-header)
+(require 'idee-utils)
 
 (defun idee-read-header()
   "Read the header from header.txt."
   (interactive)
   (let ((h (idee-read-and-eval-template(concat projectile-project-root "header.txt"))))
      (concat idee-comment-above
-             (format "%s" (mapcar 
+             (mapconcat 'identity (mapcar 
                            (lambda (l) (concat idee-comment-prefix l "\n"))
-                           (split-string h "\n")))
+                           (split-string h "\n")) "")
              idee-comment-below)) 
   )
 
-(defun idee-render-line (line)
-  "Renders the specified LINE evaluating backquoted lisp expressions."
- (let (t (yas--make-template :table       nil ;; no tables for ephemeral snippets
-                                   :key         "key" 
-                                   :content     line
-                                   :name        "a line" 
-                                   :expand-env  t))
-   (yas-expand-snippet t)
-
-   )
-  )
-
+(provide 'idee-header)
 ;;; idee-header.el ends here

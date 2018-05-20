@@ -78,6 +78,10 @@
 (defvar idee-comment-above nil)
 (defvar idee-comment-prefix ";")
 (defvar idee-comment-below nil)
+
+
+;;; Header
+(defvar idee-header nil)
   
 (provide 'idee-vars)
 ;;; idee-vars.el ends here

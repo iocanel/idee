@@ -28,8 +28,8 @@
   (with-temp-buffer
     (insert-file-contents f)
     (buffer-substring-no-properties
-       (point-min)
-       (point-max))))
+     (point-min)
+     (point-max))))
 
 
 (defun idee-read-and-eval-template (f)
@@ -42,6 +42,20 @@
      (point-max))
     )
   )
+
+
+;;; String Functions
+(defun idee-starts-with (string prefix)
+  "Return t if STRING starts with prefix."
+  (and (string-match (rx-to-string `(: bos ,prefix) t)
+                     string)
+       t))
+
+(defun idee-ends-with (string suffix)
+  "Return t if STRING ends with SUFFIX."
+  (and (string-match (rx-to-string `(: ,suffix eos) t)
+                     string)
+       t))
 
 (provide 'idee-utils)
 ;;; idee-utils.el ends here.
