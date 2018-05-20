@@ -73,5 +73,11 @@
 ;; On Event Command Association List
 (defvar idee-on-event-command-alist '())
 
+;;; Comments
+
+(defvar idee-comment-above nil)
+(defvar idee-comment-prefix ";")
+(defvar idee-comment-below nil)
+  
 (provide 'idee-vars)
 ;;; idee-vars.el ends here
