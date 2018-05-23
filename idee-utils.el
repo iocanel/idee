@@ -33,20 +33,22 @@
 
 
 (defun idee-read-and-eval-template (f)
-  "Read the template and evaluate quotes."
-  (with-temp-buffer
-    (insert-file-contents f)
-    (yas--restore-backquotes (yas--save-backquotes))
-    (buffer-substring-no-properties
-     (point-min)
-     (point-max))
-    )
+  "Read the template from F and evaluate quotes."
+  (if (file-exists-p f)
+      (with-temp-buffer
+        (insert-file-contents f)
+        (yas--restore-backquotes (yas--save-backquotes))
+        (buffer-substring-no-properties
+         (point-min)
+         (point-max))
+        )
+    nil)
   )
 
 
 ;;; String Functions
 (defun idee-starts-with (string prefix)
-  "Return t if STRING starts with prefix."
+  "Return t if STRING starts with PREFIX."
   (and (string-match (rx-to-string `(: bos ,prefix) t)
                      string)
        t))
@@ -58,4 +60,4 @@
        t))
 
 (provide 'idee-utils)
-;;; idee-utils.el ends here.
+;;; idee-utils.el ends here

@@ -28,6 +28,8 @@
 (require 'idee-actions)
 (require 'idee-navigation)
 (require 'idee-views)
+(require 'idee-templates)
+(require 'idee-headers)
 
 (require 'hydra)
 (require 'company-yasnippet)
@@ -37,16 +39,17 @@
   "
         ^ Project      ^Source^                 ^Navigate^         ^Search^             ^Task^              ^Layout^
         ^^^^^^-------------------------------------------------------------------------------------------------------
-          _O_ open      _o_ optimize imports     _?_: declaration   _g_: grep             _r_: run/eval        _0_: terminal
-          _R_ recent    _i_ indent               _/_: references    _f_: find file        _u_: run unit test   _1_: ide
-          _S_ save all  _r_ indent region        _<_: back          _v_: find variable                       _2_: side by side
-          _C_ close     _I_ toggle tab width     _>_: forward                                              _3_: repl
-          _B_ build     _T_ toggle use tabs      _._: set mark                                             _t_: toggle tree
-          _V_ vcs       _s_ insert snippet                                                               _c_: toggle cli
-                      _l_ license headers
+         _O_ open      _o_ optimize imports     _?_: declaration   _g_: grep             _r_: run/eval        _0_: terminal
+         _N_ new file  _i_ indent               _/_: references    _f_: find file        _u_: run unit test   _1_: ide
+         _R_ recent    _r_ indent region        _<_: back          _v_: find variable                       _2_: side by side
+         _S_ save all  _I_ toggle tab width     _>_: forward                                              _3_: repl
+         _C_ close     _T_ toggle use tabs      _._: set mark                                             _t_: toggle tree
+         _B_ build     _s_ insert snippet                                                               _c_: toggle cli
+         _V_ vcs       _h_ select headers
           "
 
   ("O" idee-open)
+  ("N" idee-create-from-template)
   ("R" idee-recent)
   ("S" idee-save-all)
   ("C" idee-close)
@@ -59,7 +62,7 @@
   ("I" idee-toggle-tab-width)
   ("T" idee-toggle-use-tabs)
   ("s" company-yasnippet)
-  ("l" idee-license-headers)
+  ("h" idee-select-project-header)
 
   ("?" idee-declaration)
   ("/" idee-references)

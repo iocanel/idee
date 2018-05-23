@@ -25,7 +25,7 @@
 ;;; Code:
 
 (require 'idee-vars)
-(require 'idee-header)
+(require 'idee-headers)
 (require 'projectile)
 (require 'meghanada)
 
@@ -35,7 +35,7 @@
 (defconst source-test-prefix "src/test/java")
 (defconst source-prefix "src")
 (defconst java-prefix "java")
-(defconst test-prefix "test")
+(defconst test-prefix "tesrt")
 
 (defconst source-directory-list `(,source-main-prefix ,source-test-prefix ,java-prefix ,source-prefix ,test-prefix))
 
@@ -44,6 +44,9 @@
 (defconst meghanada-conf ".meghanada.conf")
 
 (defconst idee-meghanada-project-file-list `(,pom-xml ,build-gradle ,meghanada-conf))
+
+(defconst java-comment-style (make-idee-comment-style :above "/**\n" :prefix "  * " :below "**/"))
+(add-to-list 'idee-type-comment-styles-alist `("java" . ,java-comment-style))
 
 (defun idee-meghanada-enable()
   "Enables java bindings"
@@ -67,7 +70,6 @@
   (setq idee-comment-above "/**\n")
   (setq idee-comment-prefix " * ")
   (setq idee-comment-below "**/")
-  (setq idee-header (idee-read-header))
   )
 
 
@@ -109,18 +111,31 @@
 (defun idee-meghanada-find-module-dir (f)
   "Find the directory of the module that owns the source file F."
   (let ((current-dir f))
-    (while (not (idee-meghanada-module-dirp current-dir))
+    (while (not (idee-meghanada-module-dir-p current-dir))
       (setq current-dir (file-name-directory (directory-file-name current-dir))))
     current-dir
     )
   )
 
-(defun idee-meghanada-module-dirp (f)
+(defun idee-meghanada-module-dir-p (f)
   "Return true if F is a module directory."
   (if (seq-filter 'file-exists-p (seq-map (lambda (p) (concat f p)) idee-meghanada-project-file-list))
       t
     nil)
   )
+
+;;; Visitor
+(defun idee-visitor-meghanada (root)
+  "Check if a meghanada project is available under the specified ROOT."
+  (when (seq-filter (lambda (x)
+                      (or (equal "pom.xml" x)
+                          (equal "build.gradle" x)
+                          (equal ".meghanada.conf" x))
+                    (directory-files root))
+    (idee-meghanada-enable))
+  )
+
+(add-to-list 'idee-project-visitors 'idee-visitor-meghanada)
 
 ;;; Hook
 (add-hook 'meghanada-mode-hook 'idee-meghanada-enable)

@@ -23,13 +23,14 @@
 ;;; Commentary:
 
 ;;; Code:
+
+
+;; Back and Forth Navigation
 (cl-defstruct idee-buffer-point
   buffer
   line
   column
   )
-
-;; Back and Forth Navigation
 (defvar idee-back-stack ())
 (defvar idee-forward-stack ())
 (defvar ignore-current-buffer nil)
@@ -74,14 +75,37 @@
 (defvar idee-on-event-command-alist '())
 
 ;;; Comments
+(cl-defstruct idee-comment-style
+  above
+  prefix
+  below
+  )
 
-(defvar idee-comment-above nil)
-(defvar idee-comment-prefix ";")
-(defvar idee-comment-below nil)
+;; General purpose comment styles
+(defconst elisp-comment-style (make-idee-comment-style :prefix ";"))
+(defconst shell-comment-style (make-idee-comment-style :prefix "#"))
+(defconst xml-comment-style (make-idee-comment-style :above "<!--" :below "-->"))
 
+(defvar idee-type-comment-styles-alist '(
+                                         ("el" . elisp-comment-style)
+                                         ("html" . shell-comment-style)
+                                         ("sh" . shell-comment-style)
+                                         ("xml" . xml-comment-style)
+  ))
 
-;;; Header
-(defvar idee-header nil)
-  
+(defvar idee-current-comment-style elisp-comment-style)
+
+;;; Headers
+(defcustom idee-emacs-headers-dir "~/.emacs.d/headers" "The directory where header files are stored.")
+
+;;; Templates
+(defcustom idee-emacs-templates-dir "~/.emacs.d/templates" "The directory where template files are stored.")
+
+(defvar idee--current-header nil)
+
+;;; File Types
+(defvar idee-types-to-mode-alsit '(("el" . "emacs-lisp-mode")
+                                   ("java" ."java-mode")))
+
 (provide 'idee-vars)
 ;;; idee-vars.el ends here

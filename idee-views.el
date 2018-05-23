@@ -36,7 +36,7 @@
   "Switches to a traditional IDE view for the buffer. (project tree, main buffer & terminal"
   (interactive)
   (idee-ide-view)
-  (magit-status-internal projectile-project-root)
+  (magit-status-internal (projectile-project-root))
   )
 
 (defun idee-ide-view()
@@ -51,7 +51,7 @@
         (projectile-run-eshell)
         (evil-window-set-height 12)))
   (if idee-tree-enabled
-      (treemacs-projectile))
+      (treemacs--init (projectile-project-root)))
   (other-window 1)
   (goto-char (point-min))
   )
@@ -72,7 +72,7 @@
   (setq idee-current-view 'idee-repl-view)
   (delete-other-windows-internal)
   (if idee-tree-enabled
-      (treemacs-projectile))
+      (treemacs--init (projectile-project-root)))
   (if idee-repl-enabled
       (if (get-buffer (format "*cider-repl %s*" (projectile-project-name)))
           (progn
@@ -156,7 +156,6 @@
 (defun idee-refresh-view ()
   "Refreshes the current view"
   (interactive)
-  ;(message (format "Current view: %s" idee-current-view))
   (funcall idee-current-view)
   )
 
