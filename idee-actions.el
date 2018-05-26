@@ -172,11 +172,12 @@
 
 (defun idee-set-tab-width ()
   "Set the tab width."
-  (funcall  (alist-get 'idee-mode-tab-width-function idee-function-alist))
+  (funcall  (alist-get 'idee-mode-tab-width-function idee-function-alist) idee-tab-width)
   (message (format "Indentation spaces: %s" idee-tab-width))
   )
 
-(defun idee-global-set-tab-width-function(width)
+(defun idee-global-set-tab-width-function (width)
+  "Set the tab WIDTH."
   (setq standard-indent width)
   )
 
