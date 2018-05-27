@@ -59,19 +59,27 @@
                      string)
        t))
 
- (defun idee-http-post (url args callback)
-      "Send ARGS to URL as a POST request."
-      (let ((url-request-method "POST")
-            (url-request-extra-headers
-             '(("Content-Type" . "application/x-www-form-urlencoded")))
-            (url-request-data
-             (mapconcat (lambda (arg)
-                          (concat (url-hexify-string (car arg))
-                                  "="
-                                  (url-hexify-string (cdr arg))))
-                       args
-                        "&")))
-        (url-retrieve url callback)))
+(defun idee-http-post (url args callback)
+  "Send ARGS to URL as a POST request."
+  (let ((url-request-method "POST")
+        (url-request-extra-headers
+         '(("Content-Type" . "application/x-www-form-urlencoded")))
+        (url-request-data
+         (mapconcat (lambda (arg)
+                      (concat (url-hexify-string (car arg))
+                              "="
+                              (url-hexify-string (cdr arg))))
+                    args
+                    "&")))
+    (url-retrieve url callback)))
+
+(defun idee-screenshot ()
+  "Get a screenshot"
+  (interactive)
+  (shell-command "scrot -s '/home/iocanel/Photos/screenshots/%Y-%m-%d_%H:%M:%S_$wx$h.png'")
+  )
+
+(global-set-key (kbd "C-c i s") 'idee-screenshot)
 
 (provide 'idee-utils)
 ;;; idee-utils.el ends here

@@ -133,6 +133,7 @@
                       (directory-files root))
                     (idee-meghanada-enable))
     )
+  )
 
   (add-to-list 'idee-project-visitors 'idee-visitor-meghanada)
 
