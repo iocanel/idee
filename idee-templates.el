@@ -26,14 +26,13 @@
 
 (require 'yasnippet)
 
-;; Dummmy function to show how we can use completion.
-(defun idee-create-from-template()
+(defun idee-new-file-function()
   "Just creates an empty buffer"
   (interactive)
-  (let ((path) (extension) (mode) (filetypes) (fileype))
+  (let ((path) (extension) (mode) (filetypes) (filetype))
     (setq path (ido-find-file))
     (setq extension (file-name-extension (buffer-file-name path)))
-    (setq mode (cdr (assoc extension idee-types-to-mode-alsit)))
+    (setq mode (cdr (assoc extension idee-type-modes-alist)))
     (setq filetypes (directory-files (concat (file-name-as-directory idee-emacs-templates-dir) mode)))
     (setq filetype (projectile-completing-read "Select type of file:" filetypes))
     
@@ -45,14 +44,14 @@
     )
   )
 
-(defun idee-select-project-header ()
+(defun idee-select-project-header-function ()
   "Select a header for the project from the existing selection of headers."
   (interactive)
   (let ( (headers) (header) (content) )
     (setq headers (directory-files idee-emacs-headers-dir))
     (setq header (projectile-completing-read "Select header:" headers))
     (setq content (idee-read-and-eval-template (concat (file-name-as-directory idee-emacs-headers-dir) header)))
-    (setq idee--current-header (idee--comment content))
+    (setq idee--current-header content)
     )
   )
 (provide 'idee-templates)

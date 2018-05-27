@@ -45,8 +45,6 @@
 
 (defconst idee-meghanada-project-file-list `(,pom-xml ,build-gradle ,meghanada-conf))
 
-(defconst java-comment-style (make-idee-comment-style :above "/**\n" :prefix "  * " :below "**/"))
-(add-to-list 'idee-type-comment-styles-alist `("java" . ,java-comment-style))
 
 (defun idee-meghanada-enable()
   "Enables java bindings"
@@ -66,10 +64,11 @@
   (add-to-list 'idee-function-alist '(idee-mode-tab-width-function . idee-meghanada-tab-width))
   (add-to-list 'idee-function-alist '(idee-mode-hydra-function . meghanada-hydra/body))
 
+  (add-to-list 'idee-type-modes-alist '("java" . "java-mode"))
+
   ;; Define comment structure
-  (setq idee-comment-above "/**\n")
-  (setq idee-comment-prefix " * ")
-  (setq idee-comment-below "**/")
+  (defconst java-comment-style (make-idee-comment-style :above "/**\n" :prefix "  * " :below "**/"))
+  (add-to-list 'idee-type-comment-styles-alist `("java" . ,java-comment-style))
   )
 
 
@@ -131,14 +130,14 @@
                       (or (equal "pom.xml" x)
                           (equal "build.gradle" x)
                           (equal ".meghanada.conf" x))
-                    (directory-files root))
-    (idee-meghanada-enable))
-  )
+                      (directory-files root))
+                    (idee-meghanada-enable))
+    )
 
-(add-to-list 'idee-project-visitors 'idee-visitor-meghanada)
+  (add-to-list 'idee-project-visitors 'idee-visitor-meghanada)
 
 ;;; Hook
-(add-hook 'meghanada-mode-hook 'idee-meghanada-enable)
+  (add-hook 'meghanada-mode-hook 'idee-meghanada-enable)
 
-(provide 'idee-meghanada)
+  (provide 'idee-meghanada)
 ;;; idee-meghanada.el ends here

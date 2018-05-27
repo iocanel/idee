@@ -39,17 +39,18 @@
   "
         ^ Project      ^Source^                 ^Navigate^         ^Search^             ^Task^              ^Layout^
         ^^^^^^-------------------------------------------------------------------------------------------------------
-         _O_ open      _o_ optimize imports     _?_: declaration   _g_: grep             _r_: run/eval        _0_: terminal
-         _N_ new file  _i_ indent               _/_: references    _f_: find file        _u_: run unit test   _1_: ide
-         _R_ recent    _r_ indent region        _<_: back          _v_: find variable                       _2_: side by side
-         _S_ save all  _I_ toggle tab width     _>_: forward                                              _3_: repl
-         _C_ close     _T_ toggle use tabs      _._: set mark                                             _t_: toggle tree
-         _B_ build     _s_ insert snippet                                                               _c_: toggle cli
-         _V_ vcs       _h_ select headers
-          "
+         _O_pen        _o_ptimize imports     _?_: declaration   _g_: grep             _r_: run/eval        _0_: terminal
+         New _P_roject _i_ndent               _/_: references    _f_: find file        _u_: run unit test   _1_: ide
+         New _F_ile    indent _r_egion        _<_: back          _v_: find variable                       _2_: side by side
+         _R_ecent      toggle _t_ab enabled   _>_: forward                                              _3_: repl
+         _S_ave all    toggle tab _w_idth     _._: set mark                                             _t_: toggle tree
+         _C_lose       insert _s_nippet                                                               _c_: toggle cli
+         _B_uild       select _h_eaders
+         _V_cs      "
 
   ("O" idee-open)
-  ("N" idee-create-from-template)
+  ("P" idee-new-project)
+  ("F" idee-new-file)
   ("R" idee-recent)
   ("S" idee-save-all)
   ("C" idee-close)
@@ -59,8 +60,8 @@
   ("o" idee-optimize-imports)
   ("i" idee-indent)
   ("r" idee-indent-region)
-  ("I" idee-toggle-tab-width)
-  ("T" idee-toggle-use-tabs)
+  ("w" idee-toggle-tab-width)
+  ("t" idee-toggle-use-tabs)
   ("s" company-yasnippet)
   ("h" idee-select-project-header)
 

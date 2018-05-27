@@ -29,11 +29,26 @@
 
 ;;Project
 (defun idee-open()
-  "Open project"
+  "Open project."
   (interactive)
   (idee-back-push)
   (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
   )
+
+(defun idee-new-project()
+  "Create a new file."
+  (interactive)
+  (idee-back-push)
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
+  )
+
+(defun idee-new-file()
+  "Create a new file."
+  (interactive)
+  (idee-back-push)
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
+  )
+
 (defun idee-recent()
   "Recent project"
   (interactive)
@@ -79,8 +94,8 @@
   (interactive)
   (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
   )
-(defun idee-license-headers()
-  "Apply license headers"
+(defun idee-select-project-header()
+  "Select header for project files"
   (interactive)
   (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
   )

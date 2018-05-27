@@ -25,6 +25,21 @@
 ;;; Code:
 
 
+;; Project factories
+
+(cl-defstruct idee-project-factory
+  name
+  description
+  func
+  )
+
+(defconst idee-cask-project-factory (make-idee-project-factory
+  :name "Cask"
+  :description "Create an elisp project based on Cask."
+  :func ()))
+
+(defvar idee-project-factories-list `(,idee-cask-project-factory))
+
 ;; Back and Forth Navigation
 (cl-defstruct idee-buffer-point
   buffer
@@ -50,6 +65,8 @@
 
 ;; Functions
 (defvar idee-function-alist '((idee-open-function . projectile-switch-project)
+                              (idee-new-project-function . idee-new-project-function)
+                              (idee-new-file-function . idee-new-file-function)
                               (idee-recent-function . projectile-recentf)
                               (idee-save-all-function . projectile-save-project-buffers)
                               (idee-close-function . projectile-kill-buffers)
@@ -59,7 +76,7 @@
                               (idee-optimizie-imports-function . nil)
                               (idee-indent-function . evil-indent)
                               (idee-indent-region-function . nil)
-                              (idee-license-headers-function . nil)
+                              (idee-select-project-header-function . idee-select-project-header-function)
                               (idee-references-function . nil)
                               (idee-declaration-function . nil)
                               (idee-back-function . nil)
@@ -82,15 +99,15 @@
   )
 
 ;; General purpose comment styles
-(defconst elisp-comment-style (make-idee-comment-style :prefix ";"))
-(defconst shell-comment-style (make-idee-comment-style :prefix "#"))
+(defconst elisp-comment-style (make-idee-comment-style :prefix ";; "))
+(defconst shell-comment-style (make-idee-comment-style :prefix "# "))
 (defconst xml-comment-style (make-idee-comment-style :above "<!--" :below "-->"))
 
-(defvar idee-type-comment-styles-alist '(
-                                         ("el" . elisp-comment-style)
-                                         ("html" . shell-comment-style)
-                                         ("sh" . shell-comment-style)
-                                         ("xml" . xml-comment-style)
+(defvar idee-type-comment-styles-alist `(
+                                         ("el" . ,elisp-comment-style)
+                                         ("html" . ,shell-comment-style)
+                                         ("sh" . ,shell-comment-style)
+                                         ("xml" . ,xml-comment-style)
   ))
 
 (defvar idee-current-comment-style elisp-comment-style)
@@ -104,8 +121,8 @@
 (defvar idee--current-header nil)
 
 ;;; File Types
-(defvar idee-types-to-mode-alsit '(("el" . "emacs-lisp-mode")
-                                   ("java" ."java-mode")))
+(defvar idee-type-modes-alist '(("el" . "emacs-lisp-mode")
+                                   ))
 
 (provide 'idee-vars)
 ;;; idee-vars.el ends here

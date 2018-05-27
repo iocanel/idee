@@ -48,7 +48,7 @@
 
 ;;; String Functions
 (defun idee-starts-with (string prefix)
-  "Return t if STRING starts with PREFIX."
+  "Return t if STRING start with PREFIX."
   (and (string-match (rx-to-string `(: bos ,prefix) t)
                      string)
        t))
@@ -58,6 +58,20 @@
   (and (string-match (rx-to-string `(: ,suffix eos) t)
                      string)
        t))
+
+ (defun idee-http-post (url args callback)
+      "Send ARGS to URL as a POST request."
+      (let ((url-request-method "POST")
+            (url-request-extra-headers
+             '(("Content-Type" . "application/x-www-form-urlencoded")))
+            (url-request-data
+             (mapconcat (lambda (arg)
+                          (concat (url-hexify-string (car arg))
+                                  "="
+                                  (url-hexify-string (cdr arg))))
+                       args
+                        "&")))
+        (url-retrieve url callback)))
 
 (provide 'idee-utils)
 ;;; idee-utils.el ends here
