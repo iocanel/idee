@@ -1,0 +1,108 @@
+* IDE for Emacs
+
+Unified way to perform IDE-like tasks across multiple languages and frameworks in Emacs.
+
+[[./doc/images/idee-ide-view.png]]
+
+** Features
+   - Integration with projectile, treemacs and yasnippet.
+   - Global shortcuts and functions for all languages and frameworks.
+   - Traditional IDE-like swapable layouts.
+   - Advanced navigation control (back and forth).
+   - File template support.
+   - File header management.
+   - Project factory support.
+
+
+** Overview
+
+The initial idea behind this project was to provide an IDE-like window layout (project tree, editor & command line interface).
+This is functionality already provided by existing plugins, so this plugin was meant to better integrate these plugins.
+
+** Global shortcuts and functions for all languages and frameworks.
+
+   Golang developers may be using the oracle or guru, two different plugins with similar functions. To jump to the definition of a symbol guru users use `go-guru-definition` while oracle users use `go-oracle-definition`.
+   In python the same functionality is provided by `anacoda-mode-find-definitions` (for anacoda users) and so on. 
+
+   The more languages and frameworks added, the harder it gets to remember the right functions and their shortcuts.
+
+   This plugin provides a gloabl set of functions and shortcuts that works for all underlying modes, languages and frameworks.
+   Also this is backed by a hydra, which makes these functions easier to remember.
+   
+   [[./doc/images/idee-hydra.png]]
+
+** Advanced navigation control
+
+   Jumping to a symbols definition, finding callers, looking up functions etc, is of no use if you can't easily return to the point from which the query was originated.
+   Some plugins do provide `jump back` functionality, others don't. Even the ones that do provide `jump back` most of the time don't provide `jump further back` or `jump forth`.
+   And of course this is something that doesn't play nicely in polyglot projects or even across different projects.
+   
+   This plugin does provide the following functions:
+
+   - idee-jump-back
+   - idee-jump-forward
+   - idee-forget-current-buffer (remove the current buffer/point from the back/forth stacks).
+
+** File template support
+
+   For code snippets yasnippet has been an excellent choice. I often use yasnippet to provide a full-file template. 
+   But I always felt that there should be a line between snippets and templates (even though if the backing plugin is the same, e.g. yasnippet).
+
+   Why?
+
+   Because, I'd like the file template mechanism to kick in automatically when a new file is created.
+   And this is how this plugin approaches file templates:
+
+*** How it works?
+
+    When a new file is created, the plugin checks the file extension and detects the corresponding major mode that is going to be used.
+    Then it searches for the target major mode, all available file templates that are found under <template dir>/<major mode>.
+    A list of all available templates is provided to the user and after the user selected a new file based on the template is created.
+
+    For example for java files, the list of available templates can be: ("class", "annotation", "enum", "interface").
+
+   [[./docs/images/idee-file-templates.png]] 
+    
+ 
+** File header management
+
+   Open-source developers are familiar with the processes of adding license headers to their files. But even if this is a pretty common use-case nowadays, even commercial IDE doesn't have a good story around that.
+   Most of the times, this is a configuration that needs to be performed per project with very little room for re usability.
+
+   This project introduces the idea of `global license header repository` that its a folder that users can store multiple different header profiles, which can then be selected per project.
+
+   [[./docs/images/idee-select-header.png]]
+   
+   Regardless, of how you specify the header of choice, you can add a call to `idee-header` in your file template, so that all new files create contain the header. 
+  
+   [[./docs/images/idee-file-template.png]]
+
+** Project factories
+
+  Each language and framework has its own way of creating or scaffolding a project. The idea behind project factories is to allow integrating these approaches into this plugin, so that its easy to create new project. 
+
+  Each time the users want to create a new project, he is prompted to select one among the known project factories. Then the factory is invoked to generate the project.
+  The factory may or may not require further input.
+
+  A list of potential project factories:
+
+  - A maven archetype factory.
+  - A Spring intializer factory.
+  - A JBoss forge factory.
+  - A lein factory.
+  - A cask factory.
+  - and more.
+
+*** Spring intializer project factory
+
+    A simple project factory that uses https://start.spring.io to scaffold a new project.
+    
+    [[./docs/images/idee-spring-project-factory-1.png]]
+    
+    The factory prompts the user to select from a list of:
+
+    - languages
+    - build tools
+    - dependencies
+
+    and then it generates and opens the project.
