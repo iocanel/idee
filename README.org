@@ -5,7 +5,7 @@ Unified way to perform IDE-like tasks across multiple languages and frameworks i
 [[./doc/images/idee-ide-view.png]]
 
 ** Features
-   - Integration with projectile, treemacs and yasnippet.
+   - Integration with [[https://github.com/bbatsov/projectile][projectile]], [[https://github.com/Alexander-Miller/treemacs][treemacs]] and [[https://github.com/jaotavora/yasnippet][yasnippet]].
    - Global shortcuts and functions for all languages and frameworks.
    - Traditional IDE-like swapable layouts.
    - Advanced navigation control (back and forth).
@@ -45,8 +45,8 @@ This is functionality already provided by existing plugins, so this plugin was m
 
 ** File template support
 
-   For code snippets yasnippet has been an excellent choice. I often use yasnippet to provide a full-file template. 
-   But I always felt that there should be a line between snippets and templates (even though if the backing plugin is the same, e.g. yasnippet).
+   For code snippets [[https://github.com/jaotavora/yasnippet][yasnippet]] has been an excellent choice. I often use [[https://github.com/jaotavora/yasnippet][yasnippet]] to provide a full-file template. 
+   But I always felt that there should be a line between snippets and templates (even though if the backing plugin is the same, e.g. [[https://github.com/jaotavora/yasnippet][yasnippet]]).
 
    Why?
 
