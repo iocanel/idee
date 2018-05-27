@@ -61,7 +61,7 @@ This is functionality already provided by existing plugins, so this plugin was m
 
     For example for java files, the list of available templates can be: ("class", "annotation", "enum", "interface").
 
-   [[./docs/images/idee-file-templates.png]] 
+   [[./doc/images/idee-file-templates.png]] 
     
  
 ** File header management
@@ -71,11 +71,11 @@ This is functionality already provided by existing plugins, so this plugin was m
 
    This project introduces the idea of `global license header repository` that its a folder that users can store multiple different header profiles, which can then be selected per project.
 
-   [[./docs/images/idee-select-header.png]]
+   [[./doc/images/idee-select-header.png]]
    
    Regardless, of how you specify the header of choice, you can add a call to `idee-header` in your file template, so that all new files create contain the header. 
   
-   [[./docs/images/idee-file-template.png]]
+   [[./doc/images/idee-file-template.png]]
 
 ** Project factories
 
@@ -97,7 +97,7 @@ This is functionality already provided by existing plugins, so this plugin was m
 
     A simple project factory that uses https://start.spring.io to scaffold a new project.
     
-    [[./docs/images/idee-spring-project-factory-1.png]]
+    [[./doc/images/idee-spring-project-factory-1.png]]
     
     The factory prompts the user to select from a list of:
 
