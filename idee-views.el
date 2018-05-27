@@ -33,14 +33,14 @@
 (setq idee-current-view 'idee-ide-view)
 
 (defun idee-project-open-view()
-  "Switches to a traditional IDE view for the buffer. (project tree, main buffer & terminal"
+  "Switches to a traditional IDE view for the buffer. (project tree, main buffer & terminal)"
   (interactive)
   (idee-ide-view)
   (magit-status-internal (projectile-project-root))
   )
 
 (defun idee-ide-view()
-  "Switches to a traditional IDE view for the buffer. (project tree, main buffer & terminal"
+  "Switches to a traditional IDE view for the buffer. (project tree, main buffer & terminal)"
   (interactive)
   (setq idee-current-view 'idee-ide-view)
   (delete-other-windows-internal)

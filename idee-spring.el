@@ -62,11 +62,21 @@
 
 (defun idee-spring-starter-download-callback (s)
   "Download callback for spring starter http request."
-  (let ((zip (concat temporary-file-directory "spring-" (format "%06x-%06x" (random (expt 16 6)) (random (expt 16 6))) ".zip"))) 
+  (let ((project-name) (zip (concat temporary-file-directory "spring-" (format "%06x-%06x" (random (expt 16 6)) (random (expt 16 6))) ".zip"))) 
+  (setq project-name (file-name-nondirectory (directory-file-name (file-name-directory idee-spring-extract-dir))))
   (write-region (point-min) (point-max) zip)
   (call-process-shell-command (format "unzip %s -d %s" zip idee-spring-extract-dir))
   (set-buffer idee-spring-extract-dir-buffer)
+  (write-region "" nil (concat (file-name-as-directory idee-spring-extract-dir) ".projectile"))
+  (message (format "Adding %s to the list of known projectile projects." idee-spring-extract-dir))
+  (projectile-add-known-project idee-spring-extract-dir)
+  (setq projectile-project-root idee-spring-extract-dir)
+  (message (format "Switching to project: %s" project-name))
+  (projectile-switch-project-by-name idee-spring-extract-dir)
   (revert-buffer)
+  (dired idee-spring-extract-dir)
+  (idee-ide-view)
+  (message "all done")
   )
 )
 
