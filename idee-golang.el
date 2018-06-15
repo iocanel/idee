@@ -27,7 +27,7 @@
 (require 'projectile)
 (require 'go-mode)
 
-(defun golang-ide()
+(defun idee-golang-enable()
   "Enabled golang bindings"
   (interactive)
   (go-set-project)
@@ -38,7 +38,7 @@
   (setq idee-function-alist (delq (assoc 'idee-mode-hydra-function idee-function-alist) idee-function-alist))
 
   (add-to-list 'idee-function-alist '(idee-references-function . go-guru-callers))
-  (add-to-list 'idee-function-alist '(idee-declaration-function . godef-jump-other-window))
+  (add-to-list 'idee-function-alist '(idee-declaration-function . go-guru-definition))
   (add-to-list 'idee-function-alist '(idee-optimize-imports-function . goimports))
   (add-to-list 'idee-function-alist '(idee-indent-function . gofmt))
   (add-to-list 'idee-function-alist '(idee-mode-hydra-function . go-hydra/body))
