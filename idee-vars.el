@@ -78,6 +78,7 @@
                               (idee-indent-region-function . nil)
                               (idee-select-project-header-function . idee-select-project-header-function)
                               (idee-references-function . nil)
+                              (idee-implementation-function . nil)
                               (idee-declaration-function . nil)
                               (idee-back-function . nil)
                               (idee-grep-function . projectile-grep)

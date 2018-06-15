@@ -107,6 +107,12 @@
   (idee-back-push)
   (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
   )
+(defun idee-implementation()
+  "Find implementations."
+  (interactive)
+  (idee-back-push)
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
+  )
 (defun idee-declaration()
   "Jump to declaration"
   (interactive)
