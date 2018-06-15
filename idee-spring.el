@@ -26,6 +26,7 @@
 ;;; Code:
 
 (require 'idee-utils)
+(require 'idee-projects)
 
 (defvar idee-spring-languages '("java" "groovy" "kotlin"))
 (defvar idee-spring-project-types '("maven-project" "gradle-project"))

@@ -27,6 +27,8 @@
 
 ;;; Code:
 
+(require 'ido)
+
 (defun idee-new-project-function()
   "Create a new project"
   (interactive)

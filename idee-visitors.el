@@ -24,6 +24,8 @@
 
 ;;; Code:
 
+(require 'projectile)
+
 (defvar idee-project-visitors)
 (setq idee-project-visitors ())
 

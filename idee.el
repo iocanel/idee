@@ -18,7 +18,7 @@
 
 ;; Version: 0.0.1
 
-;; Package-Requires: ((emacs "25.1") (magit "2.8.0"))
+;; Package-Requires: ((emacs "25.1"))
 
 ;;; Commentary:
 
