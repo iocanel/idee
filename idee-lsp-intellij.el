@@ -92,7 +92,6 @@
   (add-to-list 'idee-function-alist '(idee-declaration-function . xref-find-definitions))
   (add-to-list 'idee-function-alist '(idee-run-or-eval-function . lsp-intellij-run-at-point))
 
-
   ;; Add project to lsp java workspace folders
   (setq lsp-java--workspace-folders (delq (assoc (projectile-project-root) lsp-java--workspace-folders) lsp-java--workspace-folders))
   (add-to-list 'lsp-java--workspace-folders (projectile-project-root))
