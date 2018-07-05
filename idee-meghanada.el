@@ -27,7 +27,11 @@
 (require 'idee-vars)
 (require 'idee-headers)
 (require 'projectile)
+(require 'flycheck)
+(require 'use-package)
 (require 'meghanada)
+(require 'company-meghanada)
+
 
 (require 'cc-vars)
 
