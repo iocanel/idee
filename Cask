@@ -17,7 +17,10 @@
  (depends-on "treemacs")
  (depends-on "treemacs-projectile")
  (depends-on "company")
-
+ (depends-on "company-lsp")
+ (depends-on "use-package")
+ (depends-on "markdown-mode")
+ 
  ; Evil
  (depends-on "evil")
  (depends-on "evil-leader")
@@ -35,6 +38,10 @@
  ; Python
  (depends-on "python-mode")
  (depends-on "anaconda-mode")
+
+; Java
+(depends-on "lsp-java")
+(depends-on "lsp-intellij")
  
  (depends-on "f")
  (depends-on "ecukes")
