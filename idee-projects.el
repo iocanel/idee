@@ -40,8 +40,9 @@
 (defun idee--select-new-project-dir()
   "Select a new project directory."
   (interactive)
-    (ido-file-internal 'dired 'dired nil "Select project directory:" 'dir)
-    (dired-current-directory))
+  (let ((project-dir (car (find-file-read-args "Select project directory:" nil))))
+    (make-directory project-dir t)
+    project-dir))
 
 (defun idee--select-project-factory()
   "Select a project factory from the list of registered factories"
