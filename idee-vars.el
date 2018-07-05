@@ -114,10 +114,10 @@
 (defvar idee-current-comment-style elisp-comment-style)
 
 ;;; Headers
-(defcustom idee-emacs-headers-dir "~/.emacs.d/headers" "The directory where header files are stored.")
+(defcustom idee-emacs-headers-dir "~/.emacs.d/headers" "The directory where header files are stored." :group 'idee :type 'string)
 
 ;;; Templates
-(defcustom idee-emacs-templates-dir "~/.emacs.d/templates" "The directory where template files are stored.")
+(defcustom idee-emacs-templates-dir "~/.emacs.d/templates" "The directory where template files are stored." :group 'idee :type 'string)
 
 (defvar idee--current-header nil)
 
