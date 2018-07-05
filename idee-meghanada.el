@@ -117,25 +117,25 @@
   ;; Define comment structure
   (defconst java-comment-style (make-idee-comment-style :above "/**\n" :prefix "  * " :below "**/"))
   (add-to-list 'idee-type-comment-styles-alist `("java" . ,java-comment-style))
-
-  ;; Add project to lsp java workspace folders
-  (setq lsp-java--workspace-folders (delq (assoc (projectile-project-root) lsp-java--workspace-folders) lsp-java--workspace-folders))
-  (add-to-list 'lsp-java--workspace-folders (projectile-project-root))
   )
 
 
 ;;; Visitor
+(defun idee-meghanada-is-applicable()
+  (interactive)
+  "Checks if meghanada mode is applicable to the project."
+  (seq-filter (lambda (x)
+                (or
+                 (equal "pom.xml" x)
+                 (equal "build.gradle" x)
+                 (equal ".meghanada.conf" x)
+                 ))
+              (directory-files (projectile-project-root))))
+
 (defun idee-visitor-meghanada (root)
   "Check if a meghanada project is available under the specified ROOT."
-  (when (seq-filter (lambda (x)
-                      (or
-                       (equal "pom.xml" x)
-                       (equal "build.gradle" x)
-                       (equal ".meghanada.conf" x)
-                       )
-                      (directory-files root))
-                    (idee-meghanada-start))
-    )
+  (if (idee-meghanada-is-applicable)
+      (idee-meghanada-start))
   )
 
 (idee-meghanada-init)
