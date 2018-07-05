@@ -29,6 +29,7 @@
 (require 'projectile)
 
 (require 'cc-vars)
+(require 'cc-cmds)
 
 (defconst source-main-prefix "src/main/java")
 (defconst source-test-prefix "src/test/java")
