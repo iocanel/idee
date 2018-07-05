@@ -27,10 +27,14 @@
 (require 'idee-vars)
 (require 'idee-headers)
 (require 'projectile)
+(require 'use-package)
+(require 'markdown-mode)
 
 (require 'cc-vars)
 
 (require 'idee-java)
+(require 'lsp-intellij)
+(require 'company-lsp)
 
 (defconst source-main-prefix "src/main/java")
 (defconst source-test-prefix "src/test/java")
@@ -59,7 +63,7 @@
   (add-to-list 'company-backends 'company-lsp)
   (add-to-list 'idee-project-visitors 'idee-visitor-lsp-intellij)
   (add-hook 'java-mode-hook 'idee-lsp-intellij-start)
-  (add-hook 'java-mode-hook #'lsp-intellij-enable)
+  (add-hook 'java-mode-hook 'lsp-intellij-enable)
   )
 
 (defun idee-lsp-intellij-disable()
@@ -70,7 +74,7 @@
   (setq company-backends (delete 'company-lsp company-backends))
   (setq idee-project-visitors (delete 'idee-visitor-lsp-intellij idee-project-visitors))
   (remove-hook 'java-mode-hook 'idee-lsp-intellij-start t)
-  (remove-hook 'java-mode-hook #'lsp-intellij-enable t)
+  (remove-hook 'java-mode-hook 'lsp-intellij-enable t)
   )
 
 (defun idee-lsp-intellij-start()
@@ -87,16 +91,42 @@
   (setq idee-function-alist (delq (assoc 'idee-run-or-eval-function idee-function-alist) idee-function-alist))
 
   ;; Set functions
-  (add-to-list 'idee-function-alist '(idee-references-function . xref-find-references))
+  (add-to-list 'idee-function-alist '(idee-references-function . idee--xref-find-references-at-point))
   (add-to-list 'idee-function-alist '(idee-implementation-function . lsp-goto-implementation))
-  (add-to-list 'idee-function-alist '(idee-declaration-function . xref-find-definitions))
+  (add-to-list 'idee-function-alist '(idee-declaration-function . idee--xref-find-definitions-at-point))
   (add-to-list 'idee-function-alist '(idee-run-or-eval-function . lsp-intellij-run-at-point))
-
-  ;; Add project to lsp java workspace folders
-  (setq lsp-java--workspace-folders (delq (assoc (projectile-project-root) lsp-java--workspace-folders) lsp-java--workspace-folders))
-  (add-to-list 'lsp-java--workspace-folders (projectile-project-root))
   )
 
+(defun idee--xref-find-definition(w)
+  "Find the definition."
+  (interactive "sEnter Symbol:")
+  (xref-find-definitions w)
+  )
+
+(defun idee--xref-find-definitions-at-point()
+  "Find the definition of the word at point."
+  (interactive)
+  (xref-find-definitions (word-at-point))
+  )
+
+(defun idee--xref-find-references-at-point()
+  "Find the references of the work at point."
+  (interactive)
+  (xref-find-references (word-at-point))
+  )
+
+;;; Visitor
+(defun idee-visitor-lsp-intellij (root)
+  "Check if a lsp-intellij project is available under the specified ROOT."
+  (when (seq-filter (lambda (x)
+                      (or
+                       (equal "pom.xml" x)
+                       (equal "build.gradle" x)
+                       (equal ".lsp-intellij.conf" x)
+                       ))
+                      (directory-files root))
+                    (idee-lsp-intellij-start))
+    )
 
 (idee-lsp-intellij-init)
 
