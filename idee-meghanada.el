@@ -51,11 +51,12 @@
 
 (defconst idee-meghanada-project-file-list `(,pom-xml ,build-gradle ,meghanada-conf))
 
-(defcustom idee-meghanada-enabled nil "Meghanada Feature Toggle" :group 'idee :type 'boolean)
-(defcustom idee-meghanada-completion-enabled nil "Meghanada Completion Feature Toggle" :group 'idee :type 'boolean)
+(defcustom idee-meghanada-enabled t "Meghanada Feature Toggle" :group 'idee :type 'boolean)
+(defcustom idee-meghanada-completion-enabled t "Meghanada Completion Feature Toggle" :group 'idee :type 'boolean)
 
 (defun idee-meghanada-init()
   "Initialize meghanada."
+  (message "Intializing meghanada")
   (if idee-meghanada-enabled
       (idee-meghanada-enable)))
 
