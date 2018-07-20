@@ -118,10 +118,8 @@
 (defun idee-java-test-dwim()
   "Run unit tests 'Do what I mean'."
   (interactive)
-
-  (let ((thing (thing-at-point 'defun)))
-    (message (format "%s" thing))
-    (idee-java-method-name thing)
+  (let ((method (which-function)))
+    (message method)
     )
   )
 
