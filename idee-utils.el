@@ -73,6 +73,23 @@
                     "&")))
     (url-retrieve url callback)))
 
+(defun idee--point-beginning-of-line()
+  "Return the point of the beginning of the current line."
+  (save-excursion
+    (beginning-of-line)
+    (point)
+    )
+  )
+
+(defun idee--point-end-of-line()
+  "Return the point of the end of the current line."
+  (save-excursion
+    (end-of-line)
+    (point)
+    )
+  )
+
+;;; Misc Functions
 (defun idee-screenshot ()
   "Get a screenshot"
   (interactive)

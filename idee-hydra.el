@@ -46,8 +46,9 @@
          _S_ave all    toggle tab _w_idth     _>_: forward                                               _t_: toggle tree
          _C_lose       insert _s_nippet       _._: set mark                                              _c_: toggle cli
          _B_uild       select _h_eaders
-         _V_cs      "
+         _V_cs         apply _H_eader"
 
+  ("o" idee-open)
   ("O" idee-open)
   ("P" idee-new-project)
   ("F" idee-new-file)
@@ -64,6 +65,7 @@
   ("t" idee-toggle-use-tabs)
   ("s" company-yasnippet)
   ("h" idee-select-project-header)
+  ("H" idee-apply-buffer-header)
 
   ("?" idee-declaration)
   ("/" idee-references)
@@ -83,9 +85,9 @@
   ("2" idee-side-by-side-view)
   ("3" idee-repl-view)
   ("0" idee-terminal-view)
-  ("t" idee-toggle-tree) 
-  ("c" idee-toggle-cli) 
-  ("m" idee-mode-hydra "mode") 
+  ("t" idee-toggle-tree)
+  ("c" idee-toggle-cli)
+  ("m" idee-mode-hydra "mode")
   ("q" nil "quit"))
 
 

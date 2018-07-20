@@ -32,6 +32,13 @@
   (idee-read-and-eval-template (concat projectile-project-root "header.txt")))
 
 
+(defun idee--buffer-comment-style()
+  "Return the buffer comment style."
+  (let ((extension (file-name-extension (buffer-file-name (current-buffer)))))
+    (cdr (assoc extension idee-type-comment-styles-alist))
+    )
+  )
+
 (defun idee--comment (content extension)
   "Apply comments to CONTENT for file EXTENSION."
   (let ((s (cdr (assoc extension idee-type-comment-styles-alist))))
@@ -64,6 +71,94 @@
     (setq headers (directory-files idee-emacs-headers-dir))
     (setq header (projectile-completing-read "Select header:" headers))
     (setq idee--current-header (idee-read-and-eval-template (concat (file-name-as-directory idee-emacs-headers-dir) header)))
+    )
+  )
+
+(defun idee-apply-buffer-header ()
+  "Apply the selected header to the current buffer."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (idee-remove-comment-at-point)
+    (insert (idee-header))
+    )
+  )
+
+(defun idee-remove-comment-at-point ()
+  "Remove the comment at the current point."
+  (interactive)
+  (save-excursion
+    (let* ((style (idee--buffer-comment-style))
+           (above (idee-comment-style-above style))
+           (prefix (idee-comment-style-prefix style))
+           (below (idee-comment-style-below style))
+           (begin (point-min))
+           (end (point-min))
+           (next (point-max))
+           )
+      
+      (if (and above below)
+          ;; Detect end and start of comment.
+          (progn
+            (setq current (point))
+            ;; Move back enough characters so that we can read the end of the comment.
+            (goto-char (- current (length below)))
+            (setq end (search-forward below nil t))
+            (setq begin (search-backward above nil t))
+            (goto-char end)
+            (setq next (search-forward above end t))
+            (if (and (>= current begin) (or (not next) (< end next)))
+                (delete-region begin end)
+              (message "no comment detected at point.")
+              )
+            )
+        (progn
+          (if (not (equal 1 (line-number-at-pos)))
+              (while (idee--line-above-commented-or-empty-p) (forward-line -1))
+            )
+          (while (idee--line-commented-p) (kill-whole-line))
+          )
+        )
+      )
+    )
+  )
+
+(defun idee--line-empty-p ()
+  "Check if current line is empty."
+    (save-excursion
+    (beginning-of-line)
+    (looking-at "[[:space:]]*$")))
+
+(defun idee--line-commented-p ()
+  "Check if current line is commented."
+  (interactive)
+    (let* ((style (idee--buffer-comment-style))
+           (prefix (idee-comment-style-prefix style))
+           ;;(line (thing-at-point 'line t))
+           (begin (idee--point-beginning-of-line))
+           (end (idee--point-end-of-line))
+           (line (buffer-substring begin end))
+           )
+      (cl-search prefix line)
+      )
+  )
+
+(defun idee--line-commented-or-empty-p ()
+  "Check if current line is commented."
+  (interactive)
+      (or (idee--line-empty-p) (idee--line-commented-p))
+  )
+
+(defun idee--line-above-commented-or-empty-p()
+  "Check if the line above is commented or empty."
+  (save-excursion
+    (if (= (line-number-at-pos) 0)
+        nil
+      (progn
+        (forward-line -1)
+        (idee--line-commented-or-empty-p)
+        )
+      )
     )
   )
 
