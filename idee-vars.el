@@ -102,7 +102,7 @@
 ;; General purpose comment styles
 (defconst elisp-comment-style (make-idee-comment-style :prefix ";; "))
 (defconst shell-comment-style (make-idee-comment-style :prefix "# "))
-(defconst xml-comment-style (make-idee-comment-style :above "<!--" :below "-->"))
+(defconst xml-comment-style (make-idee-comment-style :above "<!--\n" :below "-->"))
 
 (defvar idee-type-comment-styles-alist `(
                                          ("el" . ,elisp-comment-style)

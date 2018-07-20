@@ -59,7 +59,7 @@
   (add-to-list 'idee-type-modes-alist '("java" . "java-mode"))
 
   ;; Define comment structure
-  (defconst java-comment-style (make-idee-comment-style :above "/**\n" :prefix "  * " :below "**/"))
+  (defconst java-comment-style (make-idee-comment-style :above "/**\n" :prefix "  * " :below "**/\n"))
   (add-to-list 'idee-type-comment-styles-alist `("java" . ,java-comment-style))
   )
 
