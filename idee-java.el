@@ -91,12 +91,8 @@
   "Return the package of the specified file F."
   (let ((relative-path) (module-dir) (source-dir))
     (setq module-dir (idee-java-find-module-dir f))
-    (message "module dir: %s" module-dir)
     (setq source-dir (car (seq-filter (lambda (s) (file-exists-p (concat module-dir s))) source-directory-list)))
-    (message "source dir: %s" source-dir)
-    (message f) 
     (setq relative-path (substring f (+ (length module-dir) (length source-dir))))
-    (message "relative path: %s" relative-path)
     (replace-regexp-in-string "^." ""
                               (replace-regexp-in-string ".$" ""
                                                         (replace-regexp-in-string "\/" "." relative-path)))
@@ -142,10 +138,7 @@
   (with-temp-buffer
     (save-excursion
       (insert thing))
-      (message (format "before point:%s" (point)))
       (c-end-of-defun)
-      (message (format "after point:%s" (point)))
-      (message (format "%s" (c-defun-name)))
       )
   )
 
