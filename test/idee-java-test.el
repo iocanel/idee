@@ -35,10 +35,22 @@
 (require 'idee-templates (f-expand "idee-templates.el" root-code-path))
 (require 'idee-java (f-expand "idee-java.el" root-code-path))
 
+
+(idee-java-enable)
+
 (ert-deftest java/comment-java ()
   "Should properly comment java."
-  (idee-java-enable)
     (should (equal (idee--comment "bingo" "java") "/**\n * bingo\n**/\n"))
+)
+
+(ert-deftest java/set-tab-width ()
+  "Should set tab width."
+  (idee-java-set-tab-width 2)
+  (should (equal idee-tab-width 2))
+
+
+  (idee-java-set-tab-width 4)
+  (should (equal idee-tab-width 4))
 )
 
 (provide 'idee-java-test)

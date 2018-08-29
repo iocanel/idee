@@ -61,7 +61,7 @@
   (setq idee-function-alist (delq (assoc 'idee-mode-tab-width-function idee-function-alist) idee-function-alist))
 
   ;; Set functions
-  (add-to-list 'idee-function-alist '(idee-mode-tab-width-function . idee-java-tab-width))
+  (add-to-list 'idee-function-alist '(idee-mode-tab-width-function . idee-java-set-tab-width))
 
   (add-to-list 'idee-type-modes-alist '("java" . "java-mode"))
   (add-to-list 'idee-type-comment-styles-alist `("java" . ,java-comment-style))
@@ -69,15 +69,18 @@
 
 
 ;;; Formatting
-(defun idee-java-tab-width ()
-  "Replace the hook that set the tab width."
-  (remove-hook 'java-mode-hook 'idee-java-update-tab-width)
-  (add-hook 'java-mode-hook 'idee-java-update-tab-width)
+(defun idee-java-set-tab-width (&optional w)
+  "Replace the hook that set the tab width to W or idee-tab-width."
+  (if w
+      (setq idee-tab-width w))
+  
+  (remove-hook 'java-mode-hook 'idee-java-update-tab-width-callback)
+  (add-hook 'java-mode-hook 'idee-java-update-tab-width-callback)
   (java-mode)
   (java-mode)
   )
 
-(defun idee-java-update-tab-width()
+(defun idee-java-update-tab-width-callback()
   "Update the tab width for java hook."
   (setq c-basic-offset idee-tab-width)
   )
