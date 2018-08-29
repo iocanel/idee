@@ -46,14 +46,8 @@
   (interactive)
   (let ((f (concat (idee-project-root-dir (buffer-file-name)) "header.txt")))
        (if (file-exists-p f)
-           (progn
-             (message (format "header file found at: %s." f))
            (idee-read-and-eval-template f)
-           )
-         (progn
-             (message (format "header file found at: %s." f))
              nil)
-         )
        )
   )
 
