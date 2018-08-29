@@ -26,61 +26,84 @@
 
 (require 'idee-vars)
 
+;;
+;; State
+;;
+
+(cl-defstruct idee-buffer-point
+  buffer
+  line
+  column
+  )
+(defvar idee-back-stack ())
+(defvar idee-forward-stack ())
+(defvar ignore-current-buffer nil)
+
+;;
+;; Functions
+;;
 (defun idee-back-push()
+  "Push the current point to the back stack."
   (interactive)
   (if ignore-current-buffer
       (setq ignore-current-buffer nil)
     (setq idee-back-stack (cons (make-idee-buffer-point :buffer (current-buffer) :line (line-number-at-pos (point)) :column (current-column)) idee-back-stack))))
 
 (defun idee-back-pop()
+  "Pop the back stack."
   (interactive)
   (let ((p (car idee-back-stack)))
     (setq idee-back-stack (cdr idee-back-stack))
     p))
 
 (defun idee-forward-push()
+  "Push the current point to the forward stack."
   (interactive)
   (if ignore-current-buffer
       (setq ignore-current-buffer nil)
     (setq idee-forward-stack (cons (make-idee-buffer-point :buffer (current-buffer) :line (line-number-at-pos (point)) :column (current-column)) idee-back-stack))))
 
 (defun idee-forward-pop()
+  "Pop the forward stack."
   (interactive)
   (let ((p (car idee-forward-stack)))
     (setq idee-forward-stack (cdr idee-forward-stack))
     p))
 
 (defun idee-forget-current-buffer()
+  "Remove references to the current buffer from all navigation stacks."
   (interactive)
   (let ((c (current-buffer)) (b (car idee-back-stack)) (f (car idee-forward-stack)))
     (if (and b (equal c (idee-buffer-point-buffer b))) (idee-back-pop))
     (if (and f (equal c (idee-buffer-point-buffer f))) (idee-forward-pop))
-    ) 
+    )
   (setq ignore-current-buffer t))
 
 
 (defun idee-jump-back()
+  "Jump back."
   (interactive)
   (let ((p (idee-back-pop)))
     (if p (progn
             (idee-forward-push)
             (switch-to-buffer (idee-buffer-point-buffer p))
             (goto-char (point-min))
-            (forward-line (idee-buffer-point-line p))
+            (forward-line (- (idee-buffer-point-line p) 1))
             (move-to-column (idee-buffer-point-column p))
             (point))
       )
     )
-  ) 
+  )
 
 (defun idee-jump-forward()
+  "Jump forward."
   (interactive)
   (let ((p (idee-forward-pop)))
     (if p (progn
             (idee-back-push)
             (switch-to-buffer (idee-buffer-point-buffer p))
             (goto-char (point-min))
-            (forward-line (idee-buffer-point-line p))
+            (forward-line (- (idee-buffer-point-line p) 1))
             (move-to-column (idee-buffer-point-column p))
             (point)
             )
@@ -89,3 +112,4 @@
   )
 
 (provide 'idee-navigation)
+;;; idee-navigation.el ends here

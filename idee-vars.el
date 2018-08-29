@@ -24,44 +24,9 @@
 
 ;;; Code:
 
-
-;; Project factories
-
-(cl-defstruct idee-project-factory
-  name
-  description
-  func
-  )
-
-(defconst idee-cask-project-factory (make-idee-project-factory
-  :name "Cask"
-  :description "Create an elisp project based on Cask."
-  :func ()))
-
-(defvar idee-project-factories-list `(,idee-cask-project-factory))
-
-;; Back and Forth Navigation
-(cl-defstruct idee-buffer-point
-  buffer
-  line
-  column
-  )
-(defvar idee-back-stack ())
-(defvar idee-forward-stack ())
-(defvar ignore-current-buffer nil)
-
 ;; Tabs and indentation
 (defvar idee-tab-width 4)
 (defvar idee-use-tabs nil)
-
-;; View Toggles
-(defvar idee-tree-enabled t)
-(defvar idee-cli-enabled t)
-(defvar idee-repl-enabled t)
-(defvar idee-bottom-buffer-command 'projectile-run-eshell)
-
-;; View
-(defvar idee-current-view 'idee-ide-view)
 
 ;; Functions
 (defvar idee-function-alist '((idee-open-function . projectile-switch-project)
@@ -92,38 +57,7 @@
 ;; On Event Command Association List
 (defvar idee-on-event-command-alist '())
 
-;;; Comments
-(cl-defstruct idee-comment-style
-  above
-  prefix
-  below
-  )
-
-;; General purpose comment styles
-(defconst elisp-comment-style (make-idee-comment-style :prefix ";; "))
-(defconst shell-comment-style (make-idee-comment-style :prefix "# "))
-(defconst xml-comment-style (make-idee-comment-style :above "<!--\n" :below "-->"))
-
-(defvar idee-type-comment-styles-alist `(
-                                         ("el" . ,elisp-comment-style)
-                                         ("html" . ,shell-comment-style)
-                                         ("sh" . ,shell-comment-style)
-                                         ("xml" . ,xml-comment-style)
-  ))
-
-(defvar idee-current-comment-style elisp-comment-style)
-
-;;; Headers
-(defcustom idee-emacs-headers-dir "~/.emacs.d/headers" "The directory where header files are stored." :group 'idee :type 'string)
-
-;;; Templates
-(defcustom idee-emacs-templates-dir "~/.emacs.d/templates" "The directory where template files are stored." :group 'idee :type 'string)
-
-(defvar idee--current-header nil)
-
 ;;; File Types
-(defvar idee-type-modes-alist '(("el" . "emacs-lisp-mode")
-                                   ))
 
 (provide 'idee-vars)
 ;;; idee-vars.el ends here

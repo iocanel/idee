@@ -103,21 +103,38 @@
   (setq idee-function-alist (delq (assoc 'idee-indent-function idee-function-alist) idee-function-alist))
   (setq idee-function-alist (delq (assoc 'idee-mode-hydra-function idee-function-alist) idee-function-alist))
   (setq idee-function-alist (delq (assoc 'idee-run-or-eval-function idee-function-alist) idee-function-alist))
+  (setq idee-function-alist (delq (assoc 'idee-test idee-function-alist) idee-function-alist))
 
   ;; Set functions
   (add-to-list 'idee-function-alist '(idee-references-function . meghanada-reference))
   (add-to-list 'idee-function-alist '(idee-declaration-function . meghanada-jump-declaration))
   (add-to-list 'idee-function-alist '(idee-optimize-imports-function . meghanada-optimize-import))
   (add-to-list 'idee-function-alist '(idee-run-or-eval-function . meghanada-exec-main))
+  (add-to-list 'idee-function-alist '(idee-test-function . idee-meghanada-test-dwim))
   (add-to-list 'idee-function-alist '(idee-mode-hydra-function . meghanada-hydra/body))
 
   (add-to-list 'idee-type-modes-alist '("java" . "java-mode"))
 
   ;; Define comment structure
-  (defconst java-comment-style (make-idee-comment-style :above "/**\n" :prefix "  * " :below "**/"))
+  (setq java-comment-style (make-idee-comment-style :block-beginning "/**\n" :line-prefix "  * " :block-ending "**/"))
   (add-to-list 'idee-type-comment-styles-alist `("java" . ,java-comment-style))
   )
 
+
+(defun idee-meghanada-test-dwim()
+  "Run unit test 'Do what I mean'."
+  (interactive)
+  (let ((method (which-function))
+        (f (buffer-file-name (current-buffer))))
+
+    (if (idee-java-source-p f)
+        (message (format "%s is a source file" f))
+      (if (idee-java-test-p f)
+          (if method
+              (meghanada-run-junit-test-case)
+            (meghanada-run-junit-class))))
+    )
+  )
 
 ;;; Visitor
 (defun idee-meghanada-is-applicable()

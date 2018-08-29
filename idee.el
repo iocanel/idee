@@ -23,12 +23,12 @@
 ;;; Commentary:
 
 ;;; Code:
-
 (require 'idee-hydra)
+(require 'idee-headers)
+(require 'idee-navigation)
 (require 'idee-projects)
 (require 'idee-templates)
 
 
 (provide 'idee)
-
 ;;; idee.el ends here

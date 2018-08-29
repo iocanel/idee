@@ -39,9 +39,9 @@
  (depends-on "python-mode")
  (depends-on "anaconda-mode")
 
-; Java
-(depends-on "lsp-java")
-(depends-on "lsp-intellij")
+ ; Java
+ (depends-on "lsp-java")
+ (depends-on "lsp-intellij")
  
  (depends-on "f")
  (depends-on "ecukes")

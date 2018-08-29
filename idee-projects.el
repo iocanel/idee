@@ -1,6 +1,6 @@
 ;;; idee-projects.el --- Project Factories
 
-;; Copyright (C) 2018 Ioannis Canellos 
+;; Copyright (C) 2018 Ioannis Canellos
 ;;     
 ;; 
 ;; Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,9 +28,41 @@
 ;;; Code:
 
 (require 'ido)
+(require 'projectile)
+
+(cl-defstruct idee-project-factory
+  name
+  description
+  func
+  )
+
+(defconst idee-cask-project-factory (make-idee-project-factory
+  :name "Cask"
+  :description "Create an elisp project based on Cask."
+  :func ()))
+
+(defvar idee-project-factories-list `(,idee-cask-project-factory))
+
+(defconst idee-project-root-markers '(".idee" ".projectile" ".git"))
+
+(defun idee-project-root-dir (&optional f)
+  "Find the directory of the module that owns the source file F."
+  (let ((current-dir (f-full (if f f (projectile-project-root)))))
+    (while (not (idee-project-root-dir-p current-dir))
+      (setq current-dir (file-name-directory (directory-file-name current-dir))))
+    current-dir
+    )
+  )
+
+(defun idee-project-root-dir-p (f)
+  "Return non-nil if F is a module directory."
+  (if (seq-filter 'file-exists-p (seq-map (lambda (p) (concat f p)) idee-project-root-markers))
+      t
+    nil)
+  )
 
 (defun idee-new-project-function()
-  "Create a new project"
+  "Create a new project."
   (interactive)
   (let ((factory (idee--select-project-factory)))
     (funcall (idee-project-factory-func factory))
@@ -45,7 +77,7 @@
     project-dir))
 
 (defun idee--select-project-factory()
-  "Select a project factory from the list of registered factories"
+  "Select a project factory from the list of registered factories."
   (let ((factory (projectile-completing-read "Select project type:"
                                              (mapcar 'idee--project-factory-entry idee-project-factories-list))))
 
@@ -53,7 +85,7 @@
           (lambda (f)
             (equal (idee-project-factory-name f) (car (split-string factory " ")))) idee-project-factories-list))
     )
-  ) 
+  )
 
 (defun idee--project-factory-entry (f)
   "Create an entry for the specified project factory F."
@@ -61,4 +93,4 @@
   )
 
 (provide 'idee-projects)
-;;; idee-projects.el ends here.
+;;; idee-projects.el ends here

@@ -26,8 +26,17 @@
 
 (require 'yasnippet)
 
+;;
+;; State
+;;
+(defcustom idee-emacs-templates-dir "~/.emacs.d/templates" "The directory where template files are stored." :group 'idee :type 'string)
+(defvar idee-type-modes-alist '(("el" . "emacs-lisp-mode")))
+
+;;
+;; Functions
+;;
 (defun idee-new-file-function()
-  "Just creates an empty buffer"
+  "Just creates an empty buffer."
   (interactive)
   (let ((path) (extension) (mode) (filetypes) (filetype))
     (setq path (ido-find-file))

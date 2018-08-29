@@ -147,7 +147,7 @@
   )
 
 (defun idee-find-variable()
-  "Find variable"
+  "Find variable."
   (interactive)
   (idee-back-push)
   (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
@@ -156,12 +156,12 @@
 ;;Task
 
 (defun idee-run-or-eval ()
-  "Run the project"
+  "Run the project."
   (interactive)
   (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
   )
 (defun idee-test()
-  "Runs tests"
+  "Run test."
   (interactive)
   (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
   )

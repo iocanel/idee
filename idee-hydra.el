@@ -39,18 +39,19 @@
   "
         ^ Project      ^Source^                 ^Navigate^         ^Search^             ^Task^              ^Layout^
         ^^^^^^-------------------------------------------------------------------------------------------------------
-         _O_pen        _o_ptimize imports     _?_: declaration    _g_: grep             _r_: run/eval        _0_: terminal
-         New _P_roject _i_ndent               _/_: references     _f_: find file        _u_: run unit test   _1_: ide
+         _o_pen        _o_ptimize imports     _?_: declaration    _g_: grep             _r_: run/eval        _0_: terminal
+         New _p_roject _i_ndent               _/_: references     _f_: find file        _u_: run unit test   _1_: ide
          New _F_ile    indent _r_egion        _\\_: implementation _v_: find variable                       _2_: side by side
          _R_ecent      toggle _t_ab enabled   _<_: back                                                  _3_: repl
          _S_ave all    toggle tab _w_idth     _>_: forward                                               _t_: toggle tree
          _C_lose       insert _s_nippet       _._: set mark                                              _c_: toggle cli
          _B_uild       select _h_eaders
-         _V_cs         apply _H_eader"
+         _V_cs         apply _H_eader
+
+"
 
   ("o" idee-open)
-  ("O" idee-open)
-  ("P" idee-new-project)
+  ("p" idee-new-project)
   ("F" idee-new-file)
   ("R" idee-recent)
   ("S" idee-save-all)
@@ -58,7 +59,7 @@
   ("B" idee-build)
   ("V" idee-vcs)
 
-  ("o" idee-optimize-imports)
+  ("O" idee-optimize-imports)
   ("i" idee-indent)
   ("r" idee-indent-region)
   ("w" idee-toggle-tab-width)

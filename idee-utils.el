@@ -23,6 +23,10 @@
 ;;; Commentary:
 
 ;;; Code:
+(require 'seq)
+(require 'f)
+(require 'yasnippet)
+
 (defun idee-read-file (f)
   "Read the content of file F."
   (with-temp-buffer
@@ -44,7 +48,6 @@
         )
     nil)
   )
-
 
 ;;; String Functions
 (defun idee-starts-with (string prefix)
@@ -91,7 +94,7 @@
 
 ;;; Misc Functions
 (defun idee-screenshot ()
-  "Get a screenshot"
+  "Get a screenshot."
   (interactive)
   (shell-command "scrot -s '/home/iocanel/Photos/screenshots/%Y-%m-%d_%H:%M:%S_$wx$h.png'")
   )

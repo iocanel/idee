@@ -30,17 +30,33 @@
 (require 'magit)
 (require 'treemacs-projectile)
 
+;;
+;; State
+;;
+
+(defvar idee-current-view 'idee-ide-view)
+
+;; Toggles
+(defvar idee-tree-enabled t)
+(defvar idee-cli-enabled t)
+(defvar idee-repl-enabled t)
+(defvar idee-bottom-buffer-command 'projectile-run-eshell)
+
+
+;;
+;; Functions
+;;
 (setq idee-current-view 'idee-ide-view)
 
 (defun idee-project-open-view()
-  "Switches to a traditional IDE view for the buffer. (project tree, main buffer & terminal)"
+  "Switch to a traditional IDE view for the buffer.  (project tree, main buffer & terminal)."
   (interactive)
   (idee-ide-view)
   (magit-status-internal (projectile-project-root))
   )
 
 (defun idee-ide-view()
-  "Switches to a traditional IDE view for the buffer. (project tree, main buffer & terminal)"
+  "Switch to a traditional IDE view for the buffer.  (project tree, main buffer & terminal)."
   (interactive)
   (setq idee-current-view 'idee-ide-view)
   (delete-other-windows-internal)
@@ -57,7 +73,7 @@
   )
 
 (defun idee-side-by-side-view()
-  "Open a new buffer from the project to the side for side by side view"
+  "Open a new buffer from the project to the side for side by side view."
   (interactive)
   (delete-other-windows-internal)
   (idee-split-and-follow-horizontally)
@@ -98,7 +114,7 @@
   )
 
 (defun idee-terminal-view()
-  "Maximized terminal in the project root"
+  "Maximize terminal in the project root."
   (interactive)
   (setq idee-current-view 'idee-terminal-view)
   (delete-other-windows-internal)
@@ -111,7 +127,7 @@
 ;; View Mode Helpers
 
 (defun idee-update-tree-state()
-  "Updates the state of the tree switch (in case the winodw has been externally closed)"
+  "Update the state of the tree switch (in case the winodw has been externally closed)."
   (if (equal (format "%s" (treemacs--current-visibility)) "visible")
       (setq idee-tree-enabled t)
     (setq idee-tree-enabled nil))
@@ -119,12 +135,12 @@
 
 
 (defun idee-toggle-tree ()
-  "Toggles the tree"
+  "Toggle the tree."
   (interactive)
   (idee-update-tree-state)
   (if idee-tree-enabled
       (progn
-        (setq idee-tree-enabled nil)      
+        (setq idee-tree-enabled nil)
         (idee-refresh-view))
     (progn
       (setq idee-tree-enabled t)
@@ -133,19 +149,19 @@
 
 
 (defun idee-update-cli-state()
-  "Updates the state of the cli switch (in case the winodw has been externally closed)"
+  "Update the state of the cli switch (in case the winodw has been externally closed)."
   (if (get-buffer-window (format "*eshell %s*" (projectile-project-name)))
       (setq idee-cli-enabled t)
     (setq idee-cli-enabled nil))
   )
 
 (defun idee-toggle-cli ()
-  "Toggles the cli"
+  "Toggle the cli."
   (interactive)
   (idee-update-cli-state)
   (if idee-cli-enabled
       (progn
-        (setq idee-cli-enabled nil)      
+        (setq idee-cli-enabled nil)
         (idee-refresh-view))
     (progn
       (setq idee-cli-enabled t)
@@ -154,17 +170,18 @@
       (goto-char (point-max)))))
 
 (defun idee-refresh-view ()
-  "Refreshes the current view"
+  "Refresh the current view."
   (interactive)
   (funcall idee-current-view)
   )
 
 (defun idee-new-empty-buffer()
-  "Just creates an empty buffer"
+  "Create an empty buffer."
   (let ((fl (make-temp-file "Untitled")))
     (switch-to-buffer fl)))
 
 (defun idee-split-and-follow-horizontally ()
+  "Split window horizontally and follow."
   (interactive)
   (split-window-right)
   (balance-windows)
@@ -172,12 +189,12 @@
 
 
 (defun idee-split-and-follow-vertically ()
+  "Split window vertically and follow."
   (interactive)
   (split-window-below)
   (balance-windows)
   (other-window 1))
 
-                                        ;
 (advice-add 'projectile-switch-project :after 'idee-project-open-view)
 
 (provide 'idee-views)
