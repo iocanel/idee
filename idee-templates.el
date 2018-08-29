@@ -36,7 +36,7 @@
 ;; Functions
 ;;
 (defun idee-new-file-function()
-  "Just creates an empty buffer."
+  "Create an empty buffer."
   (interactive)
   (let ((path) (extension) (mode) (filetypes) (filetype))
     (setq path (ido-find-file))

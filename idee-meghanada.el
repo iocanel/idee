@@ -112,12 +112,6 @@
   (add-to-list 'idee-function-alist '(idee-run-or-eval-function . meghanada-exec-main))
   (add-to-list 'idee-function-alist '(idee-test-function . idee-meghanada-test-dwim))
   (add-to-list 'idee-function-alist '(idee-mode-hydra-function . meghanada-hydra/body))
-
-  (add-to-list 'idee-type-modes-alist '("java" . "java-mode"))
-
-  ;; Define comment structure
-  (setq java-comment-style (make-idee-comment-style :block-beginning "/**\n" :line-prefix "  * " :block-ending "**/"))
-  (add-to-list 'idee-type-comment-styles-alist `("java" . ,java-comment-style))
   )
 
 

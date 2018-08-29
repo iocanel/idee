@@ -63,10 +63,8 @@
 
 (defun idee-header ()
   "Return the header commented for the current buffer style."
-  (let ( (extension) (file-name-extension (buffer-file-name (current-buffer))))
     (idee--comment idee--current-header (file-name-extension (buffer-file-name (current-buffer))))
-    )
-  )
+ ) 
 
 (defun idee-select-project-header ()
   "Select a header for the project from the existing selection of headers."
