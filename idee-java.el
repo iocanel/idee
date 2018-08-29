@@ -25,6 +25,8 @@
 
 (require 'idee-vars)
 (require 'idee-headers)
+(require 'idee-visitors)
+(require 'idee-templates)
 (require 'projectile)
 
 (require 'cc-vars)
