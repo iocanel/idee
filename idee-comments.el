@@ -111,13 +111,14 @@
             (goto-char (- current (length block-ending)))
             (setq end (search-forward block-ending nil t))
             (setq begin (search-backward block-beginning nil t))
-            (goto-char end)
-            (setq next (search-forward block-beginning end t))
-            (if (and (>= current begin) (or (not next) (< end next)))
-                (delete-region begin end)
-              (message "no comment detected at point.")
-              )
-            )
+            (message (format "detecting region %s %s." begin end))
+            (if end
+                (progn
+                  (goto-char end)
+                  (setq next (search-forward block-beginning end t))
+                  (if (and (>= current begin) (or (not next) (< end next)))
+                      (delete-region begin end)
+                    (message "no comment detected at point.")))))
         (progn
           (if (not (equal 1 (line-number-at-pos)))
               (while (idee--line-above-commented-or-empty-p) (forward-line -1))
