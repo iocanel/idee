@@ -31,6 +31,7 @@
 
 (require 'cc-vars)
 (require 'cc-cmds)
+(require 'cl-extra)
 
 (defconst source-main-prefix "src/main/java")
 (defconst source-test-prefix "src/test/java")
@@ -53,6 +54,8 @@
 
 (defconst java-comment-style (make-idee-comment-style :block-beginning "/*" :block-ending "*/"
                                                       :custom-block-beginning idee-comment-java-custom-block-beginning :custom-line-prefix idee-comment-java-custom-line-prefix :custom-block-ending idee-comment-java-custom-block-ending))
+(defvar idee--java-symbols)
+
 (defun idee-java-enable()
   "Enable java bindings."
   (interactive)
@@ -133,7 +136,6 @@
     )
  )
 
-
 (defun idee-java-source-p (f)
   "Return non-nil if F is a source file."
   (let ((source-dir (idee-java-find-src-dir f)))
@@ -182,6 +184,46 @@
     (interactive)
     (message (format "%s" (c-defun-name)))
     )
+
+(defun idee--java-fqcn-matches-p (c)
+  "Predicate that matches c against idee--java-symbols."
+  (let* ((matches (seq-filter (lambda (i) (idee--java-fqcn-matches c i)) idee--java-symbols)))
+    (message (format "%s -> %s" c matches))
+    matches))
+
+(defun idee--java-fqcn-matches (c f)
+  "Match a candidate C to the fully qualified class name F.
+- Example accepted matches for java.util.List:
+   - Li
+   - List
+   - util.Li
+   - util.List
+   - java.util.List
+   - j.u.List"
+  (let* ((candidate-list (split-string c "\\([\\.]\\)"))
+         (fqcn-list (split-string f "\\([\\.]\\)"))
+         (reverse-candidate-list (reverse candidate-list))
+         (reverse-fqcn-list (reverse fqcn-list))
+         (canidate-class-name (car reverse-candidate-list))
+         (fqcn-class-name (car reverse-fqcn-list))
+         (candidate-package (reverse (cdr reverse-candidate-list)))
+         (fqcn-package (reverse (cdr reverse-fqcn-list))))
+
+    (and
+     (every (lambda (x y) (s-prefix-p x y)) (idee--java-camelcase-split canidate-class-name) (idee--java-camelcase-split fqcn-class-name))
+     (every (lambda (x y) (s-prefix-p x y)) candidate-package fqcn-package)
+     )
+    )
+  )
+
+(defun idee--java-camelcase-split (s)
+  "Splits a camel case S into a list of strings."
+  (let ((case-fold-search nil))
+    (seq-filter
+     (lambda (x) (not (equal "" x))) ;;remove all empty strings (its usually the first)
+    (split-string (replace-regexp-in-string "\\([A-Z]\\)" " \\1" s) " ")
+    ))
+  )
 
 ;;; Visitor
   (defun idee-visitor-java (root)

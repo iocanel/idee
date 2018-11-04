@@ -29,9 +29,14 @@
 ;;
 ;; State
 ;;
-(defcustom idee-emacs-templates-dir "~/.emacs.d/templates" "The directory where template files are stored." :group 'idee :type 'string)
-(defvar idee-type-modes-alist '(("el" . "emacs-lisp-mode")))
+(defcustom idee-emacs-templates-dir "~/.config/emacs/templates" "The directory where template files are stored." :group 'idee :type 'string)
 
+(defvar idee-type-modes-alist '() "Association list for extension to mode.")
+(setq idee-type-modes-alist '(
+                                ("el" . "emacs-lisp-mode")
+                                ("org" . "org-mode")
+                                ("md" . "markdown-mode")
+                                ))
 ;;
 ;; Functions
 ;;

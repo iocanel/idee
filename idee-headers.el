@@ -27,6 +27,7 @@
 (require 'idee-utils)
 (require 'idee-comments)
 (require 'idee-projects)
+(require 'idee-vars)
 
 ;;
 ;; Customization
@@ -44,16 +45,17 @@
 (defun idee--read-project-header ()
   "Read the header from header.txt."
   (interactive)
-  (let ((f (concat (idee-project-root-dir (buffer-file-name)) "header.txt")))
-       (if (file-exists-p f)
-           (idee-read-and-eval-template f)
-             nil)
+  (let ((root-dir-header (concat (idee-project-root-dir (buffer-file-name)) "header.txt"))
+        (idee-dir-header (concat (idee-project-root-dir (buffer-file-name)) (file-name-as-directory idee-project-conf-dir) "header.txt")))
+
+       (cond ((file-exists-p root-dir-header) (idee-read-and-eval-template root-dir-header))
+             ((file-exists-p idee-dir-header) (idee-read-and-eval-template idee-dir-header))
+             (t nil))
        )
   )
 
 (defun idee--set-header ()
   "Set the header value, if exists."
-  (message "Setting header.")
   (let ((h (idee--read-project-header)))
     (if h
         (setq idee--current-header h)
@@ -64,7 +66,7 @@
 (defun idee-header ()
   "Return the header commented for the current buffer style."
     (idee--comment idee--current-header (file-name-extension (buffer-file-name (current-buffer))))
- ) 
+ )
 
 (defun idee-select-project-header ()
   "Select a header for the project from the existing selection of headers."

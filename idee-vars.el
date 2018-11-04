@@ -24,6 +24,8 @@
 
 ;;; Code:
 
+(defcustom idee-project-conf-dir ".idee" "The directory where idee configuration files are stored." :group 'idee :type 'string)
+
 ;; Tabs and indentation
 (defvar idee-tab-width 4)
 (defvar idee-use-tabs nil)
