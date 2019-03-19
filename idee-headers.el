@@ -88,6 +88,19 @@
     )
   )
 
+(defun idee-apply-header-to-file (f)
+  "Apply the selected header to the specified file F."
+  (find-file f)
+  (idee-apply-buffer-header)
+  (write-file f)
+  )
+
+(defun idee-apply-header-to-project-files ()
+  "Recursively visit all project files nad apply the selected header."
+  (interactive)
+  (idee-visit-project-files 'idee-apply-header-to-file)
+  )
+
 (advice-add 'projectile-switch-project :after 'idee--set-header)
 
 (provide 'idee-headers)

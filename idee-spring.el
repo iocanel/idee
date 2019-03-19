@@ -30,7 +30,7 @@
 
 (defvar idee-spring-languages '("java" "groovy" "kotlin"))
 (defvar idee-spring-project-types '("maven-project" "gradle-project"))
-(defvar idee-spring-dependencies '("web" "security" "jpa" "actuator"))
+(defvar idee-spring-dependencies '("web" "security" "data-jpa" "actuator" "postgresql" "data-rest"))
 
 (defvar idee-spring-extract-dir nil)
 (defvar idee-spring-extract-dir-buffer nil)
@@ -68,6 +68,9 @@
   (write-region (point-min) (point-max) zip)
   (call-process-shell-command (format "unzip %s -d %s" zip idee-spring-extract-dir))
   (set-buffer idee-spring-extract-dir-buffer)
+  (setq default-directory (file-name-as-directory idee-spring-extract-dir))
+  (message (format "default dir: %s" default-directory))
+  (call-process-shell-command "git init")
   (write-region "" nil (concat (file-name-as-directory idee-spring-extract-dir) ".projectile"))
   (projectile-add-known-project idee-spring-extract-dir)
   (setq projectile-project-root idee-spring-extract-dir)

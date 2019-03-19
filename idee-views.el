@@ -29,6 +29,7 @@
 
 (require 'magit)
 (require 'treemacs-projectile)
+(require 'treemacs-impl)
 
 ;;
 ;; State
@@ -67,7 +68,11 @@
         (projectile-run-eshell)
         (evil-window-set-height 12)))
   (if idee-tree-enabled
-      (treemacs--init (projectile-project-root)))
+      (progn
+        (treemacs--init (projectile-project-root))
+        ;; we remove the mode-line to hide the treemacs label
+        (setq mode-line-format ""))
+    )
   (other-window 1)
   (goto-char (point-min))
   )
@@ -128,7 +133,7 @@
 
 (defun idee-update-tree-state()
   "Update the state of the tree switch (in case the winodw has been externally closed)."
-  (if (equal (format "%s" (treemacs--current-visibility)) "visible")
+  (if (equal (format "%s" (treemacs-current-visibility)) "visible")
       (setq idee-tree-enabled t)
     (setq idee-tree-enabled nil))
   )

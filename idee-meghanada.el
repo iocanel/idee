@@ -54,14 +54,8 @@
 (defcustom idee-meghanada-enabled t "Meghanada Feature Toggle" :group 'idee :type 'boolean)
 (defcustom idee-meghanada-completion-enabled t "Meghanada Completion Feature Toggle" :group 'idee :type 'boolean)
 
-(defun idee-meghanada-init()
-  "Initialize meghanada."
-  (message "Intializing meghanada")
-  (if idee-meghanada-enabled
-      (idee-meghanada-enable)))
-
 (defun idee-meghanada-enable()
-  "Enable meghanada. Add hooks, visitors etc."
+  "Enable meghanada, add hooks, visitors etc."
   (interactive)
   (use-package meghanada
     :ensure t
@@ -72,7 +66,6 @@
     (setq meghanada-server-jvm-option "-ea -server -XX:+UseConcMarkSweepGC -XX:SoftRefLRUPolicyMSPerMB=50 -Xverify:none -Xms512m -Dfile.encoding=UTF-8")
     )
 
-  (add-to-list 'idee-project-visitors 'idee-visitor-meghanada)
   (add-hook 'java-mode-hook 'idee-meghanada-start)
   (if idee-meghanada-completion-enabled
       (add-to-list 'company-backends 'company-meghanada)
@@ -81,9 +74,8 @@
   )
 
 (defun idee-meghanada-disable()
-  "Disable meghanada. Remove hooks, visitors etc."
+  "Disable meghanada, Remove hooks, visitors etc."
   (interactive)
-  (setq idee-project-visitors (delete 'idee-visitor-meghanada idee-project-visitors))
   (setq company-backends (delete 'company-meghanada company-backends))
   (remove-hook 'java-mode-hook 'idee-meghanada-start t)
   )
@@ -144,11 +136,10 @@
 
 (defun idee-visitor-meghanada (root)
   "Check if a meghanada project is available under the specified ROOT."
-  (if (idee-meghanada-is-applicable)
-      (idee-meghanada-start))
+  (if (and idee-meghanada-enabled (idee-meghanada-is-applicable))
+      (idee-meghanada-enable))
   )
 
-(idee-meghanada-init)
-
+(add-to-list 'idee-project-visitors 'idee-visitor-meghanada)
 (provide 'idee-meghanada)
 ;;; idee-meghanada.el ends here

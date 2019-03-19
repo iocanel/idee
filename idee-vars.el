@@ -27,8 +27,10 @@
 (defcustom idee-project-conf-dir ".idee" "The directory where idee configuration files are stored." :group 'idee :type 'string)
 
 ;; Tabs and indentation
-(defvar idee-tab-width 4)
+(defvar idee-tab-width 2)
 (defvar idee-use-tabs nil)
+
+(defvar idee-source-file-extensions '(java kt groovy scala clojure xml go py js el))
 
 ;; Functions
 (defvar idee-function-alist '((idee-open-function . projectile-switch-project)

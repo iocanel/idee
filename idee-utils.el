@@ -26,6 +26,7 @@
 (require 'seq)
 (require 'f)
 (require 'yasnippet)
+(require 'editorconfig)
 
 (defun idee-read-file (f)
   "Read the content of file F."
@@ -92,14 +93,45 @@
     )
   )
 
-;;; Misc Functions
-(defun idee-screenshot ()
-  "Get a screenshot."
-  (interactive)
-  (shell-command "scrot -s '/home/iocanel/Photos/screenshots/%Y-%m-%d_%H:%M:%S_$wx$h.png'")
+(defun idee-indent-file (f)
+  "Indent file F."
+    (find-file f)
+    (set-auto-mode t)
+    (indent-region (point-min) (point-max))
+    (write-file f)
   )
 
-(global-set-key (kbd "C-c i s") 'idee-screenshot)
+(defun idee-indent-all-project-files()
+  "Indend all files in the project."
+  (interactive)
+  (idee-visit-project-files 'idee-indent-file)
+  )
 
-(provide 'idee-utils)
+(defun idee-visit-project-files (visitor &optional dir)
+  "Call VISITOR with all project files or DIR files."
+  (let* ((current (or dir (projectile-project-root))))
+    (dolist (extension idee-source-file-extensions)
+         (mapc (lambda (x) (funcall visitor x))
+          (directory-files-recursively current (format "\\.%s$" extension))))
+    )
+  )
+
+;; Credits: https://emacs.stackexchange.com/questions/12613/convert-the-first-character-to-uppercase-capital-letter-using-yasnippet
+(defun idee-capitalize-first(&optional string)
+  "Capitalize only the first character of the input STRING."
+  (when (and string (> (length string) 0))
+    (let ((first (substring string nil 1))
+          (rest-str   (substring string 1)))
+      (concat (capitalize first) rest-str))))
+
+;;; Misc Functions
+  (defun idee-screenshot ()
+    "Get a screenshot."
+    (interactive)
+    (shell-command "scrot -s '/home/iocanel/Photos/screenshots/%Y-%m-%d_%H:%M:%S_$wx$h.png'")
+    )
+
+  (global-set-key (kbd "C-c i s") 'idee-screenshot)
+
+  (provide 'idee-utils)
 ;;; idee-utils.el ends here

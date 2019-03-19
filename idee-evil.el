@@ -29,6 +29,9 @@
 (require 'idee-hydra)
 
 (evil-leader/set-key "i" 'idee-hydra/body)
+(evil-leader/set-key "p" 'idee-project-hydra/body)
+(evil-leader/set-key "f" 'idee-file-hydra/body)
+(evil-leader/set-key "n" 'idee-navigation-hydra/body)
 
 (provide 'idee-evil)
 ;;; idee-evil.el ends here

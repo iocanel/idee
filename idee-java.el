@@ -31,7 +31,6 @@
 
 (require 'cc-vars)
 (require 'cc-cmds)
-(require 'cl-extra)
 
 (defconst source-main-prefix "src/main/java")
 (defconst source-test-prefix "src/test/java")
@@ -210,8 +209,8 @@
          (fqcn-package (reverse (cdr reverse-fqcn-list))))
 
     (and
-     (every (lambda (x y) (s-prefix-p x y)) (idee--java-camelcase-split canidate-class-name) (idee--java-camelcase-split fqcn-class-name))
-     (every (lambda (x y) (s-prefix-p x y)) candidate-package fqcn-package)
+     (cl-every (lambda (x y) (s-prefix-p x y)) (idee--java-camelcase-split canidate-class-name) (idee--java-camelcase-split fqcn-class-name))
+     (cl-every (lambda (x y) (s-prefix-p x y)) candidate-package fqcn-package)
      )
     )
   )

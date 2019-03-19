@@ -34,12 +34,67 @@
 (require 'hydra)
 (require 'company-yasnippet)
 
+(defhydra idee-project-hydra (:hint nil :exit t)
+"
+        ^ Project      
+        ^^^^^^---------
+         _o_pen       
+         _n_ew project 
+         _s_ave all    
+         _c_lose       
+         _b_uild       
+         _v_cs         
+"
+  ("o" idee-open)
+  ("n" idee-new-project)
+  ("s" idee-save-all)
+  ("c" idee-close)
+  ("b" idee-build)
+  ("v" idee-vcs)
+  ("q" nil "quit"))
+
+(defhydra idee-file-hydra (:hint nil :exit t)
+"
+        ^ File
+        ^^^^^^---------
+         _o_pen       
+         _n_ew 
+         _r_ecent
+         _s_ave 
+         _c_lose       
+"
+  ("o" idee-find-file)
+  ("n" idee-new-file)
+  ("r" idee-recent)
+  ("s" save-buffer)
+  ("c" kill-buffer)
+  ("q" nil "quit"))
+ 
+(defhydra idee-navigation-hydra (:hint nil :exit t)
+"
+        ^ Navigation
+        ^^^^^^---------
+         _d_eclaration
+         _r_eferenves
+         _i_mplementation
+         _b_ack 
+         _f_orward
+         _s_set mark
+"
+  ("d" idee-declaration)
+  ("r" idee-references)
+  ("i" idee-implementation)
+  ("b" idee-jump-back)
+  ("f" idee-jump-forward)
+  ("s" idee-back-push)
+  ("q" nil "quit"))
+ 
 
 (defhydra idee-hydra (:hint nil :exit t)
   "
         ^ Project      ^Source^                 ^Navigate^         ^Search^             ^Task^              ^Layout^
         ^^^^^^-------------------------------------------------------------------------------------------------------
-         _o_pen        _o_ptimize imports     _?_: declaration    _g_: grep             _r_: run/eval        _0_: terminal
+         _o_pen        _O_ptimize imports     _?_: declaration    _g_: grep             _r_: run/eval        _0_: terminal
          New _p_roject _i_ndent               _/_: references     _f_: find file        _u_: run unit test   _1_: ide
          New _F_ile    indent _r_egion        _\\_: implementation _v_: find variable                       _2_: side by side
          _R_ecent      toggle _t_ab enabled   _<_: back                                                  _3_: repl

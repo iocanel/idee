@@ -29,30 +29,13 @@
 (defcustom idee-lsp-java-enabled t "Lsp Java Feature Toggle" :group 'idee :type 'boolean)
 (defcustom idee-lsp-java-completion-enabled t "Lsp Java Completion Feature Toggle" :group 'idee :type 'boolean)
 
-(defun idee-lsp-java-init()
-  "Initialize lsp-java."
-  (message "Intializing lsp-java")
-  (if idee-lsp-java-enabled
-      (idee-lsp-java-enable)))
-
 (defun idee-lsp-java-enable()
-  "Enable lsp-java. Add hooks, visitors etc."
+  "Enable lsp-java, add hooks, visitors etc."
   (interactive)
-  (use-package lsp-java
-    :ensure t
-    :requires (lsp-ui-flycheck lsp-ui-sideline)
-    :config
-    (add-hook 'java-mode-hook  'lsp-java-enable)
-    (add-hook 'java-mode-hook  'flycheck-mode)
-    (add-hook 'java-mode-hook  'company-mode)
-    (add-hook 'java-mode-hook  (lambda () (lsp-ui-flycheck-enable t)))
-    (add-hook 'java-mode-hook  'lsp-ui-sideline-mode)
-    )
-
-  (add-to-list 'idee-project-visitors 'idee-visitor-lsp-java)
   (add-hook 'java-mode-hook 'idee-lsp-java-start)
   (if idee-lsp-java-completion-enabled
-      (add-to-list 'company-backends 'company-lsp)
+      (progn (add-to-list 'company-backends 'company-lsp)
+             (lsp-workspace-folders-add (projectile-project-root)))
     (setq company-backends (delete 'company-lsp company-backends))
     )
   )
@@ -60,7 +43,6 @@
 (defun idee-lsp-java-disable()
   "Disable lsp-java, remove hooks, visitors etc."
   (interactive)
-  (setq idee-project-visitors (delete 'idee-visitor-lsp-java idee-project-visitors))
   (setq company-backends (delete 'company-lsp company-backends))
   (remove-hook 'java-mode-hook 'idee-lsp-java-start t)
   )
@@ -68,11 +50,30 @@
 (defun idee-lsp-java-start()
   "Start LSP for Java."
   
-  ;; Add project to lsp java workspace folders
-  (setq lsp-java--workspace-folders (delq (assoc (projectile-project-root) lsp-java--workspace-folders) lsp-java--workspace-folders))
-  (add-to-list 'lsp-java--workspace-folders (projectile-project-root))
+  ;; Clear functions
+  (setq idee-function-alist (delq (assoc 'idee-refernces-function idee-function-alist) idee-function-alist))
+  (setq idee-function-alist (delq (assoc 'idee-declaration-function idee-function-alist) idee-function-alist))
+  (setq idee-function-alist (delq (assoc 'idee-optimize-imports-function idee-function-alist) idee-function-alist))
+  (setq idee-function-alist (delq (assoc 'idee-indent-function idee-function-alist) idee-function-alist))
+  ;(setq idee-function-alist (delq (assoc 'idee-mode-hydra-function idee-function-alist) idee-function-alist))
+  ;(setq idee-function-alist (delq (assoc 'idee-run-or-eval-function idee-function-alist) idee-function-alist))
+  ;(setq idee-function-alist (delq (assoc 'idee-test idee-function-alist) idee-function-alist))
+
+  ;; Set functions
+  (add-to-list 'idee-function-alist '(idee-references-function . lsp--get-references))
+  (add-to-list 'idee-function-alist '(idee-declaration-function . lsp-goto-type-definition))
+  (add-to-list 'idee-function-alist '(idee-optimize-imports-function . lsp-java-organize-imports))
+  ;(add-to-list 'idee-function-alist '(idee-run-or-eval-function . lsp-java-de))
+  ;(add-to-list 'idee-function-alist '(idee-test-function . idee-meghanada-test-dwim))
+  ;(add-to-list 'idee-function-alist '(idee-mode-hydra-function . meghanada-hydra/body))
   )
 
+(defun idee--lsp-java--on-save-buffer()
+  "Save buffer handler."
+  (if (and (buffer-file-name) (equal "pom.xml" (file-name-nondirectory (buffer-file-name))))
+             (lsp-java-update-project-configuration)))
+
+(advice-add 'save-buffer :after #'idee--lsp-java--on-save-buffer)
 
 ;;; Visitor
 (defun idee-lsp-java-is-applicable()
@@ -88,9 +89,11 @@
 
 (defun idee-visitor-lsp-java (root)
   "Check if a lsp-java project is available under the specified ROOT."
-  (if (idee-lsp-java-is-applicable)
-      (idee-lsp-java-start))
+  (if (and idee-lsp-java-enabled (idee-lsp-java-is-applicable))
+      (idee-lsp-java-enable))
   )
+
+(add-to-list 'idee-project-visitors 'idee-visitor-lsp-java)
 
 (provide 'idee-lsp-java)
 ;;; idee-lsp-java.el ends here

@@ -36,6 +36,15 @@
                                 ("el" . "emacs-lisp-mode")
                                 ("org" . "org-mode")
                                 ("md" . "markdown-mode")
+                                ("java" . "java-mode")
+                                ("js" . "js2-mode")
+                                ("ts" . "typescript-mode")
+                                ("py" . "python-mode")
+                                ("go" . "go-mode")
+                                ("cl" . "clojure-mode")
+                                ("kt" . "kotlin-mode")
+                                ("groovy" . "groovy-mode")
+                                ("html" . "html-mode")
                                 ))
 ;;
 ;; Functions

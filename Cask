@@ -11,6 +11,7 @@
 (development
 
  ; Common
+ (depends-on "editorconfig")
  (depends-on "hydra")
  (depends-on "magit")
  (depends-on "projectile")

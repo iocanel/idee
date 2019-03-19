@@ -81,7 +81,7 @@
   "Enable intellij bindings."
   (interactive)
   (idee-java-enable)
-  (lsp-intellij-enable)
+  ;(lsp-intellij-enable)
   ;; Clear functions
   (setq idee-function-alist (delq (assoc 'idee-refernces-function idee-function-alist) idee-function-alist))
   (setq idee-function-alist (delq (assoc 'idee-implementation-function idee-function-alist) idee-function-alist))
