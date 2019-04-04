@@ -63,22 +63,18 @@
     (setq meghanada-java-path "java")
     (setq meghanada-maven-path "mvn")
     (setq company-meghanada-prefix-length 2)
-    (setq meghanada-server-jvm-option "-ea -server -XX:+UseConcMarkSweepGC -XX:SoftRefLRUPolicyMSPerMB=50 -Xverify:none -Xms512m -Dfile.encoding=UTF-8")
-    )
+    (setq meghanada-server-jvm-option "-ea -server -XX:+UseConcMarkSweepGC -XX:SoftRefLRUPolicyMSPerMB=50 -Xverify:none -Xms512m -Dfile.encoding=UTF-8"))
 
   (add-hook 'java-mode-hook 'idee-meghanada-start)
   (if idee-meghanada-completion-enabled
       (add-to-list 'company-backends 'company-meghanada)
-    (setq company-backends (delete 'company-meghanada company-backends))
-    )
-  )
+    (setq company-backends (delete 'company-meghanada company-backends))))
 
 (defun idee-meghanada-disable()
   "Disable meghanada, Remove hooks, visitors etc."
   (interactive)
   (setq company-backends (delete 'company-meghanada company-backends))
-  (remove-hook 'java-mode-hook 'idee-meghanada-start t)
-  )
+  (remove-hook 'java-mode-hook 'idee-meghanada-start t))
 
 (defun idee-meghanada-start()
   "Set meghanada bindings."
@@ -103,8 +99,7 @@
   (add-to-list 'idee-function-alist '(idee-optimize-imports-function . meghanada-optimize-import))
   (add-to-list 'idee-function-alist '(idee-run-or-eval-function . meghanada-exec-main))
   (add-to-list 'idee-function-alist '(idee-test-function . idee-meghanada-test-dwim))
-  (add-to-list 'idee-function-alist '(idee-mode-hydra-function . meghanada-hydra/body))
-  )
+  (add-to-list 'idee-function-alist '(idee-mode-hydra-function . meghanada-hydra/body)))
 
 
 (defun idee-meghanada-test-dwim()
@@ -118,9 +113,7 @@
       (if (idee-java-test-p f)
           (if method
               (meghanada-run-junit-test-case)
-            (meghanada-run-junit-class))))
-    )
-  )
+            (meghanada-run-junit-class))))))
 
 ;;; Visitor
 (defun idee-meghanada-is-applicable()
@@ -137,8 +130,7 @@
 (defun idee-visitor-meghanada (root)
   "Check if a meghanada project is available under the specified ROOT."
   (if (and idee-meghanada-enabled (idee-meghanada-is-applicable))
-      (idee-meghanada-enable))
-  )
+      (idee-meghanada-enable)))
 
 (add-to-list 'idee-project-visitors 'idee-visitor-meghanada)
 (provide 'idee-meghanada)

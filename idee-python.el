@@ -29,7 +29,7 @@
 (require 'python-mode)
 
 (defun python-ide()
-  "Enabled python bindings"
+  "Enable python bindings."
   (interactive)
   (setq idee-function-alist (delq (assoc 'idee-refernces-function idee-function-alist) idee-function-alist))
   (setq idee-function-alist (delq (assoc 'idee-declaration-function idee-function-alist) idee-function-alist))
@@ -38,8 +38,7 @@
 
   (add-to-list 'idee-function-alist '(idee-references-function . anaconda-mode-find-references))
   (add-to-list 'idee-function-alist '(idee-declaration-function . anaconda-mode-find-definitions))
-  (add-to-list 'idee-function-alist '(idee-indent-function . python-indent))
-  )
+  (add-to-list 'idee-function-alist '(idee-indent-function . python-indent)))
 
 (provide 'idee-python)
 ;;; idee-python.el ends here

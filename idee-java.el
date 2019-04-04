@@ -66,8 +66,7 @@
   (add-to-list 'idee-function-alist '(idee-mode-tab-width-function . idee-java-set-tab-width))
 
   (add-to-list 'idee-type-modes-alist '("java" . "java-mode"))
-  (add-to-list 'idee-type-comment-styles-alist `("java" . ,java-comment-style))
-  )
+  (add-to-list 'idee-type-comment-styles-alist `("java" . ,java-comment-style)))
 
 
 ;;; Formatting
@@ -79,22 +78,18 @@
   (remove-hook 'java-mode-hook 'idee-java-update-tab-width-callback)
   (add-hook 'java-mode-hook 'idee-java-update-tab-width-callback)
   (java-mode)
-  (java-mode)
-  )
+  (java-mode))
 
 (defun idee-java-update-tab-width-callback()
   "Update the tab width for java hook."
-  (setq c-basic-offset idee-tab-width)
-  )
+  (setq c-basic-offset idee-tab-width))
 
 ;;; Language Functions
 (defun idee-java-package-line()
   "Return the full package line for the current directory."
   (let ((pkg (idee-java-package-of default-directory)))
     (if pkg
-        (concat "package " pkg ";"))
-    )
-  )
+        (concat "package " pkg ";"))))
 
 (defun idee-java-package-of (f)
   "Return the package of the specified file F."
@@ -104,25 +99,20 @@
     (setq relative-path (substring f (+ (length module-dir) (length source-dir))))
     (replace-regexp-in-string "^." ""
                               (replace-regexp-in-string ".$" ""
-                                                        (replace-regexp-in-string "\/" "." relative-path)))
-    )
-  )
+                                                        (replace-regexp-in-string "\/" "." relative-path)))))
 
 (defun idee-java-find-module-dir (f)
   "Find the directory of the module that owns the source file F."
   (let ((current-dir f))
     (while (not (idee-java-module-dir-p current-dir))
       (setq current-dir (file-name-directory (directory-file-name current-dir))))
-    current-dir
-    )
-  )
+    current-dir))
 
 (defun idee-java-module-dir-p (f)
   "Return non-nil if F is a module directory."
   (if (seq-filter 'file-exists-p (seq-map (lambda (p) (concat f p)) idee-java-project-file-list))
       t
-    nil)
-  )
+    nil))
 
 (defun idee-java-find-src-dir (f)
   "Return the source root of F."
@@ -131,17 +121,13 @@
 
     (if (file-exists-p source-dir)
         source-dir
-      nil)
-    )
- )
+      nil)))
 
 (defun idee-java-source-p (f)
   "Return non-nil if F is a source file."
   (let ((source-dir (idee-java-find-src-dir f)))
     (message (format "file: %s source dir: %s." f source-dir))
-    (and source-dir (string-prefix-p source-dir f))
-    )
-  )
+    (and source-dir (string-prefix-p source-dir f))))
 
 (defun idee-java-find-test-dir (f)
   "Return the test root of F."
@@ -150,24 +136,19 @@
 
     (if (file-exists-p test-dir)
         test-dir
-      nil)
-    )
-  )
+      nil)))
 
 (defun idee-java-test-p (f)
   "Return non-nil if F is a test file."
   (let ((test-dir (idee-java-find-test-dir f)))
     (message (format "file %s test dir %s." f test-dir))
-    (and test-dir (string-prefix-p test-dir f))
-    )
-  )
+    (and test-dir (string-prefix-p test-dir f))))
 
   (defun idee--java-in-method-p()
     "Return non-nil if point is inside a method."
     (interactive)
     
-    (let ((thing (thing-at-point 'defun))))
-    )
+    (let ((thing (thing-at-point 'defun)))))
 
   (defun idee-java-method-name(thing)
     "Return non-nil if THING is a method."
@@ -175,14 +156,11 @@
     (with-temp-buffer
       (save-excursion
         (insert thing))
-      (c-end-of-defun)
-      )
-    )
+      (c-end-of-defun)))
 
   (defun idee-java-block-name()
     (interactive)
-    (message (format "%s" (c-defun-name)))
-    )
+    (message (format "%s" (c-defun-name))))
 
 (defun idee--java-fqcn-matches-p (c)
   "Predicate that matches c against idee--java-symbols."
@@ -210,36 +188,29 @@
 
     (and
      (cl-every (lambda (x y) (s-prefix-p x y)) (idee--java-camelcase-split canidate-class-name) (idee--java-camelcase-split fqcn-class-name))
-     (cl-every (lambda (x y) (s-prefix-p x y)) candidate-package fqcn-package)
-     )
-    )
-  )
+     (cl-every (lambda (x y) (s-prefix-p x y)) candidate-package fqcn-package))))
 
 (defun idee--java-camelcase-split (s)
   "Splits a camel case S into a list of strings."
   (let ((case-fold-search nil))
     (seq-filter
      (lambda (x) (not (equal "" x))) ;;remove all empty strings (its usually the first)
-    (split-string (replace-regexp-in-string "\\([A-Z]\\)" " \\1" s) " ")
-    ))
-  )
+    (split-string (replace-regexp-in-string "\\([A-Z]\\)" " \\1" s) " "))))
 
 ;;; Visitor
-  (defun idee-visitor-java (root)
-    "Check if a java project is available under the specified ROOT."
-    (when (seq-filter (lambda (x)
-                        (or (equal pom-xml x)
-                            (equal build-gradle x)
-                            (equal meghanada-conf x))
-                        (directory-files root))
-                      (idee-java-enable))
-      )
-    )
+(defun idee-visitor-java (root)
+  "Check if a java project is available under the specified ROOT."
+  (when (seq-filter (lambda (x)
+                      (or (equal pom-xml x)
+                          (equal build-gradle x)
+                          (equal meghanada-conf x))
+                      (directory-files root))
+                    (idee-java-enable))))
 
-  (add-to-list 'idee-project-visitors 'idee-visitor-java)
+(add-to-list 'idee-project-visitors 'idee-visitor-java)
 
 ;;; Hook
-  (add-hook 'java-mode-hook 'idee-java-enable)
+(add-hook 'java-mode-hook 'idee-java-enable)
 
   (provide 'idee-java)
 ;;; idee-java.el ends here

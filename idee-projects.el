@@ -50,24 +50,19 @@
   (let ((current-dir (f-full (if f f (projectile-project-root)))))
     (while (not (idee-project-root-dir-p current-dir))
       (setq current-dir (file-name-directory (directory-file-name current-dir))))
-    current-dir
-    )
-  )
+    current-dir))
 
 (defun idee-project-root-dir-p (f)
   "Return non-nil if F is a module directory."
   (if (seq-filter 'file-exists-p (seq-map (lambda (p) (concat f p)) idee-project-root-markers))
       t
-    nil)
-  )
+    nil))
 
 (defun idee-new-project-function()
   "Create a new project."
   (interactive)
   (let ((factory (idee--select-project-factory)))
-    (funcall (idee-project-factory-func factory))
-    )
-  )
+    (funcall (idee-project-factory-func factory))))
 
 (defun idee--select-new-project-dir()
   "Select a new project directory."
@@ -83,14 +78,11 @@
 
     (car (seq-filter
           (lambda (f)
-            (equal (idee-project-factory-name f) (car (split-string factory " ")))) idee-project-factories-list))
-    )
-  )
+            (equal (idee-project-factory-name f) (car (split-string factory " ")))) idee-project-factories-list))))
 
 (defun idee--project-factory-entry (f)
   "Create an entry for the specified project factory F."
-  (concat (idee-project-factory-name f) " - " (idee-project-factory-description f))
-  )
+  (concat (idee-project-factory-name f) " - " (idee-project-factory-description f)))
 
 (provide 'idee-projects)
 ;;; idee-projects.el ends here

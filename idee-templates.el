@@ -63,9 +63,7 @@
     (switch-to-buffer path)
     (insert filetype)
     (funcall (intern mode))
-    (yas-expand)
-    )
-  )
+    (yas-expand)))
 
 (defun idee-select-project-header-function ()
   "Select a header for the project from the existing selection of headers."
@@ -74,8 +72,7 @@
     (setq headers (directory-files idee-emacs-headers-dir))
     (setq header (projectile-completing-read "Select header:" headers))
     (setq content (idee-read-and-eval-template (concat (file-name-as-directory idee-emacs-headers-dir) header)))
-    (setq idee--current-header content)
-    )
-  )
+    (setq idee--current-header content)))
+
 (provide 'idee-templates)
 ;;; idee-templates.el ends here

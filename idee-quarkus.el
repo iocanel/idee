@@ -46,8 +46,7 @@
          (parent-dir (file-name-directory (directory-file-name target-dir)))
          (dir-name (substring target-dir (length parent-dir)))
          (generate-command (format "mvn io.quarkus:quarkus-maven-plugin:%s:create -DprojectGroupId=%s -DprojectArtifactId=%s -DprojectVersion=%s -DclassName=%s.Endpoint -Dendpoint=%s" idee-quarkus-version group-id artifact-id version group-id
-                           endpoint))
-         )
+                           endpoint)))
 
     (make-directory temp-dir t)
     (setq default-directory temp-dir)
@@ -59,9 +58,7 @@
     (projectile-switch-project-by-name target-dir)
     (revert-buffer)
     (dired target-dir)
-    (idee-ide-view)
-    )
-  )
+    (idee-ide-view)))
 
 (defconst idee-quarkus-rest-project-factory
   (make-idee-project-factory

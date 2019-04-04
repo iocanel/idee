@@ -53,8 +53,7 @@
   "Switch to a traditional IDE view for the buffer.  (project tree, main buffer & terminal)."
   (interactive)
   (idee-ide-view)
-  (magit-status-internal (projectile-project-root))
-  )
+  (magit-status-internal (projectile-project-root)))
 
 (defun idee-ide-view()
   "Switch to a traditional IDE view for the buffer.  (project tree, main buffer & terminal)."
@@ -71,11 +70,9 @@
       (progn
         (treemacs--init (projectile-project-root))
         ;; we remove the mode-line to hide the treemacs label
-        (setq mode-line-format ""))
-    )
+        (setq mode-line-format "")))
   (other-window 1)
-  (goto-char (point-min))
-  )
+  (goto-char (point-min)))
 
 (defun idee-side-by-side-view()
   "Open a new buffer from the project to the side for side by side view."
@@ -84,8 +81,7 @@
   (idee-split-and-follow-horizontally)
   ;; reduce the noise by switching to an untitled buffer
   (idee-new-empty-buffer)
-  (projectile-find-file-dwim)
-  )
+  (projectile-find-file-dwim))
 
 (defun idee-repl-view()
   "Just like IDE view but with a REPL instead of a terminal (project tree, main buffer & repl)."
@@ -115,16 +111,14 @@
                                                                            (goto-char (point-min))
                                                                            )))
           (idee-repl)
-          )))
-  )
+          ))))
 
 (defun idee-terminal-view()
   "Maximize terminal in the project root."
   (interactive)
   (setq idee-current-view 'idee-terminal-view)
   (delete-other-windows-internal)
-  (projectile-run-eshell)
-  )
+  (projectile-run-eshell))
 
 
 ;;
@@ -135,8 +129,7 @@
   "Update the state of the tree switch (in case the winodw has been externally closed)."
   (if (equal (format "%s" (treemacs-current-visibility)) "visible")
       (setq idee-tree-enabled t)
-    (setq idee-tree-enabled nil))
-  )
+    (setq idee-tree-enabled nil)))
 
 
 (defun idee-toggle-tree ()
@@ -149,16 +142,14 @@
         (idee-refresh-view))
     (progn
       (setq idee-tree-enabled t)
-      (idee-refresh-view)
-      )))
+      (idee-refresh-view))))
 
 
 (defun idee-update-cli-state()
   "Update the state of the cli switch (in case the winodw has been externally closed)."
   (if (get-buffer-window (format "*eshell %s*" (projectile-project-name)))
       (setq idee-cli-enabled t)
-    (setq idee-cli-enabled nil))
-  )
+    (setq idee-cli-enabled nil)))
 
 (defun idee-toggle-cli ()
   "Toggle the cli."
@@ -177,8 +168,7 @@
 (defun idee-refresh-view ()
   "Refresh the current view."
   (interactive)
-  (funcall idee-current-view)
-  )
+  (funcall idee-current-view))
 
 (defun idee-new-empty-buffer()
   "Create an empty buffer."

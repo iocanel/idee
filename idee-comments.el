@@ -41,8 +41,7 @@
   ;Custom (used for styling)
   custom-block-beginning
   custom-line-prefix
-  custom-block-ending
-  )
+  custom-block-ending)
 
 (defcustom idee-comment-elisp-custom-line-prefix ";; " "Custom line comment prefix to use when commenting elisp code." :group 'idee-elisp :type 'string)
 (defcustom idee-comment-shell-custom-line-prefix "# " "Custom line comment prefix to use when commenting shell code." :group 'idee-shell :type 'string)
@@ -61,8 +60,7 @@
                                          ("el" . ,elisp-comment-style)
                                          ("html" . ,shell-comment-style)
                                          ("sh" . ,shell-comment-style)
-                                         ("xml" . ,xml-comment-style)
-  ))
+                                         ("xml" . ,xml-comment-style)))
 
 (defvar idee-current-comment-style elisp-comment-style)
 
@@ -73,9 +71,7 @@
 (defun idee--buffer-comment-style()
   "Return the buffer comment style."
   (let ((extension (file-name-extension (buffer-file-name (current-buffer)))))
-    (cdr (assoc extension idee-type-comment-styles-alist))
-    )
-  )
+    (cdr (assoc extension idee-type-comment-styles-alist))))
 
 (defun idee--comment (content extension)
   "Apply comments to CONTENT for file EXTENSION."
@@ -86,9 +82,7 @@
                                       (lambda (l) (concat (idee-comment-style-custom-line-prefix s) l "\n"))
                                       (split-string content "\n")) "")
                 (idee-comment-style-custom-block-ending s))
-      nil)
-    )
-  )
+      nil)))
 
 (defun idee-remove-comment-at-point ()
   "Remove the comment at the current point."
@@ -101,8 +95,7 @@
            (current (point))
            (begin (point-min))
            (end (point-min))
-           (next (point-max))
-           )
+           (next (point-max)))
       
       (if (and block-beginning block-ending)
           ;; Detect end and start of comment.
@@ -123,12 +116,7 @@
           (if (not (equal 1 (line-number-at-pos)))
               (while (idee--line-above-commented-or-empty-p) (forward-line -1))
             )
-          (while (idee--line-commented-p) (kill-whole-line))
-          )
-        )
-      )
-    )
-  )
+          (while (idee--line-commented-p) (kill-whole-line)))))))
 
 (defun idee--line-commented-p ()
   "Check if current line is commented."
@@ -140,9 +128,7 @@
            (end (idee--point-end-of-line))
            (line (buffer-substring begin end))
            )
-      (cl-search prefix line)
-      )
-  )
+      (cl-search prefix line)))
 
 
 (defun idee--line-empty-p ()
@@ -154,8 +140,7 @@
 (defun idee--line-commented-or-empty-p ()
   "Check if current line is commented."
   (interactive)
-      (or (idee--line-empty-p) (idee--line-commented-p))
-  )
+      (or (idee--line-empty-p) (idee--line-commented-p)))
 
 (defun idee--line-above-commented-or-empty-p()
   "Check if the line above is commented or empty."
@@ -164,11 +149,7 @@
         nil
       (progn
         (forward-line -1)
-        (idee--line-commented-or-empty-p)
-        )
-      )
-    )
-  )
+        (idee--line-commented-or-empty-p)))))
 
 (provide 'idee-comments)
 ;;; idee-comments.el ends here

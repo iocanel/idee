@@ -32,98 +32,91 @@
   "Open project."
   (interactive)
   (idee-back-push)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
 
 (defun idee-new-project()
   "Create a new file."
   (interactive)
   (idee-back-push)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
 
 (defun idee-new-file()
   "Create a new file."
   (interactive)
   (idee-back-push)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
 
 (defun idee-recent()
   "Recent project"
   (interactive)
   (idee-back-push)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
+
 (defun idee-save-all()
   "Save all project buffers"
   (interactive)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
+
 (defun idee-close()
   "Close project"
   (interactive)
   (delete-other-windows-internal)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
+
 (defun idee-build()
   "Build"
   (interactive)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
+
 (defun idee-vcs()
   "Version Control"
   (interactive)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
-
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
 
 ;;Source
 (defun idee-optimize-imports()
   "Optimize Imports"
   (interactive)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
+
 (defun idee-indent()
   "Indent"
   (interactive)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
+
 (defun idee-indent-region()
   "Indent Region"
   (interactive)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
+
 (defun idee-select-project-header()
   "Select header for project files"
   (interactive)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
 
 ;;Navigate
 (defun idee-references()
   "Find references"
   (interactive)
   (idee-back-push)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
+
 (defun idee-implementation()
   "Find implementations."
   (interactive)
   (idee-back-push)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
+
 (defun idee-declaration()
   "Jump to declaration"
   (interactive)
   (idee-back-push)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
+
 (defun idee-back()
   "Jump back"
   (interactive)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
 
 ;;Search
 (defun idee-grep()
@@ -135,49 +128,41 @@
     (while (and
             (not (equal "*grep*" (buffer-name (window-buffer))))
             (not (equal b (buffer-name (window-buffer)))))
-      (other-window 1))
-    ))
-
+      (other-window 1))))
 
 (defun idee-find-file()
   "Find file"
   (interactive)
   (idee-back-push)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
 
 (defun idee-find-variable()
   "Find variable."
   (interactive)
   (idee-back-push)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
 
 ;;Task
-
 (defun idee-run-or-eval ()
   "Run the project."
   (interactive)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
+
 (defun idee-test()
   "Run test."
   (interactive)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
 
 ;;Layout
 (defun idee-repl ()
   "Run a REPL"
   (interactive)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
 
 (defun idee-mode-hydra ()
   "Open the mode specific hydra"
   (interactive)
-  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
-  )
+  (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist)))
 
 ;; Toggles
 (defun idee-toggle-tab-width ()
@@ -188,19 +173,16 @@
     (setq idee-tab-width 4))
 
   (setq tab-width idee-tab-width)
-  (idee-set-tab-width)
-  )
+  (idee-set-tab-width))
 
 (defun idee-set-tab-width ()
   "Set the tab width."
   (funcall  (alist-get 'idee-mode-tab-width-function idee-function-alist) idee-tab-width)
-  (message (format "Indentation spaces: %s" idee-tab-width))
-  )
+  (message (format "Indentation spaces: %s" idee-tab-width)))
 
 (defun idee-global-set-tab-width-function (width)
   "Set the tab WIDTH."
-  (setq standard-indent width)
-  )
+  (setq standard-indent width))
 
 (defun idee-toggle-use-tabs ()
     "Toggle between tabs and spaces."
@@ -212,10 +194,7 @@
   (setq indent-tabs-mode idee-use-tabs)
   (if idee-use-tabs
       (message "Use tabs: enabled.")
-    (message "Use tabs: disabled."))
-  )
-
-
+    (message "Use tabs: disabled.")))
 
 (provide 'idee-actions)
 ;;; idee-actions.el ends here

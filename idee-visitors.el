@@ -34,9 +34,7 @@
   (interactive)
   (let (v)
     (dolist (v idee-project-visitors)
-      (funcall v (projectile-project-root)))
-    )
-  )
+      (funcall v (projectile-project-root)))))
 
 (add-to-list 'idee-project-visitors 'idee-visitor-clojure)
 (advice-add 'projectile-switch-project :after 'idee-project-visit)

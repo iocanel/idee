@@ -33,8 +33,7 @@
   (setq idee-function-alist (delq (assoc 'idee-indent-function idee-function-alist) idee-function-alist))
   (setq idee-function-alist (delq (assoc 'idee-mode-hydra-function idee-function-alist) idee-function-alist))
 
-  (add-to-list 'idee-function-alist '(idee-mode-hydra-function . elisp-hydra/body))
-  ) 
+  (add-to-list 'idee-function-alist '(idee-mode-hydra-function . elisp-hydra/body))) 
 
 (provide 'idee-elisp)
 ;;; idee-elisp.el ends here

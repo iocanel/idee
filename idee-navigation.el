@@ -33,8 +33,8 @@
 (cl-defstruct idee-buffer-point
   buffer
   line
-  column
-  )
+  column)
+
 (defvar idee-back-stack ())
 (defvar idee-forward-stack ())
 (defvar ignore-current-buffer nil)
@@ -90,10 +90,7 @@
             (goto-char (point-min))
             (forward-line (- (idee-buffer-point-line p) 1))
             (move-to-column (idee-buffer-point-column p))
-            (point))
-      )
-    )
-  )
+            (point)))))
 
 (defun idee-jump-forward()
   "Jump forward."
@@ -105,11 +102,7 @@
             (goto-char (point-min))
             (forward-line (- (idee-buffer-point-line p) 1))
             (move-to-column (idee-buffer-point-column p))
-            (point)
-            )
-      )
-    )
-  )
+            (point)))))
 
 (provide 'idee-navigation)
 ;;; idee-navigation.el ends here

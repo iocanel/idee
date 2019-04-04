@@ -28,6 +28,7 @@
 
 (defcustom idee-lsp-java-enabled t "Lsp Java Feature Toggle" :group 'idee :type 'boolean)
 (defcustom idee-lsp-java-completion-enabled t "Lsp Java Completion Feature Toggle" :group 'idee :type 'boolean)
+(defcustom idee-lsp-java-workspace-per-project-enabled t "Lsp Workspace per Project Feature Toggle" :group 'idee :type 'boolean)
 
 (defun idee-lsp-java-enable()
   "Enable lsp-java, add hooks, visitors etc."
@@ -60,20 +61,18 @@
   ;(setq idee-function-alist (delq (assoc 'idee-test idee-function-alist) idee-function-alist))
 
   ;; Set functions
-  (add-to-list 'idee-function-alist '(idee-references-function . lsp--get-references))
-  (add-to-list 'idee-function-alist '(idee-declaration-function . lsp-goto-type-definition))
-  (add-to-list 'idee-function-alist '(idee-optimize-imports-function . lsp-java-organize-imports))
   ;(add-to-list 'idee-function-alist '(idee-run-or-eval-function . lsp-java-de))
   ;(add-to-list 'idee-function-alist '(idee-test-function . idee-meghanada-test-dwim))
   ;(add-to-list 'idee-function-alist '(idee-mode-hydra-function . meghanada-hydra/body))
-  )
+  (add-to-list 'idee-function-alist '(idee-references-function . lsp--get-references))
+  (add-to-list 'idee-function-alist '(idee-declaration-function . lsp-goto-type-definition))
+  (add-to-list 'idee-function-alist '(idee-optimize-imports-function . lsp-java-organize-imports)))
 
 (defun idee--lsp-java--on-save-buffer()
   "Save buffer handler."
   (if (and (buffer-file-name) (equal "pom.xml" (file-name-nondirectory (buffer-file-name))))
              (lsp-java-update-project-configuration)))
 
-(advice-add 'save-buffer :after #'idee--lsp-java--on-save-buffer)
 
 ;;; Visitor
 (defun idee-lsp-java-is-applicable()
@@ -94,6 +93,7 @@
   )
 
 (add-to-list 'idee-project-visitors 'idee-visitor-lsp-java)
+(advice-add 'save-buffer :after #'idee--lsp-java--on-save-buffer)
 
 (provide 'idee-lsp-java)
 ;;; idee-lsp-java.el ends here

@@ -63,8 +63,7 @@
   (add-to-list 'company-backends 'company-lsp)
   (add-to-list 'idee-project-visitors 'idee-visitor-lsp-intellij)
   (add-hook 'java-mode-hook 'idee-lsp-intellij-start)
-  (add-hook 'java-mode-hook 'lsp-intellij-enable)
-  )
+  (add-hook 'java-mode-hook 'lsp-intellij-enable))
 
 (defun idee-lsp-intellij-disable()
   "Disable lsp-intellij. Remove hooks, visitors etc."
@@ -74,8 +73,7 @@
   (setq company-backends (delete 'company-lsp company-backends))
   (setq idee-project-visitors (delete 'idee-visitor-lsp-intellij idee-project-visitors))
   (remove-hook 'java-mode-hook 'idee-lsp-intellij-start t)
-  (remove-hook 'java-mode-hook 'lsp-intellij-enable t)
-  )
+  (remove-hook 'java-mode-hook 'lsp-intellij-enable t))
 
 (defun idee-lsp-intellij-start()
   "Enable intellij bindings."
@@ -94,26 +92,22 @@
   (add-to-list 'idee-function-alist '(idee-references-function . idee--xref-find-references-at-point))
   (add-to-list 'idee-function-alist '(idee-implementation-function . lsp-goto-implementation))
   (add-to-list 'idee-function-alist '(idee-declaration-function . idee--xref-find-definitions-at-point))
-  (add-to-list 'idee-function-alist '(idee-run-or-eval-function . lsp-intellij-run-at-point))
-  )
+  (add-to-list 'idee-function-alist '(idee-run-or-eval-function . lsp-intellij-run-at-point)))
 
 (defun idee--xref-find-definition(w)
   "Find the definition."
   (interactive "sEnter Symbol:")
-  (xref-find-definitions w)
-  )
+  (xref-find-definitions w))
 
 (defun idee--xref-find-definitions-at-point()
   "Find the definition of the word at point."
   (interactive)
-  (xref-find-definitions (word-at-point))
-  )
+  (xref-find-definitions (word-at-point)))
 
 (defun idee--xref-find-references-at-point()
   "Find the references of the work at point."
   (interactive)
-  (xref-find-references (word-at-point))
-  )
+  (xref-find-references (word-at-point)))
 
 ;;; Visitor
 (defun idee-visitor-lsp-intellij (root)
@@ -125,8 +119,7 @@
                        (equal ".lsp-intellij.conf" x)
                        ))
                       (directory-files root))
-                    (idee-lsp-intellij-start))
-    )
+                    (idee-lsp-intellij-start)))
 
 (idee-lsp-intellij-init)
 

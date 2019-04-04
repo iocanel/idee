@@ -41,8 +41,7 @@
   (add-to-list 'idee-function-alist '(idee-declaration-function . go-guru-definition))
   (add-to-list 'idee-function-alist '(idee-optimize-imports-function . goimports))
   (add-to-list 'idee-function-alist '(idee-indent-function . gofmt))
-  (add-to-list 'idee-function-alist '(idee-mode-hydra-function . go-hydra/body))
-  )
+  (add-to-list 'idee-function-alist '(idee-mode-hydra-function . go-hydra/body)))
 
 (provide 'idee-golang)
 ;;; idee-golang.el ends here

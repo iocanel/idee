@@ -48,10 +48,7 @@
                                                             ("language" . ,language)
                                                             ("type" . ,project-type)
                                                             ("dependencies" . ,(mapconcat 'identity dependencies ",")))
-                    'idee-spring-starter-download-callback
-    ) 
-    )
-  )
+                    'idee-spring-starter-download-callback)))
 
 (defconst idee-spring-starter-project-factory
   (make-idee-project-factory
@@ -59,7 +56,6 @@
    :description "New Spring project created using https://start.spring.io"
    :func 'idee-new-spring-starter-project))
 
-(add-to-list 'idee-project-factories-list idee-spring-starter-project-factory)
 
 (defun idee-spring-starter-download-callback (s)
   "Download callback for spring starter http request."
@@ -77,9 +73,9 @@
   (projectile-switch-project-by-name idee-spring-extract-dir)
   (revert-buffer)
   (dired idee-spring-extract-dir)
-  (idee-ide-view)
-  )
-)
+  (idee-ide-view)))
+
+(add-to-list 'idee-project-factories-list idee-spring-starter-project-factory)
 
 (provide 'idee-spring)
 ;;; idee-spring.el ends here

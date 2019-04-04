@@ -47,8 +47,7 @@
          (point-min)
          (point-max))
         )
-    nil)
-  )
+    nil))
 
 ;;; String Functions
 (defun idee-starts-with (string prefix)
@@ -81,40 +80,32 @@
   "Return the point of the beginning of the current line."
   (save-excursion
     (beginning-of-line)
-    (point)
-    )
-  )
+    (point)))
 
 (defun idee--point-end-of-line()
   "Return the point of the end of the current line."
   (save-excursion
     (end-of-line)
-    (point)
-    )
-  )
+    (point)))
 
 (defun idee-indent-file (f)
   "Indent file F."
     (find-file f)
     (set-auto-mode t)
     (indent-region (point-min) (point-max))
-    (write-file f)
-  )
+    (write-file f))
 
 (defun idee-indent-all-project-files()
   "Indend all files in the project."
   (interactive)
-  (idee-visit-project-files 'idee-indent-file)
-  )
+  (idee-visit-project-files 'idee-indent-file))
 
 (defun idee-visit-project-files (visitor &optional dir)
   "Call VISITOR with all project files or DIR files."
   (let* ((current (or dir (projectile-project-root))))
     (dolist (extension idee-source-file-extensions)
          (mapc (lambda (x) (funcall visitor x))
-          (directory-files-recursively current (format "\\.%s$" extension))))
-    )
-  )
+          (directory-files-recursively current (format "\\.%s$" extension))))))
 
 ;; Credits: https://emacs.stackexchange.com/questions/12613/convert-the-first-character-to-uppercase-capital-letter-using-yasnippet
 (defun idee-capitalize-first(&optional string)
@@ -128,8 +119,7 @@
   (defun idee-screenshot ()
     "Get a screenshot."
     (interactive)
-    (shell-command "scrot -s '/home/iocanel/Photos/screenshots/%Y-%m-%d_%H:%M:%S_$wx$h.png'")
-    )
+    (shell-command "scrot -s '/home/iocanel/Photos/screenshots/%Y-%m-%d_%H:%M:%S_$wx$h.png'"))
 
   (global-set-key (kbd "C-c i s") 'idee-screenshot)
 

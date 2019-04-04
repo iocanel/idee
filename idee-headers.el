@@ -50,23 +50,17 @@
 
        (cond ((file-exists-p root-dir-header) (idee-read-and-eval-template root-dir-header))
              ((file-exists-p idee-dir-header) (idee-read-and-eval-template idee-dir-header))
-             (t nil))
-       )
-  )
+             (t nil))))
 
 (defun idee--set-header ()
   "Set the header value, if exists."
   (let ((h (idee--read-project-header)))
     (if h
-        (setq idee--current-header h)
-      )
-    )
-  )
+        (setq idee--current-header h))))
 
 (defun idee-header ()
   "Return the header commented for the current buffer style."
-    (idee--comment idee--current-header (file-name-extension (buffer-file-name (current-buffer))))
- )
+    (idee--comment idee--current-header (file-name-extension (buffer-file-name (current-buffer)))))
 
 (defun idee-select-project-header ()
   "Select a header for the project from the existing selection of headers."
@@ -74,9 +68,7 @@
   (let ( (headers) (header) )
     (setq headers (directory-files idee-emacs-headers-dir))
     (setq header (projectile-completing-read "Select header:" headers))
-    (setq idee--current-header (idee-read-and-eval-template (concat (file-name-as-directory idee-emacs-headers-dir) header)))
-    )
-  )
+    (setq idee--current-header (idee-read-and-eval-template (concat (file-name-as-directory idee-emacs-headers-dir) header)))))
 
 (defun idee-apply-buffer-header ()
   "Apply the selected header to the current buffer."
@@ -84,22 +76,18 @@
   (save-excursion
     (goto-char (point-min))
     (idee-remove-comment-at-point)
-    (insert (idee-header))
-    )
-  )
+    (insert (idee-header))))
 
 (defun idee-apply-header-to-file (f)
   "Apply the selected header to the specified file F."
   (find-file f)
   (idee-apply-buffer-header)
-  (write-file f)
-  )
+  (write-file f))
 
 (defun idee-apply-header-to-project-files ()
   "Recursively visit all project files nad apply the selected header."
   (interactive)
-  (idee-visit-project-files 'idee-apply-header-to-file)
-  )
+  (idee-visit-project-files 'idee-apply-header-to-file))
 
 (advice-add 'projectile-switch-project :after 'idee--set-header)
 

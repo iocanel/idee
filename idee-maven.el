@@ -52,9 +52,7 @@
     (projectile-switch-project-by-name target-dir)
     (revert-buffer)
     (dired target-dir)
-    (idee-ide-view)
-    )
-  )
+    (idee-ide-view)))
 
 (defconst idee-maven-project-factory
   (make-idee-project-factory

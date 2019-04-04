@@ -34,19 +34,16 @@
   "Jack in cider REPL and switch to the current projects REPL buffer."
   (interactive)
   (add-hook 'cider-connected-hook 'idee-cider-on-connected)
-  (cider-jack-in)
-  )
+  (cider-jack-in))
 
 (defun idee-cider-on-connected()
   (remove-hook 'cider-connected-hook 'idee-cider-on-connected)
   (switch-to-buffer (get-buffer (format "*cider-repl %s*" (projectile-project-name))))
   (mapcar (lambda (a) (eval a))
-          (alist-get 'on-repl-connected idee-on-event-command-alist))
-  )
+          (alist-get 'on-repl-connected idee-on-event-command-alist)))
 
 (defun idee-run-clojure-project ()
-  (async-shell-command "lein run")
-  )
+  (async-shell-command "lein run"))
 
 (defun clojure-ide ()
   (interactive)
@@ -54,15 +51,13 @@
   (add-to-list 'idee-function-alist '(idee-repl-view-function . cider-jack-in-and-switch))
 
   (setq idee-function-alist (delq (assoc 'idee-run-or-eval-function idee-function-alist) idee-function-alist))
-  (add-to-list 'idee-function-alist '(idee-run-or-eval-function . idee-run-clojure-project))
-  )
-(add-hook 'clojure-mode-hook 'clojure-ide)
+  (add-to-list 'idee-function-alist '(idee-run-or-eval-function . idee-run-clojure-project)))
 
 (defun idee-visitor-clojure (root)
   (when (seq-filter (lambda (x) (equal "project.clj" x)) (directory-files root))
-    (clojure-ide))
-  ) 
+    (clojure-ide))) 
 
+(add-hook 'clojure-mode-hook 'clojure-ide)
 (add-to-list 'idee-project-visitors 'idee-visitor-clojure)
 
 (provide 'idee-clojure)
