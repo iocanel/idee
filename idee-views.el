@@ -29,7 +29,7 @@
 
 (require 'magit)
 (require 'treemacs-projectile)
-(require 'treemacs-impl)
+(require 'treemacs-core-utils)
 
 ;;
 ;; State
