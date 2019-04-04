@@ -127,7 +127,7 @@
 
 (defun idee-update-tree-state()
   "Update the state of the tree switch (in case the winodw has been externally closed)."
-  (if (equal (format "%s" (treemacs-current-visibility)) "visible")
+  (if (equal (treemacs-current-visibility) 'visible)
       (setq idee-tree-enabled t)
     (setq idee-tree-enabled nil)))
 
