@@ -96,7 +96,7 @@
         ^^^^^^-------------------------------------------------------------------------------------------------------
          _o_pen        _O_ptimize imports     _?_: declaration    _g_: grep             _r_: run/eval        _0_: terminal
          New _p_roject _i_ndent               _/_: references     _f_: find file        _u_: run unit test   _1_: ide
-         New _F_ile    indent _r_egion        _\\_: implementation _v_: find variable                       _2_: side by side
+         New _F_ile    indent _r_egion        _=_: implementation _v_: find variable                       _2_: side by side
          _R_ecent      toggle _t_ab enabled   _<_: back                                                  _3_: repl
          _S_ave all    toggle tab _w_idth     _>_: forward                                               _t_: toggle tree
          _C_lose       insert _s_nippet       _._: set mark                                              _c_: toggle cli
@@ -125,7 +125,7 @@
 
   ("?" idee-declaration)
   ("/" idee-references)
-  ("\\" idee-implementation)
+  ("=" idee-implementation)
   (">" idee-jump-forward)
   ("<" idee-jump-back)
   ("." idee-back-push)
