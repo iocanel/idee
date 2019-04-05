@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: constant string
+# key: cons 
+# --
+private static final String ${1:$(upcase (replace-regexp-in-string "[^a-zA-z0-9]+" "_" yas-text))} = "${1:constant}";
+$0

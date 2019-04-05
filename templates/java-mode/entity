@@ -1,0 +1,24 @@
+# contributor: Ioannis Canellos <iocanel@gmail.com>
+# name: entity
+# key: entity
+# --
+`(idee-header)`
+`(idee-java-package-line)`
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {
+
+    @Id
+    private Long id;
+
+    public Long getId() {
+      return this.id;
+    }
+
+    public void setId(Long id) {
+       this.id=id; 
+    }
+}

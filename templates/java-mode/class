@@ -1,0 +1,13 @@
+# contributor: Ioannis Canellos <iocanel@gmail.com>
+# name: class
+# key: class
+# --
+`(idee-header)`
+`(idee-java-package-line)`
+
+public class `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {
+
+  public static void main(String[] args) {
+    $0
+  }
+}

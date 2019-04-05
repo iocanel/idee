@@ -1,0 +1,20 @@
+# contributor: Ioannis Canellos <iocanel@gmail.com>
+# name: rest controller
+# key: restcontroller
+# --
+`(idee-header)`
+`(idee-java-package-line)`
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {
+
+  private static final String HELLO = "hello world!";
+
+    @RequestMapping("/")
+    public String hello() {
+        return HELLO;
+    }
+}

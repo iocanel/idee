@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: getter
+# key: g
+# --
+
+public ${1:String} get${2:$(capitalize yas-text)}() {
+  return this.${2:field};
+}
+$0

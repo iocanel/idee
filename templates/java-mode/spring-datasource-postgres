@@ -1,0 +1,36 @@
+# contributor: Ioannis Canellos <iocanel@gmail.com>
+# name: spring-datasource-postgres
+# key: spring-datasource-postgres
+# --
+`(idee-header)`
+`(idee-java-package-line)`
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import javax.sql.DataSource;
+
+@Configuration
+public class `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {
+
+  @Value("\${username}")
+  private String username;
+  @Value("\${password}")
+  private String password;
+  @Value("\${uri}")
+  private String uri;
+  @Value("\${database_name}")
+  private String databaseName;
+
+  @Bean
+  DataSource create() {
+    return DataSourceBuilder.create()
+      .username(username)
+      .password(password)
+      .url(uri.replaceAll("postgres", "jdbc:postgresql") + "/" + databaseName)
+      .driverClassName("org.postgresql.Driver")
+      .build();
+  }
+}

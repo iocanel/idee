@@ -23,7 +23,7 @@
 ;;; Commentary:
 
 ;;; Code:
-
+(defcustom idee-resources-dir (locate-user-emacs-file "idee") "The directory where idee files are stored." :group 'idee :type 'string)
 (defcustom idee-project-conf-dir ".idee" "The directory where idee configuration files are stored." :group 'idee :type 'string)
 
 ;; Tabs and indentation

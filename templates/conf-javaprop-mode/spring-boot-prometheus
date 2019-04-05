@@ -1,0 +1,6 @@
+# contributor: Ioannis Canellos <iocanel@gmail.com>
+# name: application.properties for prometheus
+# key: spring-boot-prometheus
+# --
+management.endpoints.enabled-by-default=true
+management.endpoints.web.exposure.include=health,info,metrics,prometheus

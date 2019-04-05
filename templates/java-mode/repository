@@ -1,0 +1,18 @@
+# contributor: Ioannis Canellos <iocanel@gmail.com>
+# name: repository
+# key: repository
+# --
+`(idee-header)`
+`(idee-java-package-line)`
+
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import java.util.List;
+
+@RepositoryRestResource(collectionResourceRel = "${1:$(downcase yas-text)}", path = "${1:$(downcase yas-text)}")
+public interface `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` extends PagingAndSortingRepository<${1:`(replace-regexp-in-string "Repository$" "" (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))`}, Long> {
+
+    List<$1> findBy${2:$(idee-capitalize-first yas-text)}(@Param("${2:name}") String $2);
+}

@@ -1,0 +1,26 @@
+# contributor: Ioannis Canellos <iocanel@gmail.com>
+# name: enum
+# key: enum
+# --
+`(idee-header)`
+`(idee-java-package-line)`
+
+import java.util.Map;
+import java.util.HashMap;
+
+public enum ${1:`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`} {
+
+  DEAFAULT("");
+  
+  private final ${2:String} ${3:field};
+  
+  protected $1($2 $3) {
+    this.$3 = $3;
+  }
+
+  private static final Map<$2, $1> CACHE = new HashMap<>();
+
+  public static $1 getBy${3:$(capitalize yas-text)}($2 $3) {
+    return CACHE.get($3);
+  }
+}

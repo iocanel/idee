@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: sop
+# key: sop
+# --
+
+System.out.println("$0");

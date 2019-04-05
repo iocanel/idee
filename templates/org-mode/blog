@@ -1,0 +1,11 @@
+# contributor: Ioannis Canellos <iocanel@gmail.com>
+# name: blog
+# key: blog
+# --
+#+BLOG: iocanel.com
+#+ORG2BLOG:
+#+OPTIONS: toc:nil num:nil todo:nil pri:nil tags:nil ^:nil
+#+TITLE: ${1:Title}
+#+DESCRIPTION: ${2:Description}
+#+CATEGORY: ${3}
+#+TAGS: ${4}

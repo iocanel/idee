@@ -1,0 +1,22 @@
+# -*- mode: snippet -*-
+# name: empty
+# key:empty
+# --
+;;; `(file-name-nondirectory (buffer-file-name))` --- ${1:Description}
+
+`(idee-header)`
+
+;; Author: `(user-full-name)`
+
+;; Version: ${2:0.0.1}
+
+;; Package-Requires: ((emacs "25.1"))
+
+;;; Commentary:
+
+;;; Code:
+
+$0
+
+(provide '`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`)
+;;; `(file-name-nondirectory (buffer-file-name))` ends here

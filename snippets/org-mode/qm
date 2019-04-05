@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: quickmark
+# key: qm
+# --
+[[${1:$(quickmarks-get yas-text)}][${1:Name}]] $0

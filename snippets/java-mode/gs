@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: getter & setter
+# key: gs
+# --
+
+public ${1:String} get${2:$(idee-capitalize-first yas-text)}() {
+  return this.${2:field};
+}
+
+public void set${2:$(idee-capitalize-first yas-text)}($1 $2) {
+  this.$2=$2;
+}
+$0

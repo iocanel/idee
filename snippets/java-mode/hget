@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: okhttp get request
+# key: hget 
+# --
+OkHttpClient http = new OkHttpClient();
+Request request = new Request.Builder().get().url(new URL("${1:http://localhost:8080}")).build();
+Response response = http.newCall(request).execute();

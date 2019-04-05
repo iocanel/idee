@@ -116,12 +116,25 @@
       (concat (capitalize first) rest-str))))
 
 ;;; Misc Functions
-  (defun idee-screenshot ()
-    "Get a screenshot."
-    (interactive)
-    (shell-command "scrot -s '/home/iocanel/Photos/screenshots/%Y-%m-%d_%H:%M:%S_$wx$h.png'"))
+(defun idee-screenshot ()
+  "Get a screenshot."
+  (interactive)
+  (shell-command "scrot -s '/home/iocanel/Photos/screenshots/%Y-%m-%d_%H:%M:%S_$wx$h.png'"))
 
-  (global-set-key (kbd "C-c i s") 'idee-screenshot)
+(global-set-key (kbd "C-c i s") 'idee-screenshot)
 
+
+(defun idee--git-checkout (repo target &optional dirs)
+  "Checkout a git REPO into the TARGET dir. Optionally only checkout one or more DIRS."
+  (make-directory target t)
+  (setq default-directory (file-name-as-directory target))
+  (call-process-shell-command "git init")
+  (call-process-shell-command (format "git remote add -f origin %s" repo))
+  (if dirs
+      (progn
+      (call-process-shell-command "git config core.sparseCheckout true")
+      (mapc (lambda (x) (call-process-shell-command (format "echo '%s' >> .git/info/sparse-checkout" x))) dirs)))
+  (call-process-shell-command "git checkout master"))
+ 
   (provide 'idee-utils)
 ;;; idee-utils.el ends here

@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: setter
+# key: s
+# --
+
+public void set${2:$(capitalize yas-text)}(${1:String} $2) {
+  this.${2:field}=$2;
+}
+$0

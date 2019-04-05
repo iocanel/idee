@@ -26,10 +26,21 @@
 
 (require 'yasnippet)
 
+(defconst idee-templates-dir
+  (expand-file-name
+   "templates"
+   (file-name-directory
+    ;; Copied from ‘yasnippet-snippets’ that copied from ‘f-this-file’ from f.el.
+    (cond
+     (load-in-progress load-file-name)
+     ((and (boundp 'byte-compile-current-file) byte-compile-current-file)
+      byte-compile-current-file)
+     (:else (buffer-file-name))))))
+
 ;;
 ;; State
 ;;
-(defcustom idee-emacs-templates-dir "~/.config/emacs/templates" "The directory where template files are stored." :group 'idee :type 'string)
+(defconst idee-emacs-templates-dir (concat idee-resources-dir "templates") "The directory where template files are stored.")
 
 (defvar idee-type-modes-alist '() "Association list for extension to mode.")
 (setq idee-type-modes-alist '(

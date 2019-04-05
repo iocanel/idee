@@ -28,7 +28,15 @@
 (require 'idee-navigation)
 (require 'idee-projects)
 (require 'idee-templates)
+(require 'idee-vars)
+(require 'idee-utils)
 
+(defcustom idee-repo-url "idee" "The repository url of the idee project." :group 'idee :type 'string)
 
+(defun idee-resources-init ()
+  "Initialize idee resources."
+  (idee--git-checkout idee-repo-url idee-resources-dir '("headers" "templates" "snippets")))
+
+(idee-resources-init)
 (provide 'idee)
 ;;; idee.el ends here

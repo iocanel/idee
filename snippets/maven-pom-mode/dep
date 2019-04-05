@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: maven dependency
+# key: dep
+# --
+<dependency>
+  <groupId>${1:my.groupId}</groupId>
+  <artifactId>${2:my.artifactId}</artifactId>
+  <version>${3:1.0-SNAPSHOT}</version>
+</dependency>

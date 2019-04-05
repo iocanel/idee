@@ -1,0 +1,21 @@
+# contributor: Ioannis Canellos <iocanel@gmail.com>
+# name: JAX-RS Resource
+# key: jaxrs-resource
+# --
+`(idee-header)`
+`(idee-java-package-line)`
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+@Path("/${1:hello}")
+public class `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {
+
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public String $1() {
+        return "$1";
+    }
+}

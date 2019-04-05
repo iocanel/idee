@@ -32,7 +32,7 @@
 ;;
 ;; Customization
 ;;
-(defcustom idee-emacs-headers-dir "~/.emacs.d/headers" "The directory where header files are stored." :group 'idee :type 'string)
+(defconst idee-emacs-headers-dir (concat idee-resources-dir "headers") "The directory where header files are stored.")
 
 ;;
 ;; State

@@ -1,0 +1,17 @@
+# contributor: Ioannis Canellos <iocanel@gmail.com>
+# name: junit5 test
+# key: junit5
+# --
+`(idee-header)`
+`(idee-java-package-line)`
+
+import org.junit.jupiter.api.Test;
+
+class `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {
+
+  @Test
+  public void test`(capitalize (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))`() throws Exception {
+    $0
+  }
+}
+

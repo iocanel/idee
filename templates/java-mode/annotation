@@ -1,0 +1,10 @@
+# contributor: Ioannis Canellos <iocanel@gmail.com>
+# name: annotation
+# key: annotation
+# --
+`idee-header`
+`(idee-java-package-line)`
+
+public @interface `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {
+  $0
+}
