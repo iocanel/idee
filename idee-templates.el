@@ -52,13 +52,11 @@
 (defun idee-new-file-function()
   "Create an empty buffer."
   (interactive)
-  (let ((path) (extension) (mode) (filetypes) (filetype))
-    (setq path (ido-find-file))
-    (setq extension (file-name-extension (buffer-file-name path)))
-    (setq mode (cdr (assoc extension idee-type-modes-alist)))
-    (setq filetypes (directory-files (concat (file-name-as-directory idee-emacs-templates-dir) mode)))
-    (setq filetype (projectile-completing-read "Select type of file:" filetypes))
-    
+  (let* ((path (ido-find-file))
+         (extension (file-name-extension (buffer-file-name path)))
+         (mode (cdr (assoc extension idee-type-modes-alist)))
+         (filetypes (directory-files (concat (file-name-as-directory idee-emacs-templates-dir) mode)))
+         (filetype (projectile-completing-read "Select type of file:" filetypes)))
     (with-silent-modifications (write-file (buffer-file-name path)))
     (switch-to-buffer path)
     (insert filetype)
@@ -68,11 +66,10 @@
 (defun idee-select-project-header-function ()
   "Select a header for the project from the existing selection of headers."
   (interactive)
-  (let ( (headers) (header) (content) )
-    (setq headers (directory-files idee-emacs-headers-dir))
-    (setq header (projectile-completing-read "Select header:" headers))
-    (setq content (idee-read-and-eval-template (concat (file-name-as-directory idee-emacs-headers-dir) header)))
-    (setq idee--current-header content)))
+  (let ((headers (directory-files idee-emacs-headers-dir))
+        (header (projectile-completing-read "Select header:" headers))
+        (content (idee-read-and-eval-template (concat (file-name-as-directory idee-emacs-headers-dir) header))))
+        (idee--current-header content)))
 
 (provide 'idee-templates)
 ;;; idee-templates.el ends here

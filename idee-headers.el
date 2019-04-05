@@ -65,9 +65,8 @@
 (defun idee-select-project-header ()
   "Select a header for the project from the existing selection of headers."
   (interactive)
-  (let ( (headers) (header) )
-    (setq headers (directory-files idee-emacs-headers-dir))
-    (setq header (projectile-completing-read "Select header:" headers))
+  (let* ((headers (directory-files idee-emacs-headers-dir))
+        (header (projectile-completing-read "Select header:" headers)))
     (setq idee--current-header (idee-read-and-eval-template (concat (file-name-as-directory idee-emacs-headers-dir) header)))))
 
 (defun idee-apply-buffer-header ()
