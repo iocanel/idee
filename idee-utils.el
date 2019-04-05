@@ -133,6 +133,7 @@
   (if dirs
       (progn
       (call-process-shell-command "git config core.sparseCheckout true")
+      (call-process-shell-command "echo > .git/info/sparse-checkout")
       (mapc (lambda (x) (call-process-shell-command (format "echo '%s' >> .git/info/sparse-checkout" x))) dirs)))
   (call-process-shell-command "git checkout master"))
  

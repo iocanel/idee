@@ -40,7 +40,7 @@
 ;;
 ;; State
 ;;
-(defconst idee-emacs-templates-dir (concat idee-resources-dir "templates") "The directory where template files are stored.")
+(defconst idee-emacs-templates-dir (concat (file-name-as-directory idee-resources-dir) "templates") "The directory where template files are stored.")
 
 (defvar idee-type-modes-alist '() "Association list for extension to mode.")
 (setq idee-type-modes-alist '(

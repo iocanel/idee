@@ -31,7 +31,7 @@
 (require 'idee-vars)
 (require 'idee-utils)
 
-(defcustom idee-repo-url "idee" "The repository url of the idee project." :group 'idee :type 'string)
+(defcustom idee-repo-url "git@github.com:iocanel/idee.git" "The repository url of the idee project." :group 'idee :type 'string)
 
 (defun idee-resources-init ()
   "Initialize idee resources."
