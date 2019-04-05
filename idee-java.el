@@ -93,9 +93,9 @@
 
 (defun idee-java-package-of (f)
   "Return the package of the specified file F."
-  (let ((module-dir (idee-java-find-module-dir f))
-        (source-dir (car (seq-filter (lambda (s) (file-exists-p (concat module-dir s))) source-directory-list)))
-        (relative-path (substring f (+ (length module-dir) (length source-dir)))))
+  (let* ((module-dir (idee-java-find-module-dir f))
+         (source-dir (car (seq-filter (lambda (s) (file-exists-p (concat module-dir s))) source-directory-list)))
+         (relative-path (substring f (+ (length module-dir) (length source-dir)))))
     (replace-regexp-in-string "^." ""
                               (replace-regexp-in-string ".$" ""
                                                         (replace-regexp-in-string "\/" "." relative-path)))))
