@@ -7,12 +7,38 @@ Unified way to perform IDE-like tasks across multiple languages and frameworks i
 ** Features
    - Integration with [[https://github.com/bbatsov/projectile][projectile]], [[https://github.com/Alexander-Miller/treemacs][treemacs]] and [[https://github.com/jaotavora/yasnippet][yasnippet]].
    - Global shortcuts and functions for all languages and frameworks.
+     - java
+     - clojure
+     - python
+     - go
+     - javascipt
    - Traditional IDE-like swapable layouts.
    - Advanced navigation control (back and forth).
    - File template support.
    - File header management.
    - Project factory support.
+  
 
+** Installation
+
+This project is not available on any emacs package repository so you will either have to install it manually, or using something like [[https://github.com/raxod502/straight.el][straight-use-package]]:
+#+begin_src emacs-lisp
+  (use-package idee :straight (idee :host github :repo "iocanel/idee"))
+  (require 'idee-evil)
+  (require 'idee-elisp)
+  (require 'idee-java)
+  (require 'idee-lsp-java)
+  (require 'idee-maven)
+  (require 'idee-spring)
+  (require 'idee-quarkus)
+#+end_src
+
+    Using `require` you can enable additional modules, for example:
+#+begin_src emacs-lisp
+  (require 'idee-javascript)
+  (require 'idee-python)
+  (require 'idee-golang)
+#+end_src
 
 ** Overview
 
@@ -84,14 +110,13 @@ This is functionality already provided by existing plugins, so this plugin was m
   Each time the users want to create a new project, he is prompted to select one among the known project factories. Then the factory is invoked to generate the project.
   The factory may or may not require further input.
 
-  A list of potential project factories:
+ Provided factories:
 
-  - A maven archetype factory.
-  - A Spring intializer factory.
-  - A JBoss forge factory.
-  - A lein factory.
-  - A cask factory.
-  - and more.
+  - A [[https://maven.apache.org][maven]] archetype factory.
+  - A [[https://start.spring.io][spring intializer]]  factory.
+  - A [[https://quarkus.io][quarkus]] project factory.
+  - A Cask factory.
+  - An NPM factory.
 
 *** Spring intializer project factory
 
