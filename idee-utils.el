@@ -1,4 +1,4 @@
-;;; idee-utils.el --- Emacs IDE Utilities.
+;;; idee-utils.el --- Emacs IDE Utilities.  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018 Ioannis Canellos
 
@@ -114,6 +114,18 @@
     (let ((first (substring string nil 1))
           (rest-str   (substring string 1)))
       (concat (capitalize first) rest-str))))
+
+(defun idee-project-settings (settings-file)
+  "Return the path of a local SETTINGS-FILE."
+  (concat (file-name-as-directory (concat (projectile-project-root) ".idee")) settings-file))
+
+;;; Macros
+(defmacro idee-with-project-settings (settings-file options &rest body)
+  "Load a SETTINGS-FILE as local OPTIONS and evaluate BODY."
+  (declare (indent 1) (debug t))
+       `(let (,options)
+         (load-file (idee-project-settings ,settings-file))
+	 ,@body))
 
 ;;; Misc Functions
 (defun idee-screenshot ()
