@@ -36,7 +36,6 @@
      (point-min)
      (point-max))))
 
-
 (defun idee-read-and-eval-template (f)
   "Read the template from F and evaluate quotes."
   (if (file-exists-p f)
@@ -126,6 +125,20 @@
        `(let (,options)
          (load-file (idee-project-settings ,settings-file))
 	 ,@body))
+
+(defmacro idee-with-project-shell (&rest body)
+  "Load a SETTINGS-FILE as local OPTIONS and evaluate BODY."
+  (declare (indent 1) (debug t))
+  `(let ()
+  (message "doing with project shell")
+  (idee-cli-switch-on)
+  (with-current-buffer (format "*eshell %s*" (projectile-project-name))
+    (let ((comint-scroll-to-bottom-on-output t))
+      (eshell/clear-scrollback)
+      (eshell-send-input)
+      (eshell-return-to-prompt)
+      ,@body
+      (eshell-send-input)))))
 
 ;;; Misc Functions
 (defun idee-screenshot ()

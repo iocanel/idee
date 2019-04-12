@@ -1,4 +1,4 @@
-;;; idee-maven.el --- Description
+;;; idee-maven.el --- Maven support for IDEE -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018 Ioannis Canellos 
 ;;    
@@ -28,6 +28,65 @@
 (require 'idee-utils)
 (require 'idee-projects)
 
+(defconst pom-xml "pom.xml")
+(defvar idee-maven-profiles ())
+
+(defun idee-maven-module-root-dir-p (f)
+  "Return non-nil if F is a maven module directory."
+  (seq-filter (lambda (x)
+                (equal pom-xml x))
+              (directory-files f)))
+
+(defun idee-maven-module-root-dir (&optional f)
+  "Find the directory of the maven module that owns the source file F."
+  (let ((current-dir (f-full (if f f (file-name-directory (directory-file-name (buffer-file-name (current-buffer))))))))
+    (while (not (idee-maven-module-root-dir-p current-dir))
+      (setq current-dir (file-name-directory (directory-file-name current-dir))))
+    current-dir))
+
+(defun idee-maven-pom-artifact-id (pom)
+  "Get the artifactId of the specified POM."
+  (if (file-exists-p pom)
+      (with-temp-buffer
+        (insert-file-contents pom)
+        (car (cdr (cdr (assoc 'artifactId
+                        (assoc 'project
+                               (libxml-parse-xml-region (point-min) (point-max)))))))
+        ) nil))
+
+(defun idee-maven-build-project ()
+  "Build the current maven project."
+  (interactive)
+
+  (idee-with-project-settings "maven.el" idee-maven-profiles
+  (let* ((module-dir (idee-maven-module-root-dir))
+         (module-pom (concat module-dir pom-xml))
+         (profiles-opt (idee--maven-profiles-option)))
+    (idee-with-project-shell 
+      (insert (format " mvn clean install %s\n" profiles-opt))))))
+
+(defun idee-maven-build-module ()
+  "Build the current maven module."
+  (interactive)
+  (idee-with-project-settings "maven.el" idee-maven-profiles
+  (let* ((module-dir (idee-maven-module-root-dir))
+         (module-pom (concat module-dir pom-xml))
+         (artifact-id (idee-maven-pom-artifact-id module-pom))
+         (profiles-opt (idee--maven-profiles-option)))
+
+    (idee-with-project-shell 
+      (insert (format " mvn clean install -pl :%s %s\n" artifact-id profiles-opt))))))
+
+;;; Utilities
+(defun idee--maven-profiles-option ()
+  "Create the profiles option to be appended to any maven command.
+   Returns something like: -Pprofile1,profile2 if profiles are enabled, 
+   or empty string other wise."
+  (if idee-maven-profiles
+    (concat "-P" (string-join idee-maven-profiles ","))
+    ""))
+
+;;; Project Factory
 (defun idee-new-maven-from-archetype-project ()
   "Create a new project from maven."
   (interactive)

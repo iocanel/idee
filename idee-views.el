@@ -40,6 +40,7 @@
 ;; Toggles
 (defvar idee-tree-enabled t)
 (defvar idee-cli-enabled t)
+(defvar idee-output-enabled t)
 (defvar idee-repl-enabled t)
 (defvar idee-bottom-buffer-command 'projectile-run-eshell)
 
@@ -108,10 +109,8 @@
           (setq idee-on-event-command-alist (delq (assoc 'on-repl-connected idee-on-event-command-alist) idee-on-event-command-alist))
           (add-to-list 'idee-on-event-command-alist '(on-repl-connected . (
                                                                            (other-window -1)
-                                                                           (goto-char (point-min))
-                                                                           )))
-          (idee-repl)
-          ))))
+                                                                           (goto-char (point-min)))))
+          (idee-repl)))))
 
 (defun idee-terminal-view()
   "Maximize terminal in the project root."
@@ -119,7 +118,6 @@
   (setq idee-current-view 'idee-terminal-view)
   (delete-other-windows-internal)
   (projectile-run-eshell))
-
 
 ;;
 ;;
@@ -164,6 +162,16 @@
       (idee-refresh-view)
       (other-window 1)
       (goto-char (point-max)))))
+
+(defun idee-cli-switch-on ()
+  "Switch cli on."
+  (interactive)
+  (message "ensure cli is on.")
+  (idee-update-cli-state)
+  (message "cli state updated.")
+  (if (not idee-cli-enabled)
+      (idee-toggle-cli)
+    (message "cli-alredy-on")))
 
 (defun idee-refresh-view ()
   "Refresh the current view."
