@@ -49,10 +49,11 @@
   (if (file-exists-p pom)
       (with-temp-buffer
         (insert-file-contents pom)
-        (car (cdr (cdr (assoc 'artifactId
-                        (assoc 'project
-                               (libxml-parse-xml-region (point-min) (point-max)))))))
-        ) nil))
+        (let* ((xml (libxml-parse-xml-region (point-min) (point-max)))
+               (p (assoc 'project xml))
+               (project (if p p (cdr xml))))
+          (car (cdr (cdr (assoc 'artifactId project))))))
+    nil))
 
 (defun idee-maven-build-project ()
   "Build the current maven project."
