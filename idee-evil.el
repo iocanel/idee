@@ -32,6 +32,7 @@
 (evil-leader/set-key "p" 'idee-project-hydra/body)
 (evil-leader/set-key "f" 'idee-file-hydra/body)
 (evil-leader/set-key "n" 'idee-navigation-hydra/body)
+(evil-leader/set-key "m" 'idee-maven-hydra/body)
 
 (provide 'idee-evil)
 ;;; idee-evil.el ends here

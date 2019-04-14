@@ -166,12 +166,9 @@
 (defun idee-cli-switch-on ()
   "Switch cli on."
   (interactive)
-  (message "ensure cli is on.")
   (idee-update-cli-state)
-  (message "cli state updated.")
   (if (not idee-cli-enabled)
-      (idee-toggle-cli)
-    (message "cli-alredy-on")))
+      (idee-toggle-cli)))
 
 (defun idee-refresh-view ()
   "Refresh the current view."

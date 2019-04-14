@@ -44,9 +44,7 @@
         (yas--restore-backquotes (yas--save-backquotes))
         (buffer-substring-no-properties
          (point-min)
-         (point-max))
-        )
-    nil))
+         (point-max))) nil))
 
 ;;; String Functions
 (defun idee-starts-with (string prefix)
@@ -140,6 +138,10 @@
       ,@body
       (eshell-send-input)))))
 
+(defmacro idee-toggle (bool)
+  "Toggle the specified BOOL variable."
+  (list 'setq bool (list 'not bool)))
+
 ;;; Misc Functions
 (defun idee-screenshot ()
   "Get a screenshot."
@@ -150,7 +152,7 @@
 
 
 (defun idee--git-checkout (repo target &optional dirs)
-  "Checkout a git REPO into the TARGET dir. Optionally only checkout one or more DIRS."
+  "Checkout a git REPO into the TARGET dir.  Optionally only checkout one or more DIRS."
   (make-directory target t)
   (setq default-directory (file-name-as-directory target))
   (call-process-shell-command "git init")

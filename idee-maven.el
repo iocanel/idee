@@ -29,7 +29,11 @@
 (require 'idee-projects)
 
 (defconst pom-xml "pom.xml")
+
 (defvar idee-maven-profiles ())
+(defvar idee-maven-offline nil)
+(defvar idee-maven-skip-tests nil)
+(defvar idee-maven-exec-history ())
 
 (defun idee-maven-module-root-dir-p (f)
   "Return non-nil if F is a maven module directory."
@@ -42,7 +46,7 @@
   (let ((current-dir (f-full (if f f (file-name-directory (directory-file-name (buffer-file-name (current-buffer))))))))
     (while (not (idee-maven-module-root-dir-p current-dir))
       (setq current-dir (file-name-directory (directory-file-name current-dir))))
-    current-dir))
+    current-dir)) 
 
 (defun idee-maven-pom-artifact-id (pom)
   "Get the artifactId of the specified POM."
@@ -55,28 +59,85 @@
           (car (cdr (cdr (assoc 'artifactId project))))))
     nil))
 
-(defun idee-maven-build-project ()
+(defun idee-maven-clean-project ()
+  "Clean the current maven project."
+  (interactive)
+  (idee-maven-exec :goals "clean"))
+
+(defun idee-maven-install-project ()
+  "Install the current maven project."
+  (interactive)
+  (idee-maven-exec :goals "clean install"))
+
+(defun idee-maven-debug-project ()
   "Build the current maven project."
   (interactive)
+  (idee-maven-exec :goals "clean install" :debug t))
 
-  (idee-with-project-settings "maven.el" idee-maven-profiles
-  (let* ((module-dir (idee-maven-module-root-dir))
-         (module-pom (concat module-dir pom-xml))
-         (profiles-opt (idee--maven-profiles-option)))
-    (idee-with-project-shell 
-      (insert (format " mvn clean install %s\n" profiles-opt))))))
+(defun idee-maven-install-module ()
+  "Install the current maven module."
+  (interactive)
+  (idee-maven-exec :goals "clean" :module-build t))
 
-(defun idee-maven-build-module ()
+(defun idee-maven-also-install-module ()
+  "Install the current maven module (but also make dependencies in the reactor)."
+  (interactive)
+  (idee-maven-exec :goals "clean" :module-build t :also-make t))
+
+(defun idee-maven-exec-module ()
+  "Build the current maven module."
+  (interactive)
+  (idee-maven-exec :goals "clean install" :module-build t))
+ 
+(defun idee-maven-debug-module ()
+  "Build the current maven module."
+  (interactive)
+  (idee-maven-exec :goals "clean install" :debug t :module-build t))
+
+(defun idee-maven-exec-from-history ()
+  "Prompt the user to execute previous maven build from history."
+  (interactive)
+  (let ((maven-command (completing-read "Maven command:" idee-maven-exec-history)))
+    (idee-with-project-shell (insert maven-command))))
+ 
+(cl-defun idee-maven-exec (&key goals debug module-build also-make)
   "Build the current maven module."
   (interactive)
   (idee-with-project-settings "maven.el" idee-maven-profiles
   (let* ((module-dir (idee-maven-module-root-dir))
          (module-pom (concat module-dir pom-xml))
          (artifact-id (idee-maven-pom-artifact-id module-pom))
-         (profiles-opt (idee--maven-profiles-option)))
+         (profiles-opt (idee--maven-profiles-option))
+         (mvn-cmd-builder nil))
+    
+    (add-to-list 'mvn-cmd-builder (if debug "mvnDebug" "mvn"))
+    (add-to-list 'mvn-cmd-builder goals)
+    (if profiles-opt
+        (add-to-list 'mvn-cmd-builder profiles-opt))
+    (if (and artifact-id module-build)
+        (add-to-list 'mvn-cmd-builder (format "-pl :%s" artifact-id)))
+    (if also-make
+        (add-to-list 'mvn-cmd-builder "-am"))
 
-    (idee-with-project-shell 
-      (insert (format " mvn clean install -pl :%s %s\n" artifact-id profiles-opt))))))
+    (let ((mvn-command (string-join (reverse mvn-cmd-builder) " ")))
+      (add-to-list 'idee-maven-exec-history mvn-command t)
+      (idee-with-project-shell 
+          (insert mvn-command))))))
+
+;;; Toggles
+(defun idee-maven-toggle-offline ()
+  "Toggle offline flag for maven builds."
+  (interactive)
+  (if (idee-toggle idee-maven-offline)
+      (message "Maven offline: Enabled!")
+      (message "Maven offline: Disabled!")))
+
+(defun idee-maven-toggle-skip-tests ()
+  "Toggle offline flag for maven builds."
+  (interactive)
+  (if (idee-toggle idee-maven-skip-tests)
+      (message "Maven test skip: Enabled!")
+      (message "Maven test skip: Disabled!")))
 
 ;;; Utilities
 (defun idee--maven-profiles-option ()
@@ -84,8 +145,32 @@
    Returns something like: -Pprofile1,profile2 if profiles are enabled, 
    or empty string other wise."
   (if idee-maven-profiles
-    (concat "-P" (string-join idee-maven-profiles ","))
-    ""))
+    (concat "-P" (string-join idee-maven-profiles ",")) ""))
+
+;;; Maven Hydra
+(defhydra idee-maven-hydra (:hint nil :exit t)
+"
+ Maven: ^ Project          Module                 Toggle         Execute 
+        ^^^^^^----------------------------------------------------------------------
+        _pc_: clean       _mc_: clean            _to_: offline   _m_: from history
+        _pi_: install     _mi_: install          _tt_: tests
+        _pd_: debug       _mai_: also install
+                        _md_: debug
+"
+  ("pc" idee-maven-clean-project)
+  ("pi" idee-maven-install-project)
+  ("pd" idee-maven-debug-project)
+
+  ("mc" idee-maven-clean-module)
+  ("mi" idee-maven-install-module)
+  ("mai" idee-maven-also-install-module)
+  ("md" idee-maven-debug-module)
+
+  ("to" idee-maven-toggle-offline)
+  ("tt" idee-maven-toggle-skip-tests)
+
+  ("mh" idee-maven-exec-from-history)
+  ("q" nil "quit"))
 
 ;;; Project Factory
 (defun idee-new-maven-from-archetype-project ()
@@ -104,7 +189,6 @@
     (make-directory temp-dir t)
     (setq default-directory temp-dir)
     (shell-command (format "mvn archetype:generate -DgroupId=%s -DartifactId=%s -Dversion=%s -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false" group-id artifact-id version))
-    (message (format "moving generated project from: %s to %s." generated-dir target-dir))
     (shell-command (format "mv %s/* %s" generated-dir target-dir))
     (write-region "" nil (concat (file-name-as-directory target-dir) ".projectile"))
     (projectile-add-known-project target-dir)
