@@ -169,7 +169,7 @@
   ("to" idee-maven-toggle-offline)
   ("tt" idee-maven-toggle-skip-tests)
 
-  ("mh" idee-maven-exec-from-history)
+  ("h" idee-maven-exec-from-history)
   ("q" nil "quit"))
 
 ;;; Project Factory
