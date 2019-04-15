@@ -152,7 +152,7 @@
 "
  Maven: ^ Project          Module                 Toggle         Execute 
         ^^^^^^----------------------------------------------------------------------
-        _pc_: clean       _mc_: clean            _to_: offline   _m_: from history
+        _pc_: clean       _mc_: clean            _to_: offline   _h_: from history
         _pi_: install     _mi_: install          _tt_: tests
         _pd_: debug       _mai_: also install
                         _md_: debug
