@@ -77,7 +77,7 @@
 (defun idee-maven-install-module ()
   "Install the current maven module."
   (interactive)
-  (idee-maven-exec :goals "clean" :module-build t))
+  (idee-maven-exec :goals "clean install" :module-build t))
 
 (defun idee-maven-also-install-module ()
   "Install the current maven module (but also make dependencies in the reactor)."
