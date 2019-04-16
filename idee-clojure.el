@@ -45,7 +45,8 @@
 (defun idee-run-clojure-project ()
   (async-shell-command "lein run"))
 
-(defun clojure-ide ()
+(defun idee-clojure-hook ()
+  "Clojure hook."
   (interactive)
   (setq idee-function-alist (delq (assoc 'idee-repl-view-function idee-function-alist) idee-function-alist))
   (add-to-list 'idee-function-alist '(idee-repl-view-function . cider-jack-in-and-switch))
@@ -57,7 +58,7 @@
   (when (seq-filter (lambda (x) (equal "project.clj" x)) (directory-files root))
     (clojure-ide))) 
 
-(add-hook 'clojure-mode-hook 'clojure-ide)
+(add-hook 'clojure-mode-hook 'idee-clojure-hook)
 (add-to-list 'idee-project-visitors 'idee-visitor-clojure)
 
 (provide 'idee-clojure)

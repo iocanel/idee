@@ -30,11 +30,12 @@
 (setq idee-project-visitors ())
 
 (defun idee-project-visit()
-  "Calls all registered visitors."
+  "Call all registered visitors."
   (interactive)
+  (message (format "calling visitors for project %s." default-directory))
   (let (v)
     (dolist (v idee-project-visitors)
-      (funcall v (projectile-project-root)))))
+      (funcall v default-directory))))
 
 (add-to-list 'idee-project-visitors 'idee-visitor-clojure)
 (advice-add 'projectile-switch-project :after 'idee-project-visit)

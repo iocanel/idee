@@ -30,36 +30,27 @@
 (defun idee-javascript-enable()
   "Enable javascript, add hooks, visitors etc."
   (interactive)
-  (message "Enable javascript.")
-  (tide-restart-server)
-  (add-hook 'javascipt-mode-hook 'idee-javascript-start)
-  (add-hook 'js2-mode-hook 'idee-javascript-start)
-  (add-hook 'typescirpt-mode-hook 'idee-javascript-start))
+  (tide-restart-server))
 
 (defun idee-javascript-disable()
   "Disable javascript, Remove hooks, visitors etc."
   (interactive)
-  (remove-hook 'javascript-mode-hook 'idee-javascript-start t)
-  (remove-hook 'js2-mode-hook 'idee-javascript-start t)
-  (remove-hook 'typescript-mode-hook 'idee-javascript-start t))
+  (delete-process (tide-current-server)))
 
-(defun idee-javascript-start()
-  "Set javascript bindings."
-  (interactive)
-  (message "Start javascript.")
-  (idee-javascript-enable)
+(defun idee-javascript-hook()
+  "Javascript hook."
   (flycheck-mode +1)
-  
   ;; Clear functions
   (setq idee-function-alist (delq (assoc 'idee-refernces-function idee-function-alist) idee-function-alist))
   (setq idee-function-alist (delq (assoc 'idee-declaration-function idee-function-alist) idee-function-alist))
   (setq idee-function-alist (delq (assoc 'idee-implementation-function idee-function-alist) idee-function-alist))
+  (setq idee-function-alist (delq (assoc 'idee-optimize-imports-function idee-function-alist) idee-function-alist))
 
   ;; Set functions
   (add-to-list 'idee-function-alist '(idee-references-function . tide-references))
-  (add-to-list 'idee-function-alist '(idee-declaration-function . tide-jump-to-definition)))
+  (add-to-list 'idee-function-alist '(idee-declaration-function . tide-jump-to-definition))
   (add-to-list 'idee-function-alist '(idee-implementation-function . tide-jump-to-implementation))
-    
+  (add-to-list 'idee-function-alist '(idee-optimize-imports-function . tide-organize-imports)))
 
 ;;; Project Factory
 (defun idee-new-npm-project ()
@@ -76,11 +67,17 @@
 
     (make-directory temp-dir t)
     (setq default-directory temp-dir)
-    (shell-command generate-command)
-    (shell-command (format "mv %s/* %s" temp-dir target-dir))
+
+    (let ((progress-reporter (make-progress-reporter "Calling npm..." 0  100)))
+      (shell-command generate-command)
+      (progress-reporter-done progress-reporter))
+    
+    (shell-command (format "mv %s/* %s" temp-dir target-dir))m
     (write-region "" nil (concat (file-name-as-directory target-dir) ".projectile"))
     (projectile-add-known-project target-dir)
     (setq projectile-project-root target-dir)
+    (setq default-directory (file-name-as-directory target-dir))
+    (call-process-shell-command "git init")
     (projectile-switch-project-by-name target-dir)
     (revert-buffer)
     (dired target-dir)
@@ -95,17 +92,27 @@
 (add-to-list 'idee-project-factories-list idee-npm-project-factory)
 
 ;;; Visitor
-(defun idee-visitor-javascript (root)
-  "Check if a javascript project is available under the specified ROOT."
-  (when (seq-filter (lambda (x)
+(defun idee-javascript-project-p (root)
+  "Check if ROOT is the root path of a javascript project."
+  (message (format "checking if %s is a valid javascript project." root))
+  (seq-filter (lambda (x)
                       (or (equal package-json x)
                           (equal jsconfig-json x)
-                          (equal tsconfig-json x))
-                      (directory-files root))
-                    (idee-javascript-enable))))
+                          (equal tsconfig-json x))) (directory-files root)))
+
+(defun idee-visitor-javascript (root)
+  "Check if a javascript project is available under the specified ROOT."
+  (message (format "calling javascript visitor if %s is a valid javascript project." root))
+  (when (idee-javascript-project-p root)
+    (message "javascript project detected")
+    (idee-javascript-enable)))
 
 (add-to-list 'idee-project-visitors 'idee-visitor-javascript)
 
+;; Hooks
+(add-hook 'javascipt-mode-hook 'idee-javascript-hook)
+(add-hook 'js2-mode-hook 'idee-javascript-hook)
+(add-hook 'typescirpt-mode-hook 'idee-javascript-hook)
 
 (provide 'idee-javascript)
 ;;; idee-javascript.el ends here.

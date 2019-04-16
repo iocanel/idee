@@ -33,23 +33,18 @@
 (defun idee-lsp-java-enable()
   "Enable lsp-java, add hooks, visitors etc."
   (interactive)
-  (add-hook 'java-mode-hook 'idee-lsp-java-start)
   (if idee-lsp-java-completion-enabled
       (progn (add-to-list 'company-backends 'company-lsp)
              (lsp-workspace-folders-add (projectile-project-root)))
-    (setq company-backends (delete 'company-lsp company-backends))
-    )
-  )
+    (setq company-backends (delete 'company-lsp company-backends))))
 
 (defun idee-lsp-java-disable()
   "Disable lsp-java, remove hooks, visitors etc."
   (interactive)
-  (setq company-backends (delete 'company-lsp company-backends))
-  (remove-hook 'java-mode-hook 'idee-lsp-java-start t)
-  )
+  (setq company-backends (delete 'company-lsp company-backends)))
 
-(defun idee-lsp-java-start()
-  "Start LSP for Java."
+(defun idee-lsp-java-hook()
+  "Hook for lsp-java."
   
   ;; Clear functions
   (setq idee-function-alist (delq (assoc 'idee-refernces-function idee-function-alist) idee-function-alist))
@@ -75,23 +70,20 @@
 
 
 ;;; Visitor
-(defun idee-lsp-java-is-applicable()
+(defun idee-lsp-java-project-p (root)
   "Check if lsp-java mode is applicable to the project."
-  (interactive)
   (seq-filter (lambda (x)
                 (or
                  (equal "pom.xml" x)
                  (equal "build.gradle" x)
-                 (equal ".project" x)
-                 ))
-              (directory-files (projectile-project-root))))
+                 (equal ".project" x))) (directory-files root)))
 
 (defun idee-visitor-lsp-java (root)
   "Check if a lsp-java project is available under the specified ROOT."
-  (if (and idee-lsp-java-enabled (idee-lsp-java-is-applicable))
-      (idee-lsp-java-enable))
-  )
+  (if (and idee-lsp-java-enabled (idee-lsp-java-is-applicable root))
+      (idee-lsp-java-enable)))
 
+(add-hook 'java-mode-hook 'idee-lsp-java-hook)
 (add-to-list 'idee-project-visitors 'idee-visitor-lsp-java)
 (advice-add 'save-buffer :after #'idee--lsp-java--on-save-buffer)
 

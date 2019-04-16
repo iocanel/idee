@@ -89,7 +89,6 @@ This is functionality already provided by existing plugins, so this plugin was m
 
    [[./doc/images/idee-file-templates.png]] 
     
- 
 ** File header management
 
    Open-source developers are familiar with the processes of adding license headers to their files. But even if this is a pretty common use-case nowadays, even commercial IDE doesn't have a good story around that.
@@ -131,3 +130,34 @@ This is functionality already provided by existing plugins, so this plugin was m
     - dependencies
 
     and then it generates and opens the project.
+** Maven support 
+
+To make life with maven easier the following features have been added:
+
+- Per project profile management.
+- Shortcut function to run maven project builds.
+- Shortcut function to run maven module builds.
+- Execute maven build from history.
+- Maven hydra.
+
+*** Per project profile management
+Under project root, you can create a file called `.idee/maven.el` and in there you can set the desired profiles:
+
+#+begin_src emacs-lisp
+(setq idee-maven-profiles ("profile-a" "profile-b"))
+#+end_src
+
+These profiles will be automatically used for all maven operations triggered through this plugin.
+
+*** Maven command history
+Being able to execute the last maven command, using a short cut is cool.
+Being able to easily repeat any previously executed maven command is even cooler.
+
+[[./doc/images/maven-history.png]]
+
+*** Maven hydra
+
+[[./doc/images/maven-hydra.png]]
+
+The maven hydra can be called via `idee-maven-hydra/body` or using `<SPC> m` if you enabled `idee-evil`.
+

@@ -33,8 +33,7 @@
 (cl-defstruct idee-project-factory
   name
   description
-  func
-  )
+  func)
 
 (defconst idee-cask-project-factory (make-idee-project-factory
   :name "Cask"

@@ -27,6 +27,7 @@
 (require 'idee-headers)
 (require 'idee-visitors)
 (require 'idee-templates)
+(require 'idee-maven)
 (require 'projectile)
 
 (require 'cc-vars)
@@ -40,7 +41,6 @@
 
 (defconst source-directory-list `(,source-main-prefix ,source-test-prefix ,java-prefix ,source-prefix ,test-prefix))
 
-(defconst pom-xml "pom.xml")
 (defconst build-gradle "build.gradle")
 (defconst meghanada-conf ".meghanada.conf")
 
@@ -143,23 +143,23 @@
     (message (format "file %s test dir %s." f test-dir))
     (and test-dir (string-prefix-p test-dir f))))
 
-  (defun idee--java-in-method-p()
-    "Return non-nil if point is inside a method."
-    (interactive)
-    
-    (let ((thing (thing-at-point 'defun)))))
+(defun idee--java-in-method-p()
+  "Return non-nil if point is inside a method."
+  (interactive)
+  
+  (let ((thing (thing-at-point 'defun)))))
 
-  (defun idee-java-method-name(thing)
-    "Return non-nil if THING is a method."
-    (interactive)
-    (with-temp-buffer
-      (save-excursion
-        (insert thing))
-      (c-end-of-defun)))
+(defun idee-java-method-name(thing)
+  "Return non-nil if THING is a method."
+  (interactive)
+  (with-temp-buffer
+    (save-excursion
+      (insert thing))
+    (c-end-of-defun)))
 
-  (defun idee-java-block-name()
-    (interactive)
-    (message (format "%s" (c-defun-name))))
+(defun idee-java-block-name()
+  (interactive)
+  (message (format "%s" (c-defun-name))))
 
 (defun idee--java-fqcn-matches-p (c)
   "Predicate that matches c against idee--java-symbols."
@@ -194,22 +194,26 @@
   (let ((case-fold-search nil))
     (seq-filter
      (lambda (x) (not (equal "" x))) ;;remove all empty strings (its usually the first)
-    (split-string (replace-regexp-in-string "\\([A-Z]\\)" " \\1" s) " "))))
+     (split-string (replace-regexp-in-string "\\([A-Z]\\)" " \\1" s) " "))))
 
 ;;; Visitor
+(defun idee-java-project-p (root)
+  "Checks if ROOT is the root path of a java project."
+  (seq-filter (lambda (x)
+                (or (equal pom-xml x)
+                    (equal build-gradle x)
+                    (equal meghanada-conf x)))
+              (directory-files root)))
+
 (defun idee-visitor-java (root)
   "Check if a java project is available under the specified ROOT."
-  (when (seq-filter (lambda (x)
-                      (or (equal pom-xml x)
-                          (equal build-gradle x)
-                          (equal meghanada-conf x))
-                      (directory-files root))
-                    (idee-java-enable))))
+  (if (idee-java-project-p root) 
+      (idee-java-enable)))
 
 (add-to-list 'idee-project-visitors 'idee-visitor-java)
 
 ;;; Hook
 (add-hook 'java-mode-hook 'idee-java-enable)
 
-  (provide 'idee-java)
+(provide 'idee-java)
 ;;; idee-java.el ends here

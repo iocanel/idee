@@ -24,8 +24,8 @@
 
 ;;; Code:
 
-(defun elisp-ide()
-  "Enabled elisp bindings"
+(defun idee-elisp-hook()
+  "Elisp hook."
   (interactive)
   (setq idee-function-alist (delq (assoc 'idee-refernces-function idee-function-alist) idee-function-alist))
   (setq idee-function-alist (delq (assoc 'idee-declaration-function idee-function-alist) idee-function-alist))
@@ -34,6 +34,8 @@
   (setq idee-function-alist (delq (assoc 'idee-mode-hydra-function idee-function-alist) idee-function-alist))
 
   (add-to-list 'idee-function-alist '(idee-mode-hydra-function . elisp-hydra/body))) 
+
+(add-hook 'emacs-lisp-mode-hook 'idee-javascript-hook)
 
 (provide 'idee-elisp)
 ;;; idee-elisp.el ends here

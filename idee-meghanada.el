@@ -65,7 +65,6 @@
     (setq company-meghanada-prefix-length 2)
     (setq meghanada-server-jvm-option "-ea -server -XX:+UseConcMarkSweepGC -XX:SoftRefLRUPolicyMSPerMB=50 -Xverify:none -Xms512m -Dfile.encoding=UTF-8"))
 
-  (add-hook 'java-mode-hook 'idee-meghanada-start)
   (if idee-meghanada-completion-enabled
       (add-to-list 'company-backends 'company-meghanada)
     (setq company-backends (delete 'company-meghanada company-backends))))
@@ -73,13 +72,10 @@
 (defun idee-meghanada-disable()
   "Disable meghanada, Remove hooks, visitors etc."
   (interactive)
-  (setq company-backends (delete 'company-meghanada company-backends))
-  (remove-hook 'java-mode-hook 'idee-meghanada-start t))
+  (setq company-backends (delete 'company-meghanada company-backends)))
 
-(defun idee-meghanada-start()
+(defun idee-meghanada-hook()
   "Set meghanada bindings."
-  (interactive)
-  (message "Starting meghanada")
   (idee-java-enable)
   (meghanada-mode t)
   (flycheck-mode +1)
@@ -116,22 +112,21 @@
             (meghanada-run-junit-class))))))
 
 ;;; Visitor
-(defun idee-meghanada-is-applicable()
-  (interactive)
+(defun idee-meghanada-project-p (root)
   "Checks if meghanada mode is applicable to the project."
   (seq-filter (lambda (x)
                 (or
                  (equal "pom.xml" x)
                  (equal "build.gradle" x)
-                 (equal ".meghanada.conf" x)
-                 ))
-              (directory-files (projectile-project-root))))
+                 (equal ".meghanada.conf" x)))
+              (directory-files root)))
 
 (defun idee-visitor-meghanada (root)
   "Check if a meghanada project is available under the specified ROOT."
-  (if (and idee-meghanada-enabled (idee-meghanada-is-applicable))
+  (if (and idee-meghanada-enabled (idee-meghanada-is-applicable root))
       (idee-meghanada-enable)))
 
 (add-to-list 'idee-project-visitors 'idee-visitor-meghanada)
+(add-hook 'java-mode-hook 'idee-meghanada-hook)
 (provide 'idee-meghanada)
 ;;; idee-meghanada.el ends here
