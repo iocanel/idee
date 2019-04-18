@@ -80,7 +80,7 @@
 
 (defun idee-visitor-lsp-java (root)
   "Check if a lsp-java project is available under the specified ROOT."
-  (if (and idee-lsp-java-enabled (idee-lsp-java-is-applicable root))
+  (if (and idee-lsp-java-enabled (idee-lsp-java-project-p root))
       (idee-lsp-java-enable)))
 
 (add-hook 'java-mode-hook 'idee-lsp-java-hook)
