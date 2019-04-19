@@ -94,7 +94,6 @@
 ;;; Visitor
 (defun idee-javascript-project-p (root)
   "Check if ROOT is the root path of a javascript project."
-  (message (format "checking if %s is a valid javascript project." root))
   (seq-filter (lambda (x)
                       (or (equal package-json x)
                           (equal jsconfig-json x)
@@ -102,10 +101,7 @@
 
 (defun idee-visitor-javascript (root)
   "Check if a javascript project is available under the specified ROOT."
-  (message (format "calling javascript visitor if %s is a valid javascript project." root))
-  (when (idee-javascript-project-p root)
-    (message "javascript project detected")
-    (idee-javascript-enable)))
+  (when (idee-javascript-project-p root) (idee-javascript-enable)))
 
 (add-to-list 'idee-project-visitors 'idee-visitor-javascript)
 

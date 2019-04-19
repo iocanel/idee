@@ -46,7 +46,7 @@
 
 (defun idee-project-root-dir (&optional f)
   "Find the directory of the module that owns the source file F."
-  (let ((current-dir (f-full (if f f (projectile-project-root)))))
+  (let ((current-dir (f-full (if f f default-directory))))
     (while (not (idee-project-root-dir-p current-dir))
       (setq current-dir (file-name-directory (directory-file-name current-dir))))
     current-dir))

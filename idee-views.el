@@ -168,7 +168,10 @@
   (interactive)
   (idee-update-cli-state)
   (if (not idee-cli-enabled)
-      (idee-toggle-cli)))
+      (idee-toggle-cli)
+    (progn
+      (idee-refresh-view)
+      (other-window 1))))
 
 (defun idee-refresh-view ()
   "Refresh the current view."

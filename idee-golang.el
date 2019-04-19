@@ -94,9 +94,9 @@
   (when (seq-filter (lambda (x)
                       (or (equal go-mod x)
                           (equal glide-yml x)
-                          (equal gopkg-toml x))
+                          (equal gopkg-toml x)))
                       (directory-files root))
-                    (idee-golang-enable))))
+                    (idee-golang-enable)))
 
 (add-to-list 'idee-project-visitors 'idee-visitor-golang)
 

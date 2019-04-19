@@ -32,13 +32,12 @@
 (defun idee-project-visit()
   "Call all registered visitors."
   (interactive)
-  (message (format "calling visitors for project %s." default-directory))
   (let (v)
     (dolist (v idee-project-visitors)
       (funcall v default-directory))))
 
 (add-to-list 'idee-project-visitors 'idee-visitor-clojure)
-(advice-add 'projectile-switch-project :after 'idee-project-visit)
+(add-to-list 'projectile-after-switch-project-hook 'idee-project-visit)
 
 (provide 'idee-visitors)
 ;;;  idee-visitors.el ends here

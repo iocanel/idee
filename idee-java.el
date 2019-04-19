@@ -72,8 +72,7 @@
 ;;; Formatting
 (defun idee-java-set-tab-width (&optional w)
   "Replace the hook that set the tab width to W or idee-tab-width."
-  (if w
-      (setq idee-tab-width w))
+  (when w (setq idee-tab-width w))
   
   (remove-hook 'java-mode-hook 'idee-java-update-tab-width-callback)
   (add-hook 'java-mode-hook 'idee-java-update-tab-width-callback)
