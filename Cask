@@ -5,8 +5,11 @@
 (package-file "idee-clojure.el")
 (package-file "idee-golang.el")
 (package-file "idee-elisp.el")
+(package-file "idee-lsp-java.el")
 (package-file "idee-meghanada.el")
+(package-file "idee-maven.el")
 (package-file "idee-python.el")
+(package-file "idee-javascript.el")
 
 (development
 
