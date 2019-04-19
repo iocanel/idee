@@ -72,7 +72,35 @@
 (defun idee-maven-debug-project ()
   "Build the current maven project."
   (interactive)
-  (idee-maven-exec :goals "clean install" :debug t))
+  (-> (list :type "java"
+            :request "attach"
+            :hostName "localhost"
+            :port 8000
+            :wait-forport t)
+      (append (list :program-to-start (idee-maven-cmd :goals "clean install" :debug t)))
+      dap-debug))
+
+(defun idee-maven-surefire-debug-project ()
+  "Debug the current maven project."
+  (interactive)
+  (-> (list :type "java"
+            :request "attach"
+            :hostName "localhost"
+            :port 5005
+            :wait-for-port t)
+      (append (list :program-to-start (idee-maven-cmd :goals "clean install" :surefire-debug t)))
+      dap-debug))
+
+(defun idee-maven-failsafe-debug-project ()
+  "Debug the current maven project."
+  (interactive)
+  (-> (list :type "java"
+            :request "attach"
+            :hostName "localhost"
+            :port 5005
+            :wait-for-port t)
+      (append (list :program-to-start (idee-maven-cmd :goals "clean install" :failsafe-debug t)))
+      dap-debug))
 
 (defun idee-maven-install-module ()
   "Install the current maven module."
@@ -88,41 +116,73 @@
   "Build the current maven module."
   (interactive)
   (idee-maven-exec :goals "clean install" :module-build t))
- 
+
 (defun idee-maven-debug-module ()
-  "Build the current maven module."
+  "Debug the current maven module."
   (interactive)
-  (idee-maven-exec :goals "clean install" :debug t :module-build t))
+  (-> (list :type "java"
+            :request "attach"
+            :hostName "localhost"
+            :port 8000
+            :wait-for-port t)
+      (append (list :program-to-start (idee-maven-cmd :goals "clean install" :debug t :module-build t)))
+      dap-debug))
+
+(defun idee-maven-surefire-debug-module ()
+  "Debug the current maven module."
+  (interactive)
+  (-> (list :type "java"
+            :request "attach"
+            :hostName "localhost"
+            :port 5005
+            :wait-for-port t)
+      (append (list :program-to-start (idee-maven-cmd :goals "clean install" :surefire-debug t :module-build t)))
+      dap-debug))
+
+(defun idee-maven-failsafe-debug-module ()
+  "Debug the current maven module."
+  (interactive)
+  (-> (list :type "java"
+            :request "attach"
+            :hostName "localhost"
+            :port 5005
+            :wait-for-port t)
+      (append (list :program-to-start (idee-maven-cmd :goals "clean install" :failsafe-debug t :module-build t)))
+      dap-debug))
 
 (defun idee-maven-exec-from-history ()
   "Prompt the user to execute previous maven build from history."
   (interactive)
   (let ((maven-command (completing-read "Maven command:" idee-maven-exec-history)))
     (idee-with-project-shell (insert maven-command))))
- 
-(cl-defun idee-maven-exec (&key goals debug module-build also-make)
+
+(cl-defun idee-maven-cmd (&key goals debug surefire-debug failsafe-debug module-build also-make)
+  (idee-with-project-settings "maven.el" idee-maven-profiles
+                              (let* ((module-dir (idee-maven-module-root-dir))
+                                     (module-pom (concat module-dir pom-xml))
+                                     (artifact-id (idee-maven-pom-artifact-id module-pom))
+                                     (profiles-opt (idee--maven-profiles-option))
+                                     (mvn-cmd-builder nil))
+                                
+                                (add-to-list 'mvn-cmd-builder (if debug "mvnDebug" "mvn"))
+                                (add-to-list 'mvn-cmd-builder goals)
+                                (if profiles-opt
+                                    (add-to-list 'mvn-cmd-builder profiles-opt))
+                                (if (and artifact-id module-build)
+                                    (add-to-list 'mvn-cmd-builder (format "-pl :%s" artifact-id)))
+                                (if also-make
+                                    (add-to-list 'mvn-cmd-builder "-am"))
+                                (if surefire-debug
+                                    (add-to-list 'mvn-cmd-builder "-Dmaven.surefire.debug"))
+                                (if failsafe-debug
+                                    (add-to-list 'mvn-cmd-builder "-Dmaven.failsafe.debug"))
+                                (string-join (reverse mvn-cmd-builder) " "))))
+
+(cl-defun idee-maven-exec (&key goals debug surefire-debug failsafe-debug module-build also-make)
   "Build the current maven module."
   (interactive)
-  (idee-with-project-settings "maven.el" idee-maven-profiles
-  (let* ((module-dir (idee-maven-module-root-dir))
-         (module-pom (concat module-dir pom-xml))
-         (artifact-id (idee-maven-pom-artifact-id module-pom))
-         (profiles-opt (idee--maven-profiles-option))
-         (mvn-cmd-builder nil))
-    
-    (add-to-list 'mvn-cmd-builder (if debug "mvnDebug" "mvn"))
-    (add-to-list 'mvn-cmd-builder goals)
-    (if profiles-opt
-        (add-to-list 'mvn-cmd-builder profiles-opt))
-    (if (and artifact-id module-build)
-        (add-to-list 'mvn-cmd-builder (format "-pl :%s" artifact-id)))
-    (if also-make
-        (add-to-list 'mvn-cmd-builder "-am"))
-
-    (let ((mvn-command (string-join (reverse mvn-cmd-builder) " ")))
-      (add-to-list 'idee-maven-exec-history mvn-command t)
-      (idee-with-project-shell 
-          (insert mvn-command))))))
+  (idee-with-project-shell 
+      (insert (idee-maven-cmd goals debug surefire-debug failsafe-debug module-build also-make))))
 
 ;;; Toggles
 (defun idee-maven-toggle-offline ()
@@ -130,14 +190,14 @@
   (interactive)
   (if (idee-toggle idee-maven-offline)
       (message "Maven offline: Enabled!")
-      (message "Maven offline: Disabled!")))
+    (message "Maven offline: Disabled!")))
 
 (defun idee-maven-toggle-skip-tests ()
   "Toggle offline flag for maven builds."
   (interactive)
   (if (idee-toggle idee-maven-skip-tests)
       (message "Maven test skip: Enabled!")
-      (message "Maven test skip: Disabled!")))
+    (message "Maven test skip: Disabled!")))
 
 ;;; Utilities
 (defun idee--maven-profiles-option ()
@@ -145,26 +205,33 @@
    Returns something like: -Pprofile1,profile2 if profiles are enabled, 
    or empty string other wise."
   (if idee-maven-profiles
-    (concat "-P" (string-join idee-maven-profiles ",")) ""))
+      (concat "-P" (string-join idee-maven-profiles ",")) ""))
 
 ;;; Maven Hydra
 (defhydra idee-maven-hydra (:hint nil :exit t)
-"
- Maven: ^ Project          Module                 Toggle         Execute 
-        ^^^^^^----------------------------------------------------------------------
-        _pc_: clean       _mc_: clean            _to_: offline   _h_: from history
-        _pi_: install     _mi_: install          _tt_: tests
-        _pd_: debug       _mai_: also install
-                        _md_: debug
-"
+  "
+ Maven:   Project                     Module               Toggle          Execute 
+        ------------------------------------------------------------------------------------
+        _pc_: clean                  _mc_: clean              _to_: offline     _h_: from history
+        _pi_: install                _mi_: install            _tt_: tests
+                                  _mai_: also install
+        _pd_: debug                  _md_: debug
+       _psd_: surfire debug         _msd_: surefire debug
+       _pfd_: failsafe debug        _mfd_: failsafe debug
+
+       "
   ("pc" idee-maven-clean-project)
   ("pi" idee-maven-install-project)
   ("pd" idee-maven-debug-project)
+  ("psd" idee-maven-surefire-debug-project)
+  ("pfd" idee-maven-failsafe-debug-project)
 
   ("mc" idee-maven-clean-module)
   ("mi" idee-maven-install-module)
   ("mai" idee-maven-also-install-module)
   ("md" idee-maven-debug-module)
+  ("msd" idee-maven-surefire-debug-module)
+  ("mfd" idee-maven-failsafe-debug-module)
 
   ("to" idee-maven-toggle-offline)
   ("tt" idee-maven-toggle-skip-tests)
