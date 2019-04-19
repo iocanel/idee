@@ -43,10 +43,8 @@
 
 (defun idee-maven-module-root-dir (&optional f)
   "Find the directory of the maven module that owns the source file F."
-  (message (format "current buffer: %s" (current-buffer)))
   (let ((current-dir (f-full (if f f (file-name-directory (directory-file-name (buffer-file-name (current-buffer))))))))
     (while (not (idee-maven-module-root-dir-p current-dir))
-      (message (format "current dir: %s" current-dir))
       (setq current-dir (file-name-directory (directory-file-name current-dir))))
     current-dir)) 
 
