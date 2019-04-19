@@ -28,7 +28,7 @@ should be started after the :port argument is taken.
        (mapc (-lambda ((env . value)) (setenv env value)) environment-variables)
        
        (when program-to-start (idee-with-project-shell (insert program-to-start)))
-       (when wait-for-port (dap--wait-for-port host port 10 1))
+       (when wait-for-port (dap--wait-for-port host port 600 1))
        
        (unless skip-debug-session
          (let ((debug-session (dap--create-session launch-args)))
