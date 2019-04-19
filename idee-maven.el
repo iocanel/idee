@@ -43,8 +43,10 @@
 
 (defun idee-maven-module-root-dir (&optional f)
   "Find the directory of the maven module that owns the source file F."
+  (message (format "current buffer: %s" (current-buffer)))
   (let ((current-dir (f-full (if f f (file-name-directory (directory-file-name (buffer-file-name (current-buffer))))))))
     (while (not (idee-maven-module-root-dir-p current-dir))
+      (message (format "current dir: %s" current-dir))
       (setq current-dir (file-name-directory (directory-file-name current-dir))))
     current-dir)) 
 
@@ -181,8 +183,10 @@
 (cl-defun idee-maven-exec (&key goals debug surefire-debug failsafe-debug module-build also-make)
   "Build the current maven module."
   (interactive)
-  (idee-with-project-shell 
-      (insert (idee-maven-cmd goals debug surefire-debug failsafe-debug module-build also-make))))
+  (let ((cmd (idee-maven-cmd :goals goals :debug debug :surefire-debug surefire-debug :failsafe-debug failsafe-debug :module-build module-build :also-make also-make)))
+    (add-to-list 'idee-maven-exec-history cmd)
+    (idee-with-project-shell 
+        (insert cmd))))
 
 ;;; Toggles
 (defun idee-maven-toggle-offline ()
@@ -202,8 +206,8 @@
 ;;; Utilities
 (defun idee--maven-profiles-option ()
   "Create the profiles option to be appended to any maven command.
-   Returns something like: -Pprofile1,profile2 if profiles are enabled, 
-   or empty string other wise."
+Returns something like: -Pprofile1,profile2 if profiles are enabled, 
+or empty string other wise."
   (if idee-maven-profiles
       (concat "-P" (string-join idee-maven-profiles ",")) ""))
 
