@@ -208,6 +208,7 @@
 
 (defun idee-update-diagnostics-state()
   "Update the state of the cli switch (in case the winodw has been externally closed)."
+  (idee-jump-to-non-ide-window '())
   (if (get-buffer-window (flymake--diagnostics-buffer-name))
       (progn (setq idee-diagnostivs-enabled t)
              (setq ideee-cli-enabled nil))
