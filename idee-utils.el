@@ -121,8 +121,8 @@
   "Load a SETTINGS-FILE as local OPTIONS and evaluate BODY."
   (declare (indent 1) (debug t))
        `(let (,options)
-         (load-file (idee-project-settings ,settings-file))
-	 ,@body))
+          (let ((f (idee-project-settings ,settings-file)))
+            (when (and f (file-exists-p f)) (load-file f))) ,@body))
 
 (defmacro idee-with-project-shell (&rest body)
   "Load a SETTINGS-FILE as local OPTIONS and evaluate BODY."
