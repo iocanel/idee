@@ -34,7 +34,7 @@
   (f-parent root-test-path))
 
 (defvar root-sandbox-path
-  (f-expand "sandbox" root-test-path))
+  (make-temp-file "idee-test-sandbox" t))
 
 ;(require 'root (f-expand "root.el" root-code-path))
 
