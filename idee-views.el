@@ -42,6 +42,7 @@
 (defvar idee-cli-enabled t)
 (defvar idee-output-enabled t)
 (defvar idee-repl-enabled t)
+(defvar idee-diagnostics-enabled t)
 (defvar idee-bottom-buffer-command 'projectile-run-eshell)
 
 
@@ -60,13 +61,10 @@
   "Switch to a traditional IDE view for the buffer.  (project tree, main buffer & terminal)."
   (interactive)
   (setq idee-current-view 'idee-ide-view)
+  (idee-jump-to-non-ide-window ())
   (delete-other-windows-internal)
-  (if idee-cli-enabled
-      (progn
-        (idee-split-and-follow-vertically)
-        (minimize-window)
-        (projectile-run-eshell)
-        (evil-window-set-height 12)))
+  (cond (idee-cli-enabled (idee-cli-subview))
+        (idee-diagnostics-enabled (idee-diagnostics-subview)))
   (if idee-tree-enabled
       (progn
         (treemacs--init (projectile-project-root))
@@ -74,6 +72,18 @@
         (setq mode-line-format "")))
   (other-window 1)
   (goto-char (point-min)))
+
+(defun idee-cli-subview ()
+  (idee-split-and-follow-vertically)
+  (minimize-window)
+  (projectile-run-eshell)
+  (evil-window-set-height 12))
+
+(defun idee-diagnostics-subview ()
+  (flymake-show-diagnostics-buffer)
+  (other-window 1)
+  (minimize-window)
+  (evil-window-set-height 12))
 
 (defun idee-side-by-side-view()
   "Open a new buffer from the project to the side for side by side view."
@@ -123,6 +133,26 @@
 ;;
 ;; View Mode Helpers
 
+(defun idee-ide-buffer-p (buffer-name)
+  "Predicate to check if BUFFER-NAME is an ide buffer (e.g. tree, cli, repl, diagnostics etc)."
+  (let ((mode (with-current-buffer buffer-name major-mode))
+        (name (string-trim buffer-name)))
+  (cond ((provided-mode-derived-p 'prog-mode mode) t) 
+        ((and (string-prefix-p "*" name)  (string-suffix-p "*" name)) t)
+        (t nil))))
+
+(defun idee-jump-to-non-ide-window(visited)
+  "Jump to a non IDE window."
+  (interactive)
+  (let* ((buffer (current-buffer))
+         (name (buffer-name buffer))
+         (ide-buffer (idee-ide-buffer-p name)))
+
+         (cond ((not ide-buffer) t)
+               ((member name visited) nil)
+               (t (progn (other-window 1)
+                         (idee-jump-to-non-ide-window (add-to-list 'visited name)))))))
+
 (defun idee-update-tree-state()
   "Update the state of the tree switch (in case the winodw has been externally closed)."
   (if (equal (treemacs-current-visibility) 'visible)
@@ -146,7 +176,8 @@
 (defun idee-update-cli-state()
   "Update the state of the cli switch (in case the winodw has been externally closed)."
   (if (get-buffer-window (format "*eshell %s*" (projectile-project-name)))
-      (setq idee-cli-enabled t)
+      (progn (setq idee-cli-enabled t)
+             (setq ideee-diagnostics-enabled nil))
     (setq idee-cli-enabled nil)))
 
 (defun idee-toggle-cli ()
@@ -159,6 +190,7 @@
         (idee-refresh-view))
     (progn
       (setq idee-cli-enabled t)
+      (setq ideee-diagnostics-enabled nil)
       (idee-refresh-view)
       (other-window 1)
       (goto-char (point-max)))))
@@ -170,8 +202,43 @@
   (if (not idee-cli-enabled)
       (idee-toggle-cli)
     (progn
+      (setq idee-diagnostics-enabled nil)
       (idee-refresh-view)
       (other-window 1))))
+
+(defun idee-update-diagnostics-state()
+  "Update the state of the cli switch (in case the winodw has been externally closed)."
+  (if (get-buffer-window (flymake--diagnostics-buffer-name))
+      (progn (setq idee-diagnostivs-enabled t)
+             (setq ideee-cli-enabled nil))
+    (setq idee-diagnostics-enabled nil)))
+
+(defun idee-toggle-diagnostics ()
+  "Toggle the diagnostics."
+  (interactive)
+  (idee-update-diagnostics-state)
+  (if idee-diagnostics-enabled
+      (progn
+        (setq idee-diagnostics-enabled nil)
+        (idee-refresh-view))
+    (progn
+      (setq idee-diagnostics-enabled t)
+      (setq idee-cli-enabled nil)
+      (idee-refresh-view)
+      (other-window 1)
+      (goto-char (point-max)))))
+
+(defun idee-diagnostics-switch-on ()
+  "Switch diagnostics on."
+  (interactive)
+  (idee-update-diagnostics-state)
+  (if (not idee-diagnostics-enabled)
+      (idee-toggle-cli)
+    (progn
+      (setq idee-cli-enabled nil)
+      (idee-refresh-view)
+      (other-window 1))))
+
 
 (defun idee-refresh-view ()
   "Refresh the current view."
