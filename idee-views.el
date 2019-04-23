@@ -263,12 +263,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
   (interactive)
   (funcall (intern (format "idee-update-%s-state" ,name)))
   (if (not ,flag)
-      (idee-toggle-cli)
-    (progn
-      (setq idee-cli-enabled nil)
-      (idee-refresh-view)
-      (other-window ,pivot)))))
-  )
+      (idee-toggle-cli)))))
 
 ;;
 ;; Create component view functions
