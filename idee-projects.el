@@ -29,6 +29,7 @@
 
 (require 'ido)
 (require 'projectile)
+(require 'idee-views)
 
 (cl-defstruct idee-project-factory
   name
@@ -61,7 +62,9 @@
   "Create a new project."
   (interactive)
   (let ((factory (idee--select-project-factory)))
-    (funcall (idee-project-factory-func factory))))
+    (funcall (idee-project-factory-func factory))
+    ;; Make sure we are pointing to a non ide buffer.
+    (idee-jump-to-non-ide-window)))
 
 (defun idee--select-new-project-dir()
   "Select a new project directory."

@@ -58,6 +58,7 @@
   "Switch to a traditional IDE view for the buffer.  (project tree, main buffer & terminal)."
   (interactive)
   (idee-ide-view)
+  (idee-jump-to-non-ide-window)
   (magit-status-internal (projectile-project-root)))
 
 (defun idee-ide-view()
@@ -71,7 +72,7 @@
         (treemacs--init (projectile-project-root))
         ;; we remove the mode-line to hide the treemacs label
         (setq mode-line-format "")))
-  (idee-jump-to-non-ide-window ())
+  (idee-jump-to-non-ide-window)
   ;; bottom area
   (cond (idee-cli-enabled (idee-cli-subview))
         (idee-diagnostics-enabled (idee-diagnostics-subview))
@@ -151,10 +152,12 @@
         ((and (string-prefix-p "*" name)  (string-suffix-p "*" name)) t)
         (t nil))))
 
-(defun idee-jump-to-non-ide-window(visited)
-  "Jump to a non IDE window."
+(defun idee-jump-to-non-ide-window(&optional visited)
+  "Jump to a non IDE window.
+VISITED is an optional list with windows already visited."
   (interactive)
-  (let* ((buffer (current-buffer))
+  (let* ((visited (or visited '()))
+         (buffer (current-buffer))
          (name (buffer-name buffer))
          (ide-buffer (idee-ide-buffer-p name)))
 
@@ -211,23 +214,30 @@
 ;;
 ;; Buffer providers
 ;;
+(defun idee-hyda-visible-p ()
+  "Predicate that returns true if hydra is visible."
+  (get-buffer-window " *LV"))
 
-(defun idee-cli-buffer-name ()
-  "Return the name of the cli buffer."
-  (format "*eshell %s*" (projectile-project-name)))
+(defun idee-cli-visible-p ()
+  "Predicate that returns true if cli is visible."
+  (get-buffer-window (format "*eshell %s*" (projectile-project-name))))
 
-(defun idee-messages-buffer-name ()
-  "Return the name of the Messages buffer."
-  "*Messages*")
+(defun idee-diagnostics-visible-p ()
+  "Predicate that returns true if diagnostics is visible."
+  (get-buffer-window (flymake--diagnostics-buffer-name)))
+
+(defun idee-messages-visible-p ()
+  "Predicate that returns true if cli is visible."
+  (get-buffer-window "*Messages*"))
 
 ;;
 ;; Macros
 ;;
-(defmacro idee--create-view-component (name buffer-provider flag candidates pivot)
+(defmacro idee--create-view-component (name buffer-predicate flag candidates pivot)
   "Update the state of the FLAG (in case the winodw has been externally closed).
 
 NAME is the name of the view component.
-BUFFER-PROVIDER is a function that returns the name of the buffer that is bound to the component.
+BUFFER-PREDICATE is a function that returns true if buffer is currently visible.
 FLAG is the variable that holds the  visibility state of the component (e.g. visible or not visible).
 CANDIDATES is a list containing all other flags that take up the same space as the target component (e.g. cli and  diagnostics use the same area).
 PIVOT indicates how many windows should be switched at the end of the operation."
@@ -235,8 +245,8 @@ PIVOT indicates how many windows should be switched at the end of the operation.
   `(progn
     (defun ,(intern (format "idee-update-%s-state" name)) ()
   ,(format "Update the state of the %s (in case the winodw has been externally closed)." name)
-  (idee-jump-to-non-ide-window '())
-  (if (get-buffer-window (,buffer-provider))
+  (idee-jump-to-non-ide-window)
+  (if (,buffer-predicate)
       (progn (dolist (c ,candidates)
                (set c nil))
                (setq ,flag t))
@@ -263,18 +273,17 @@ PIVOT indicates how many windows should be switched at the end of the operation.
   (interactive)
   (funcall (intern (format "idee-update-%s-state" ,name)))
   (if (not ,flag)
-      (idee-toggle-cli)))))
+      (idee-toggle-cli)
+    (idee-refresh-view)))))
 
 ;;
 ;; Create component view functions
 ;;
-
-(idee--create-view-component "diagnostics" flymake--diagnostics-buffer-name idee-diagnostics-enabled idee-bottom-area-switch-list 0)
-(idee--create-view-component "cli"  idee-cli-buffer-name idee-cli-enabled idee-bottom-area-switch-list 0)
-(idee--create-view-component "messages"  idee-messages-buffer-name idee-messages-enabled idee-bottom-area-switch-list 0)
+(idee--create-view-component "diagnostics" idee-diagnostics-visible-p idee-diagnostics-enabled idee-bottom-area-switch-list 0)
+(idee--create-view-component "cli"  idee-cli-visible-p idee-cli-enabled idee-bottom-area-switch-list 0)
+(idee--create-view-component "messages"  idee-messages-visible-p idee-messages-enabled idee-bottom-area-switch-list 0)
 
 (advice-add 'projectile-switch-project :after 'idee-project-open-view)
-
 
 (provide 'idee-views)
 ;;; idee-views.el ends here

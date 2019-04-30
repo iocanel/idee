@@ -27,7 +27,10 @@ should be started after the :port argument is taken.
              (default-directory (or cwd default-directory)))
        (mapc (-lambda ((env . value)) (setenv env value)) environment-variables)
        
-       (when program-to-start (idee-with-project-shell (insert program-to-start)))
+       (when program-to-start (idee-with-project-shell
+                                  (when cwd (insert (format "cd %s\n" cwd)))
+                                  (insert program-to-start)))
+
        (when wait-for-port (dap--wait-for-port host port 600 1))
        
        (unless skip-debug-session
@@ -57,5 +60,17 @@ should be started after the :port argument is taken.
          (unless (and program-to-start dap-auto-show-output)
            (save-excursion (dap-go-to-output-buffer)))))))
 
+
+(defadvice dap--go-to-stack-frame (after idee-refresh-on-stack-frame
+                                      (&optional debug-session stack-frame))
+  "Refresh IDE after a breakpoint has been hit."
+  (idee-refresh-view)
+  (idee-jump-to-non-ide-window)
+  (recenter-top-bottom)
+  (when (not (idee-hyda-visibile-p)) (dap-hydra))
+  (when (not (get-buffer-window "*dap-ui-locals*") (dap-ui-locals))))
+
+(ad-activate 'dap--go-to-stack-frame)
+
 (provide 'idee-dap)
-;;; idee-dap.el ends here.
+;;; idee-dap.el ends here

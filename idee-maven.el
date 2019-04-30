@@ -43,7 +43,9 @@
 
 (defun idee-maven-module-root-dir (&optional f)
   "Find the directory of the maven module that owns the source file F."
-  (let ((current-dir (f-full (if f f (file-name-directory (directory-file-name (buffer-file-name (current-buffer))))))))
+  (let* ((file-name (buffer-file-name (current-buffer)))
+         (dir (if file-name (directory-file-name file-name) default-directory))
+         (current-dir (f-full (if f f (file-name-directory dir)))))
     (while (not (idee-maven-module-root-dir-p current-dir))
       (setq current-dir (file-name-directory (directory-file-name current-dir))))
     current-dir)) 
@@ -105,50 +107,67 @@
 (defun idee-maven-install-module ()
   "Install the current maven module."
   (interactive)
-  (idee-maven-exec :goals "clean install" :module-build t))
+  (idee-maven-exec :goals "clean install" :build-scope 'module))
 
 (defun idee-maven-also-install-module ()
   "Install the current maven module (but also make dependencies in the reactor)."
   (interactive)
-  (idee-maven-exec :goals "clean install" :module-build t :also-make t))
+  (idee-maven-exec :goals "clean install" :build-scope 'module :also-make t))
+
+(defun idee-maven-resume-from-module ()
+  "Install the current maven module (but also make dependencies in the reactor)."
+  (interactive)
+  (idee-maven-exec :goals "clean install" :build-scope 'resume))
 
 (defun idee-maven-exec-module ()
   "Build the current maven module."
   (interactive)
-  (idee-maven-exec :goals "clean install" :module-build t))
+  (idee-maven-exec :goals "clean install" :build-scope 'module))
 
 (defun idee-maven-debug-module ()
   "Debug the current maven module."
   (interactive)
-  (-> (list :type "java"
-            :request "attach"
-            :hostName "localhost"
-            :port 8000
-            :wait-for-port t)
-      (append (list :program-to-start (idee-maven-cmd :goals "clean install" :debug t :module-build t)))
-      dap-debug))
+  (let* ((module-dir (idee-maven-module-root-dir))
+                                     (module-pom (concat module-dir pom-xml))
+                                     (artifact-id (idee-maven-pom-artifact-id module-pom)))
+    (-> (list :type "java"
+              :request "attach"
+              :hostName "localhost"
+              :port 8000
+              :projectName artifact-id
+              :wait-for-port t)
+        (append (list :program-to-start (idee-maven-cmd :goals "clean install" :debug t :build-scope 'module)))
+        dap-debug)))
 
 (defun idee-maven-surefire-debug-module ()
   "Debug the current maven module."
   (interactive)
-  (-> (list :type "java"
-            :request "attach"
-            :hostName "localhost"
-            :port 5005
-            :wait-for-port t)
-      (append (list :program-to-start (idee-maven-cmd :goals "clean install" :surefire-debug t :module-build t)))
-      dap-debug))
+  (let* ((module-dir (idee-maven-module-root-dir))
+                                     (module-pom (concat module-dir pom-xml))
+                                     (artifact-id (idee-maven-pom-artifact-id module-pom)))
+    (-> (list :type "java"
+              :request "attach"
+              :hostName "localhost"
+              :port 8000
+              :projectName artifact-id
+              :wait-for-port t)
+        (append (list :program-to-start (idee-maven-cmd :goals "clean install" :surefire-debug t :build-scope 'module)))
+        dap-debug)))
 
 (defun idee-maven-failsafe-debug-module ()
   "Debug the current maven module."
   (interactive)
-  (-> (list :type "java"
-            :request "attach"
-            :hostName "localhost"
-            :port 5005
-            :wait-for-port t)
-      (append (list :program-to-start (idee-maven-cmd :goals "clean install" :failsafe-debug t :module-build t)))
-      dap-debug))
+  (let* ((module-dir (idee-maven-module-root-dir))
+                                     (module-pom (concat module-dir pom-xml))
+                                     (artifact-id (idee-maven-pom-artifact-id module-pom)))
+    (-> (list :type "java"
+              :request "attach"
+              :hostName "localhost"
+              :port 5005
+              :projectName artifact-id
+              :wait-for-port t)
+        (append (list :program-to-start (idee-maven-cmd :goals "clean install" :failsafe-debug t :build-scope 'module)))
+        dap-debug)))
 
 (defun idee-maven-exec-from-history ()
   "Prompt the user to execute previous maven build from history."
@@ -156,7 +175,7 @@
   (let ((maven-command (completing-read "Maven command:" idee-maven-exec-history)))
     (idee-with-project-shell (insert maven-command))))
 
-(cl-defun idee-maven-cmd (&key goals debug surefire-debug failsafe-debug module-build also-make)
+(cl-defun idee-maven-cmd (&key goals debug surefire-debug failsafe-debug build-scope also-make)
   (idee-with-project-settings "maven.el" idee-maven-profiles
                               (let* ((module-dir (idee-maven-module-root-dir))
                                      (module-pom (concat module-dir pom-xml))
@@ -168,8 +187,10 @@
                                 (add-to-list 'mvn-cmd-builder goals)
                                 (if profiles-opt
                                     (add-to-list 'mvn-cmd-builder profiles-opt))
-                                (if (and artifact-id module-build)
-                                    (add-to-list 'mvn-cmd-builder (format "-pl :%s" artifact-id)))
+                                (if artifact-id
+                                    (cond
+                                      ((equal 'resume build-scope) (add-to-list 'mvn-cmd-builder (format "-rf :%s" artifact-id)))
+                                      ((equal 'module build-scope) (add-to-list 'mvn-cmd-builder (format "-pl :%s" artifact-id)))))
                                 (if also-make
                                     (add-to-list 'mvn-cmd-builder "-am"))
                                 (if surefire-debug
@@ -178,10 +199,10 @@
                                     (add-to-list 'mvn-cmd-builder "-Dmaven.failsafe.debug"))
                                 (string-join (reverse mvn-cmd-builder) " "))))
 
-(cl-defun idee-maven-exec (&key goals debug surefire-debug failsafe-debug module-build also-make)
+(cl-defun idee-maven-exec (&key goals debug surefire-debug failsafe-debug build-scope also-make)
   "Build the current maven module."
   (interactive)
-  (let ((cmd (idee-maven-cmd :goals goals :debug debug :surefire-debug surefire-debug :failsafe-debug failsafe-debug :module-build module-build :also-make also-make)))
+  (let ((cmd (idee-maven-cmd :goals goals :debug debug :surefire-debug surefire-debug :failsafe-debug failsafe-debug :build-scope build-scope :also-make also-make)))
     (add-to-list 'idee-maven-exec-history cmd)
     (idee-with-project-shell 
         (insert cmd))))
@@ -216,6 +237,7 @@ or empty string other wise."
         ------------------------------------------------------------------------------------
         _pc_: clean                  _mc_: clean              _to_: offline     _h_: from history
         _pi_: install                _mi_: install            _tt_: tests
+                                  _mrf_: resume from
                                   _mai_: also install
         _pd_: debug                  _md_: debug
        _psd_: surfire debug         _msd_: surefire debug
@@ -230,6 +252,7 @@ or empty string other wise."
 
   ("mc" idee-maven-clean-module)
   ("mi" idee-maven-install-module)
+  ("mrf" idee-maven-resume-from-module)
   ("mai" idee-maven-also-install-module)
   ("md" idee-maven-debug-module)
   ("msd" idee-maven-surefire-debug-module)
