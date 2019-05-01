@@ -43,11 +43,13 @@
 (defvar idee-output-enabled t)
 (defvar idee-repl-enabled t)
 (defvar idee-diagnostics-enabled t)
+(defvar idee-errors-enabled t)
 (defvar idee-messages-enabled t)
+(defvar idee-grep-enabled nil)
 (defvar idee-bottom-buffer-command 'projectile-run-eshell)
 
 ;; A list with all component switches that are meant to be placed in the bottom
-(defvar idee-bottom-area-switch-list '(idee-cli-enabled idee-repl-enabled idee-diagnostics-enabled idee-messages-enabled))
+(defvar idee-bottom-area-switch-list '(idee-cli-enabled idee-repl-enabled idee-diagnostics-enabled idee-errors-enabled idee-messages-enabled idee-grep-enabled))
 
 ;;
 ;; Functions
@@ -56,7 +58,7 @@
 
 (defun idee-project-open-view()
   "Switch to a traditional IDE view for the buffer.  (project tree, main buffer & terminal)."
-  (interactive)
+ (interactive)
   (idee-ide-view)
   (idee-jump-to-non-ide-window)
   (magit-status-internal (projectile-project-root)))
@@ -74,7 +76,8 @@
         (setq mode-line-format "")))
   (idee-jump-to-non-ide-window)
   ;; bottom area
-  (cond (idee-cli-enabled (idee-cli-subview))
+  (cond (idee-grep-enabled (idee-grep-subview))
+        (idee-cli-enabled (idee-cli-subview))
         (idee-diagnostics-enabled (idee-diagnostics-subview))
         (idee-errors-enabled (idee-errors-subview))
         (idee-messages-enabled (idee-messages-subview))))
@@ -86,7 +89,7 @@
   (evil-window-set-height 12))
 
 (defun idee-diagnostics-subview ()
-  (flymake-show-diagnostics-buffer)
+ (flymake-show-diagnostics-buffer)
   (other-window 1)
   (minimize-window)
   (evil-window-set-height 12))
@@ -100,6 +103,18 @@
 (defun idee-messages-subview ()
   (split-and-follow-vertically)
   (switch-to-buffer "*Messages*")
+  (minimize-window)
+ (evil-window-set-height 12))
+
+ (defun idee-grep-subview ()
+  (if (get-buffer "*grep*")
+      (progn
+        (split-and-follow-vertically)
+        (switch-to-buffer "*grep*"))
+    (progn
+      (projectile-grep)
+      (other-window 1)
+      (get-buffer-window "*grep*")))
   (minimize-window)
   (evil-window-set-height 12))
 
@@ -238,9 +253,12 @@ VISITED is an optional list with windows already visited."
   (get-buffer-window "*Flycheck errors*"))
 
 (defun idee-messages-visible-p ()
-  "Predicate that returns true if cli is visible."
+  "Predicate that returns true if messages is visible."
   (get-buffer-window "*Messages*"))
 
+(defun idee-grep-visible-p ()
+  "Predicate that returns true if grep is visible."
+  (get-buffer-window "*grep*"))
 ;;
 ;; Macros
 ;;
@@ -290,12 +308,31 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 ;;
 ;; Create component view functions
 ;;
-(idee--create-view-component "errors" idee-errors-visible-p idee-errors-enabled idee-bottom-area-switch-list 0)
+(idee--create-view-component "errors" idee-errors-visible-p idee-rrors-enabled idee-bottom-area-switch-list 0)
 (idee--create-view-component "diagnostics" idee-diagnostics-visible-p idee-diagnostics-enabled idee-bottom-area-switch-list 0)
 (idee--create-view-component "cli"  idee-cli-visible-p idee-cli-enabled idee-bottom-area-switch-list 0)
 (idee--create-view-component "messages"  idee-messages-visible-p idee-messages-enabled idee-bottom-area-switch-list 0)
+(idee--create-view-component "grep"  idee-grep-visible-p idee-grep-enabled idee-bottom-area-switch-list 0)
 
+(defun idee-kill-grep-and-window ()
+  "Kill the grep window and buffer.  Return t if grep window was found."
+  (let ((buffer (current-buffer)))
+    (if (equal "*grep*" (buffer-name buffer))
+        (progn
+          (kill-buffer-and-window)
+          t)
+      nil)))
+
+(defadvice quit-window (around idee-on-quit-window
+                                      (&optional kill window))
+  "Handles things when quiting window."
+  (cond
+   ((idee-kill-grep-and-window) t)
+   (t ad-do-it)))
+
+(ad-activate 'quit-window)
 (advice-add 'projectile-switch-project :after 'idee-project-open-view)
 
 (provide 'idee-views)
 ;;; idee-views.el ends here
+        

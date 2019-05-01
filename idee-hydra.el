@@ -130,7 +130,7 @@
   ("<" idee-jump-back)
   ("." idee-back-push)
 
-  ("g" idee-grep)
+  ("g" idee-toggle-grep)
   ("f" idee-find-file)
   ("v" idee-find-variable)
 
