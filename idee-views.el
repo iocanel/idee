@@ -76,6 +76,7 @@
   ;; bottom area
   (cond (idee-cli-enabled (idee-cli-subview))
         (idee-diagnostics-enabled (idee-diagnostics-subview))
+        (idee-errors-enabled (idee-errors-subview))
         (idee-messages-enabled (idee-messages-subview))))
 
 (defun idee-cli-subview ()
@@ -86,6 +87,12 @@
 
 (defun idee-diagnostics-subview ()
   (flymake-show-diagnostics-buffer)
+  (other-window 1)
+  (minimize-window)
+  (evil-window-set-height 12))
+
+(defun idee-errors-subview ()
+  (flycheck-list-errors)
   (other-window 1)
   (minimize-window)
   (evil-window-set-height 12))
@@ -226,6 +233,10 @@ VISITED is an optional list with windows already visited."
   "Predicate that returns true if diagnostics is visible."
   (get-buffer-window (flymake--diagnostics-buffer-name)))
 
+(defun idee-errors-visible-p ()
+  "Predicate that returns true if errors is visible."
+  (get-buffer-window "*Flycheck errors*"))
+
 (defun idee-messages-visible-p ()
   "Predicate that returns true if cli is visible."
   (get-buffer-window "*Messages*"))
@@ -279,6 +290,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 ;;
 ;; Create component view functions
 ;;
+(idee--create-view-component "errors" idee-errors-visible-p idee-errors-enabled idee-bottom-area-switch-list 0)
 (idee--create-view-component "diagnostics" idee-diagnostics-visible-p idee-diagnostics-enabled idee-bottom-area-switch-list 0)
 (idee--create-view-component "cli"  idee-cli-visible-p idee-cli-enabled idee-bottom-area-switch-list 0)
 (idee--create-view-component "messages"  idee-messages-visible-p idee-messages-enabled idee-bottom-area-switch-list 0)

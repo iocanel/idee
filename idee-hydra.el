@@ -100,7 +100,8 @@
          _S_ave all    toggle tab _w_idth     _>_: forward                                               _t_: toggle tree
          _C_lose       insert _s_nippet       _._: set mark                                              _c_: toggle cli
          _B_uild       select _h_eaders                                                                _d_: toggle diagnostics
-         _V_cs         apply _H_eader                                                                  _m_: toggle messages
+         _V_cs         apply _H_eader                                                                  _e_: toggle errors                                                                                                       
+                                                                                                   _m_: toggle messages
 
 "
 
@@ -143,6 +144,7 @@
   ("t" idee-toggle-tree)
   ("c" idee-toggle-cli)
   ("d" idee-toggle-diagnostics)
+  ("e" idee-toggle-errors)
   ("m" idee-toggle-messages)
   ("," idee-mode-hydra "mode")
   ("q" nil "quit"))
