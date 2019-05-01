@@ -65,6 +65,10 @@
   "Clean the current maven project."
   (interactive)
   (idee-maven-exec :goals "clean"))
+(defun idee-maven-package-project ()
+  "Package the current maven project."
+  (interactive)
+  (idee-maven-exec :goals "clean package"))
 
 (defun idee-maven-install-project ()
   "Install the current maven project."
@@ -103,6 +107,11 @@
             :wait-for-port t)
       (append (list :program-to-start (idee-maven-cmd :goals "clean install" :failsafe-debug t)))
       dap-debug))
+
+(defun idee-maven-package-module ()
+  "Package the current maven module."
+  (interactive)
+  (idee-maven-exec :goals "clean package" :build-scope 'module))
 
 (defun idee-maven-install-module ()
   "Install the current maven module."
@@ -236,7 +245,8 @@ or empty string other wise."
  Maven:   Project                     Module               Toggle          Execute 
         ------------------------------------------------------------------------------------
         _pc_: clean                  _mc_: clean              _to_: offline     _h_: from history
-        _pi_: install                _mi_: install            _tt_: tests
+        _pp_: package                _mp_: package            _tt_: tests
+        _pi_: install                _mi_: install   
                                   _mrf_: resume from
                                   _mai_: also install
         _pd_: debug                  _md_: debug
@@ -245,12 +255,14 @@ or empty string other wise."
 
        "
   ("pc" idee-maven-clean-project)
+  ("pp" idee-maven-package-project)
   ("pi" idee-maven-install-project)
   ("pd" idee-maven-debug-project)
   ("psd" idee-maven-surefire-debug-project)
   ("pfd" idee-maven-failsafe-debug-project)
 
   ("mc" idee-maven-clean-module)
+  ("mp" idee-maven-package-module)
   ("mi" idee-maven-install-module)
   ("mrf" idee-maven-resume-from-module)
   ("mai" idee-maven-also-install-module)
