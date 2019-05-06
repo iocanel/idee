@@ -26,28 +26,56 @@
     (setf (treemacs-current-workspace) workspace)
     ;; BEGIN: Copy and paste from treemacs-switch-workspace
     (let ((window-visible? nil)
-           (buffer-exists? nil))
-       (pcase (treemacs-current-visibility)
-         ('visible
-          (setq window-visible? t
-                buffer-exists? t))
-         ('exists
-          (setq buffer-exists? t)))
-       (when window-visible?
-         (delete-window (treemacs-get-local-window)))
-       (when buffer-exists?
-         (kill-buffer (treemacs-get-local-buffer)))
-       (when buffer-exists?
-         (let ((treemacs-follow-after-init nil)
-               (treemacs-follow-mode nil))
-           (treemacs-select-window)))
-       (when (not window-visible?)
-         (bury-buffer)))
-     (treemacs-pulse-on-success "Selected workspace %s."
-       (propertize (treemacs-workspace->name workspace)))
-     ;; END
-     (idee-treemacs-open-project-workspace workspace)))
+          (buffer-exists? nil))
+      (pcase (treemacs-current-visibility)
+        ('visible
+         (setq window-visible? t
+               buffer-exists? t))
+        ('exists
+         (setq buffer-exists? t)))
+      (when window-visible?
+        (delete-window (treemacs-get-local-window)))
+      (when buffer-exists?
+        (kill-buffer (treemacs-get-local-buffer)))
+      (when buffer-exists?
+        (let ((treemacs-follow-after-init nil)
+              (treemacs-follow-mode nil))
+          (treemacs-select-window)))
+      (when (not window-visible?)
+        (bury-buffer)))
+    (treemacs-pulse-on-success "Selected workspace %s."
+      (propertize (treemacs-workspace->name workspace)))
+    ;; END
+    (idee-treemacs-open-project-workspace workspace)))
 
+(defun idee-treemacs-switch-to-project-workspace ()
+    "Select a different workspace for treemacs."
+    (interactive)
+    (pcase (treemacs-do-switch-workspace)
+      ('only-one-workspace
+       (treemacs-pulse-on-failure "There are no other workspaces to select."))
+      (`(success ,workspace)
+       (let ((window-visible? nil)
+             (buffer-exists? nil))
+         (pcase (treemacs-current-visibility)
+           ('visible
+            (setq window-visible? t
+                  buffer-exists? t))
+           ('exists
+            (setq buffer-exists? t)))
+         (when window-visible?
+           (delete-window (treemacs-get-local-window)))
+         (when buffer-exists?
+           (kill-buffer (treemacs-get-local-buffer)))
+         (when buffer-exists?
+           (let ((treemacs-follow-after-init nil)
+                 (treemacs-follow-mode nil))
+             (treemacs-select-window)))
+         (when (not window-visible?)
+           (bury-buffer)))
+       (treemacs-pulse-on-success "Selected workspace %s."
+         (propertize (treemacs-workspace->name workspace))
+         (idee-treemacs-open-project-workspace workspace)))))
 
 (defun idee-treemacs-open-project-workspace (workspace)
   "Open the first project of the WORKSPACE."
@@ -59,7 +87,39 @@
     (idee-refresh-view)
     (idee-jump-to-non-ide-window)))
 
-(advice-add 'treemacs-switch-workspace :after (lambda () (idee-treemacs-open-project-workspace (treemacs-current-workspace))))
+(defhydra treemacs-hydra (:hint nil :exit t)
+  ;; The '_' character is not displayed. This affects columns alignment.
+  ;; Remove s many spaces as needed to make up for the '_' deficit.
+  "
+                ^Workspaces^             ^Toggles^                 ^Windows^                     ^Navigation^
+                ^^^^^^-----------------------------------------------------------------------------------------
+                _N_: new workspace       _t_: tree view toggle     _s_: select window            _b_: bookmark
+                _S_: switch workspace    _p_: projectile toggle    _d_: delete other windows     _f_: find file
+                _R_: remove workspace    _d_: show hidden files                                  _T_: find tag
+                _E_: edit workspace      _c_: collapse dirs
+                _F_: finish edit         _g_: magit
+               "
+                                        ; Toggles
+  ("N" idee-treemacs-create-and-switch-to-workspace)
+  ("R" treemacs-remove-workspace)
+  ("S" idee-treemacs-switch-to-project-workspace)
+  ("E" treemacs-edit-workspaces)
+  ("F" treemacs-finish-edit)
+  ("t" treemacs-toggle)
+  ("p" treemacs-projectile-toggle)
+  ("d" treemacs-toggle-show-dot-files)
+  ("c" idee-treemacs-collapse-dir-toggle)
+  ("g" magit-status)
+                                        ; Windows
+  ("s" treemacs-select-window)
+  ("d" treemacs-delete-other-windows)
+                                        ; Navifation
+  ("b" treemacs-bookmark)
+  ("f" treemacs-find-file)
+  ("T" treemacs-find-tag)
+  ("q" nil "quit"))
+
+(evil-leader/set-key "t" 'treemacs-hydra/body)
 
 (provide 'idee-treemacs)
 ;;; idee-treemacs.el ends here.

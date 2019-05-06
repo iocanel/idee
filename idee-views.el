@@ -332,6 +332,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 
 (ad-activate 'quit-window)
 (advice-add 'projectile-switch-project :after 'idee-project-open-view)
+(advice-add 'treemacs-switch-workspace :after 'idee-project-open-view)
 
 (provide 'idee-views)
 ;;; idee-views.el ends here
