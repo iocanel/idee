@@ -278,29 +278,15 @@ or empty string other wise."
 
 ;;; Project Factory
 (defun idee-new-maven-from-archetype-project ()
-  "Create a new project from maven."
+  "Create a new maven from archetype project."
   (interactive)
   (let* ((group-id (read-string "Group Id:"))
          (artifact-id (read-string "Artifact Id:"))
-         (version (read-string "Version:"))
-         (recomended-dir (concat (file-name-as-directory default-directory) artifact-id))
-         (temp-dir (concat temporary-file-directory "mvn-archetype-" (format "%06x-%06x" (random (expt 16 6)) (random (expt 16 6)))))
-         (generated-dir (concat (file-name-as-directory temp-dir) artifact-id))
+         (version (read-string "Version:" "0.1-SNAPSHOT"))
          (target-dir (idee--select-new-project-dir))
-         (parent-dir (file-name-directory (directory-file-name target-dir)))
-         (dir-name (substring target-dir (length parent-dir))))
-
-    (make-directory temp-dir t)
-    (setq default-directory temp-dir)
-    (shell-command (format "mvn archetype:generate -DgroupId=%s -DartifactId=%s -Dversion=%s -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false" group-id artifact-id version))
-    (shell-command (format "mv %s/* %s" generated-dir target-dir))
-    (write-region "" nil (concat (file-name-as-directory target-dir) ".projectile"))
-    (projectile-add-known-project target-dir)
-    (setq projectile-project-root target-dir)
-    (projectile-switch-project-by-name target-dir)
-    (revert-buffer)
-    (dired target-dir)
-    (idee-ide-view)))
+         (generate-command (format "mvn archetype:generate -DgroupId=%s -DartifactId=%s -Dversion=%s -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false" group-id artifact-id version))
+         (cleanup-command (format "mv %s/* . && rm -r %s" artifact-id artifact-id)))
+    (idee-create-project-with-shell target-dir generate-command cleanup-command)))
 
 (defconst idee-maven-project-factory
   (make-idee-project-factory

@@ -56,29 +56,10 @@
   "Create a new golang module."
   (interactive)
   (let* ((module-name (read-string "Module:" "example.com/m"))
-         (recomended-dir (concat (file-name-as-directory default-directory) module-name))
-         (temp-dir (concat temporary-file-directory "golang-" (format "%06x-%06x" (random (expt 16 6)) (random (expt 16 6)))))
-         (generated-dir (concat (file-name-as-directory temp-dir) module-name))
          (target-dir (idee--select-new-project-dir))
-         (parent-dir (file-name-directory (directory-file-name target-dir)))
-         (dir-name (substring target-dir (length parent-dir)))
          (generate-command (format "go mod init %s" module-name)))
-
-    (make-directory temp-dir t)
-    (setq default-directory temp-dir)
-
-    (let ((progress-reporter (make-progress-reporter "Calling go mod init..." 0  100)))
-    (shell-command generate-command)
-       (progress-reporter-done progress-reporter))
-    
-    (shell-command (format "mv %s/* %s" temp-dir target-dir))
-    (write-region "" nil (concat (file-name-as-directory target-dir) ".projectile"))
-    (projectile-add-known-project target-dir)
-    (setq projectile-project-root target-dir)
-    (projectile-switch-project-by-name target-dir)
-    (revert-buffer)
-    (dired target-dir)
-    (idee-ide-view)))
+         (cleanup-command (format "mv %s/* . && rm -r %s" artifact-id artifact-id)))
+    (idee-create-project-with-shell target-dir generate-command cleanup-command))
 
 (defconst idee-golang-module-factory
   (make-idee-project-factory

@@ -39,26 +39,10 @@
          (artifact-id (read-string "Artifact Id:"))
          (version (read-string "Version:" "0.1-SNAPSHOT"))
          (endpoint (read-string "Endpoint:" "/hello"))
-         (recomended-dir (concat (file-name-as-directory default-directory) artifact-id))
-         (temp-dir (concat temporary-file-directory "quarkus-" (format "%06x-%06x" (random (expt 16 6)) (random (expt 16 6)))))
-         (generated-dir (concat (file-name-as-directory temp-dir) artifact-id))
          (target-dir (idee--select-new-project-dir))
-         (parent-dir (file-name-directory (directory-file-name target-dir)))
-         (dir-name (substring target-dir (length parent-dir)))
-         (generate-command (format "mvn io.quarkus:quarkus-maven-plugin:%s:create -DprojectGroupId=%s -DprojectArtifactId=%s -DprojectVersion=%s -DclassName=%s.Endpoint -Dendpoint=%s" idee-quarkus-version group-id artifact-id version group-id
-                           endpoint)))
-
-    (make-directory temp-dir t)
-    (setq default-directory temp-dir)
-    (shell-command generate-command)
-    (shell-command (format "mv %s/* %s" temp-dir target-dir))
-    (write-region "" nil (concat (file-name-as-directory target-dir) ".projectile"))
-    (projectile-add-known-project target-dir)
-    (setq projectile-project-root target-dir)
-    (projectile-switch-project-by-name target-dir)
-    (revert-buffer)
-    (dired target-dir)
-    (idee-ide-view)))
+         (generate-command (format "mvn io.quarkus:quarkus-maven-plugin:%s:create -DprojectGroupId=%s -DprojectArtifactId=%s -DprojectVersion=%s -DclassName=%s.Endpoint -Dendpoint=%s" idee-quarkus-version group-id artifact-id version group-id endpoint))
+         (cleanup-command (format "mv %s/* . && rm -r %s" artifact-id artifact-id)))
+    (idee-create-project-with-shell target-dir generate-command cleanup-command)))
 
 (defconst idee-quarkus-rest-project-factory
   (make-idee-project-factory
@@ -69,4 +53,4 @@
 (add-to-list 'idee-project-factories-list idee-quarkus-rest-project-factory)
 
 (provide 'idee-quarkus)
-;;; idee-quarkus.el ends here.
+;;; idee-quarkus.el ends here

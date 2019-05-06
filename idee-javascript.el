@@ -83,6 +83,21 @@
     (dired target-dir)
     (idee-ide-view)))
 
+(defun idee-new-npm-project ()
+  "Create a new npm project."
+  (interactive)
+  (let* ((initializer (read-string "Intializer:" "react-app"))
+         (recomended-dir (concat (file-name-as-directory default-directory) initializer))
+         (temp-dir (concat temporary-file-directory "npm-" (format "%06x-%06x" (random (expt 16 6)) (random (expt 16 6)))))
+         (generated-dir (concat (file-name-as-directory temp-dir) initializer))
+         (target-dir (idee--select-new-project-dir))
+         (parent-dir (file-name-directory (directory-file-name target-dir)))
+         (dir-name (substring target-dir (length parent-dir)))
+         (generate-command (format "npm init %s ." initializer)))
+
+    (idee-create-project-with-shell target-dir generate-command)))
+
+
 (defconst idee-npm-project-factory
   (make-idee-project-factory
    :name "Npm"

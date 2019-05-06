@@ -124,19 +124,6 @@
           (let ((f (idee-project-settings ,settings-file)))
             (when (and f (file-exists-p f)) (load-file f))) ,@body))
 
-(defmacro idee-with-project-shell (&rest body)
-  "Load a SETTINGS-FILE as local OPTIONS and evaluate BODY."
-  (declare (indent 1) (debug t))
-  `(let ()
-  (idee-switch-cli-on) 
-  (with-current-buffer (format "*eshell %s*" (projectile-project-name))
-    (let ((comint-scroll-to-bottom-on-output t))
-      (eshell/clear-scrollback)
-      (eshell-send-input)
-      (eshell-return-to-prompt)
-      ,@body
-      (eshell-send-input)))))
-
 (defmacro idee-toggle (bool)
   "Toggle the specified BOOL variable."
   (list 'setq bool (list 'not bool)))

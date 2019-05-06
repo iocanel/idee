@@ -1,4 +1,4 @@
-;;; idee-projects.el --- Project Factories
+;;;; idee-projects.el --- Project Factories
 
 ;; Copyright (C) 2018 Ioannis Canellos
 ;;     
@@ -67,7 +67,7 @@
     (idee-jump-to-non-ide-window)))
 
 (defun idee--select-new-project-dir()
-  "Select a new project directory."
+ "Select a new project directory."
   (interactive)
   (let ((project-dir (car (find-file-read-args "Select project directory:" nil))))
     (make-directory project-dir t)
@@ -85,6 +85,35 @@
 (defun idee--project-factory-entry (f)
   "Create an entry for the specified project factory F."
   (concat (idee-project-factory-name f) " - " (idee-project-factory-description f)))
+
+(defun idee-create-project-with-shell (path &rest commands)
+  "Create a new project with in the specified PATH and the specified COMMANDS."
+  (let ((dired-auto-revert-buffer t))
+    (make-directory path t)
+    (setq default-directory path)
+    (shell-command "git init")
+    (projectile-add-known-project path)
+    (setq projectile-project-root path)
+    (projectile-switch-project-by-name path)
+    (dired path)
+    (auto-revert-mode 1)
+    (idee-ide-view)
+    (idee-switch-cli-on)
+    (idee-refresh-view)
+    (idee-project-shell-command commands)
+    (idee-jump-to-non-ide-window)
+    ))
+
+(defun idee-revert-visible-dired-buffers ()
+  "Revert all visible dired buffers."
+  (interactive)
+  (dolist (buffer (buffer-list))
+    (let* ((name (buffer-name buffer))
+           (visible (get-buffer-window name)))
+      (if visible
+          (progn
+            (set-buffer buffer)
+            (when (derived-mode-p 'dired-mode) (revert-buffer)))))))
 
 (provide 'idee-projects)
 ;;; idee-projects.el ends here
