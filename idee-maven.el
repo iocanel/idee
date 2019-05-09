@@ -61,10 +61,20 @@
           (car (cdr (cdr (assoc 'artifactId project))))))
     nil))
 
+(defun idee-maven-edit-project-pom-xml ()
+  "Edit the current project pom."
+  (interactive)
+  (let* ((project-pom (concat (projectile-project-root) pom-xml)))
+    (if (file-exists-p project-pom)
+        (progn (idee-jump-to-non-ide-window)
+               (find-file project-pom)
+               (idee-refresh-view)))))
+
 (defun idee-maven-clean-project ()
   "Clean the current maven project."
   (interactive)
   (idee-maven-exec :goals "clean"))
+
 (defun idee-maven-package-project ()
   "Package the current maven project."
   (interactive)
@@ -107,6 +117,21 @@
             :wait-for-port t)
       (append (list :program-to-start (idee-maven-cmd :goals "clean install" :failsafe-debug t)))
       dap-debug))
+
+(defun idee-maven-clean-module ()
+  "Clean the current maven module."
+  (interactive)
+  (idee-maven-exec :goals "clean" :build-scope 'module))
+
+(defun idee-maven-edit-module-pom-xml ()
+  "Edit the current maven module pom."
+  (interactive)
+  (let* ((module-dir (idee-maven-module-root-dir))
+         (module-pom (concat module-dir pom-xml)))
+    (if  (file-exists-p module-pom)
+        (progn (idee-jump-to-non-ide-window)
+               (find-file module-pom)
+               (idee-refresh-view)))))
 
 (defun idee-maven-package-module ()
   "Package the current maven module."
@@ -182,7 +207,7 @@
   "Prompt the user to execute previous maven build from history."
   (interactive)
   (let ((maven-command (completing-read "Maven command:" idee-maven-exec-history)))
-    (idee-with-project-shell (insert maven-command))))
+    (idee-with-project-shell maven-command)))
 
 (cl-defun idee-maven-cmd (&key goals debug surefire-debug failsafe-debug build-scope also-make)
   (idee-with-project-settings "maven.el" idee-maven-profiles
@@ -213,8 +238,7 @@
   (interactive)
   (let ((cmd (idee-maven-cmd :goals goals :debug debug :surefire-debug surefire-debug :failsafe-debug failsafe-debug :build-scope build-scope :also-make also-make)))
     (add-to-list 'idee-maven-exec-history cmd)
-    (idee-with-project-shell 
-        (insert cmd))))
+    (idee-with-project-shell cmd)))
 
 ;;; Toggles
 (defun idee-maven-toggle-offline ()
@@ -247,6 +271,7 @@ or empty string other wise."
         _pc_: clean                  _mc_: clean              _to_: offline     _h_: from history
         _pp_: package                _mp_: package            _tt_: tests
         _pi_: install                _mi_: install   
+        _po_: edit pom               _mo_: edit pom
                                   _mrf_: resume from
                                   _mai_: also install
         _pd_: debug                  _md_: debug
@@ -254,6 +279,7 @@ or empty string other wise."
        _pfd_: failsafe debug        _mfd_: failsafe debug
 
        "
+  ("po" idee-maven-edit-project-pom-xml)
   ("pc" idee-maven-clean-project)
   ("pp" idee-maven-package-project)
   ("pi" idee-maven-install-project)
@@ -261,6 +287,7 @@ or empty string other wise."
   ("psd" idee-maven-surefire-debug-project)
   ("pfd" idee-maven-failsafe-debug-project)
 
+  ("mo" idee-maven-edit-module-pom-xml)
   ("mc" idee-maven-clean-module)
   ("mp" idee-maven-package-module)
   ("mi" idee-maven-install-module)
