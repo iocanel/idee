@@ -259,6 +259,11 @@ VISITED is an optional list with windows already visited."
 (defun idee-grep-visible-p ()
   "Predicate that returns true if grep is visible."
   (get-buffer-window "*grep*"))
+
+(defun idee-after-next-error ()
+  "Refresh the view each time next error is caled."
+  (if next-error-last-buffer
+      (idee-refresh-view)))
 ;;
 ;; Macros
 ;;
@@ -333,6 +338,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 (ad-activate 'quit-window)
 (advice-add 'projectile-switch-project :after 'idee-project-open-view)
 (advice-add 'treemacs-switch-workspace :after 'idee-project-open-view)
+(advice-add 'next-error :after 'idee-after-next-error)
 
 (provide 'idee-views)
 ;;; idee-views.el ends here
