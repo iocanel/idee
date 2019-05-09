@@ -207,7 +207,7 @@
   "Prompt the user to execute previous maven build from history."
   (interactive)
   (let ((maven-command (completing-read "Maven command:" idee-maven-exec-history)))
-    (idee-with-project-shell maven-command)))
+    (idee-eshell-project-command-enqueue maven-command)))
 
 (cl-defun idee-maven-cmd (&key goals debug surefire-debug failsafe-debug build-scope also-make)
   (idee-with-project-settings "maven.el" idee-maven-profiles
@@ -238,7 +238,7 @@
   (interactive)
   (let ((cmd (idee-maven-cmd :goals goals :debug debug :surefire-debug surefire-debug :failsafe-debug failsafe-debug :build-scope build-scope :also-make also-make)))
     (add-to-list 'idee-maven-exec-history cmd)
-    (idee-with-project-shell cmd)))
+    (idee-eshell-project-command-enqueue cmd)))
 
 ;;; Toggles
 (defun idee-maven-toggle-offline ()

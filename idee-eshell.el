@@ -94,10 +94,23 @@
           (setq should-ignore (equal 'ignore cmd))))
 
     (when (not should-ignore)
-      (when cmd (idee-with-project-shell cmd)))
+      (when cmd (idee-eshell-project-command-execute cmd)))
     should-ignore))
 
-(defun idee-with-project-shell (command)
+(defmacro idee-with-project-shell (&rest body)
+  "Load a SETTINGS-FILE as local OPTIONS and evaluate BODY."
+  (declare (indent 1) (debug t))
+  `(let ()
+  (idee-switch-cli-on) 
+  (with-current-buffer (format "*eshell %s*" (projectile-project-name))
+    (let ((comint-scroll-to-bottom-on-output t))
+     (eshell/clear-scrollback)
+      (eshell-send-input)
+      (eshell-return-to-prompt)
+      ,@body
+      (eshell-send-input)))))
+
+(defun idee-eshell-project-command-execute (command)
   "Run a single COMMAND in the current project shell."
   (idee-switch-cli-on)
   (with-current-buffer (format "*eshell %s*" (projectile-project-name))
@@ -106,7 +119,7 @@
       (idee-eshell-insert command)
       (eshell-send-input))))
 
-(defun idee-project-shell-command (commands)
+(defun idee-eshell-project-command-enqueue (commands)
   "Execute COMMANDS on eshell."
   (idee-switch-cli-on)
   (with-current-buffer (format "*eshell %s*" (projectile-project-name))

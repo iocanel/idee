@@ -102,7 +102,7 @@
     (idee-ide-view)
     (idee-switch-cli-on)
     (idee-refresh-view)
-    (idee-project-shell-command commands)
+    (idee-eshell-project-command-enqueue commands)
     (idee-jump-to-non-ide-window)))
 
 (defun idee-revert-visible-dired-buffers ()
