@@ -23,6 +23,8 @@
 
 ;;; Code:
 
+(require 'json)
+
 (defconst package-json "package.json")
 (defconst jsconfig-json "jsconfig.json")
 (defconst tsconfig-json "tsconfig.json")
@@ -116,9 +118,16 @@
 
 (defun idee-visitor-javascript (root)
   "Check if a javascript project is available under the specified ROOT."
-  (when (idee-javascript-project-p root) (idee-javascript-enable)))
+  (when (idee-javascript-project-p root)
+    (setq idee-project-version (idee-javascript-pacakge-json-version (concat root package-json)))
+    (idee-javascript-enable)))
 
 (add-to-list 'idee-project-visitors 'idee-visitor-javascript)
+
+(defun idee-javascript-package-json-version (p-json)
+  "Get the project version from P-JSON."
+  (let* ((p (json-read-file p-json)))
+    (car (gethash "version" p))))
 
 ;; Hooks
 (add-hook 'javascipt-mode-hook 'idee-javascript-hook)
@@ -126,4 +135,4 @@
 (add-hook 'typescirpt-mode-hook 'idee-javascript-hook)
 
 (provide 'idee-javascript)
-;;; idee-javascript.el ends here.
+;;; idee-javascript.el ends here

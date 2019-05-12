@@ -41,9 +41,10 @@
   :description "Create an elisp project based on Cask."
   :func ()))
 
+(defconst idee-project-root-markers '(".idee" ".projectile" ".git"))
 (defvar idee-project-factories-list `(,idee-cask-project-factory))
 
-(defconst idee-project-root-markers '(".idee" ".projectile" ".git"))
+(defvar idee-project-version nil)
 
 (defun idee-project-root-dir (&optional f)
   "Find the directory of the module that owns the source file F."
@@ -115,6 +116,10 @@
           (progn
             (set-buffer buffer)
             (when (derived-mode-p 'dired-mode) (revert-buffer)))))))
+
+(defun idee-project-version()
+  "Return the project version variable."
+  idee-project-version)
 
 (provide 'idee-projects)
 ;;; idee-projects.el ends here

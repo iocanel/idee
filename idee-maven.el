@@ -61,6 +61,17 @@
           (car (cdr (cdr (assoc 'artifactId project))))))
     nil))
 
+(defun idee-maven-pom-version (pom)
+  "Get the version of the specified POM."
+  (if (file-exists-p pom)
+      (with-temp-buffer
+        (insert-file-contents pom)
+        (let* ((xml (libxml-parse-xml-region (point-min) (point-max)))
+               (p (assoc 'project xml))
+               (project (if p p (cdr xml))))
+          (car (cdr (cdr (assoc 'version project))))))
+    nil))
+
 (defun idee-maven-edit-project-pom-xml ()
   "Edit the current project pom."
   (interactive)
@@ -322,6 +333,21 @@ or empty string other wise."
    :func 'idee-new-maven-from-archetype-project))
 
 (add-to-list 'idee-project-factories-list idee-maven-project-factory)
+
+;;; Project Visitor
+(defun idee-maven-project-p (root)
+  "Check if ROOT is the root path of a java project."
+  (seq-filter (lambda (x)
+                (or (equal pom-xml x)
+              (directory-files root)))))
+
+(defun idee-visitor-maven (root)
+  "Check if a java project is available under the specified ROOT."
+  (let ((project-pom (concat root pom-xml)))
+    (when (file-exists-p project-pom)
+         (setq idee-project-version (idee-maven-pom-version project-pom)))))
+
+(add-to-list 'idee-project-visitors 'idee-visitor-maven)
 
 (provide 'idee-maven)
 ;;; idee-maven.el ends here
