@@ -38,7 +38,7 @@
                                (load-in-progress load-file-name)
                                ((and (boundp 'byte-compile-current-file) byte-compile-current-file)
                                 byte-compile-current-file)
-                               (:else (buffer-file-name))))))
+                               (:else (buffer-file-name)))))))
 
 ;;
 ;; State
