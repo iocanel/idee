@@ -18,8 +18,9 @@
 (defvar idee-eshell-command-queue (queue-create))
 (defvar idee-eshell-command-running nil)
 
-(defcustom idee-eshell-demo-it-enabled nil "Demo-it for eshell feature toggle" :group 'idee :type 'string)
-(defcustom idee-eshell-demo-it-speed :fast "Demo-it for eshell typing speed" :group 'idee   :type '(choice (const :tag "fast" :fast)
+(defcustom idee-eshell-cat-alias-enabled t "/dev/clip aware cat alias toggle " :group 'idee-eshell :type 'boolean)
+(defcustom idee-eshell-demo-it-enabled nil "Demo-it for eshell feature toggle" :group 'idee-eshell :type 'string)
+(defcustom idee-eshell-demo-it-speed :fast "Demo-it for eshell typing speed" :group 'idee-eshell  :type '(choice (const :tag "fast" :fast)
                  (const :tag "faster"  :faster)
                  (const :tag "medium"  :medium)
                  (const :tag "slow"    :slow)
@@ -135,6 +136,15 @@
       (demo-it-insert str idee-eshell-demo-it-speed)
     (insert str)))
 
+;;
+;;
+(defun idee-eshell-cat (f)
+  "Display the contents of file F."
+  (if (equal f "/dev/clip")
+      (current-kill 0)
+    (idee-read-file f)))
+
+(when idee-eshell-cat-alias-enabled (eshell/alias "cat" "idee-eshell-cat $1"))
 
 (advice-add 'eshell-command-started :before 'idee-eshell-command-started)
 (advice-add 'eshell-command-finished :after 'idee-eshell-command-finished)
