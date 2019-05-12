@@ -1,5 +1,5 @@
 # contributor: Ioannis Canellos <iocanel@gmail.com>
-# name: application.properties for prometheus
+# name: Spring application.properties for Prometheus
 # key: spring-boot-prometheus
 # --
 management.endpoints.enabled-by-default=true

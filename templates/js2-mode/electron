@@ -1,3 +1,7 @@
+# contributor: Ioannis Canellos <iocanel@gmail.com>
+# name: Electron
+# key: electron
+# --
 const { app, BrowserWindow } = require('electron')
 
 function createWindow () {

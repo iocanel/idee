@@ -1,5 +1,5 @@
 # contributor: Ioannis Canellos <iocanel@gmail.com>
-# name: application.properties for jpa
+# name: Spring application.properties for JPA
 # key: spring-boot-jpa-postgres
 # --
 spring.jpa.hibernate.ddl-auto=create-drop

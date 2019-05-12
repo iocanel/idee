@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: empty
+# name: Empty Elisp
 # key:empty
 # --
 ;;; `(file-name-nondirectory (buffer-file-name))` --- ${1:Description}
