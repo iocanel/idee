@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: maven dependency
-# key: dep
+# key: <dependency
 # --
 <dependency>
   <groupId>${1:my.groupId}</groupId>
