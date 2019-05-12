@@ -38,6 +38,21 @@
 (defun idee-new-spring-starter-project ()
   "Create a new project from https://start.spring.io."
   (interactive)
+  (let* ((language (completing-read "Select language: " idee-spring-languages))
+         (project-type (completing-read "Select build tool: " idee-spring-project-types))
+         (dependencies (completing-read-multiple "Select dependencies: " idee-spring-dependencies))
+         (group-id (read-string "Group Id:"))
+         (artifact-id (read-string "Artifact Id:"))
+         (version (read-string "Version:" "0.1-SNAPSHOT"))
+         (target-dir (idee--select-new-project-dir))
+         (generate-command (format "spring init -g %s -a %s -v %s -d%s %s" group-id artifact-id version (mapconcat 'identity dependencies ",") artifact-id))
+         (cleanup-command (format "mv %s/* . && rm -r %s" artifact-id artifact-id)))
+    (message generate-command)
+    (idee-create-project-with-shell target-dir generate-command cleanup-command)))
+
+(defun idee-new-spring-starter-project-internal ()
+  "Create a new project from https://start.spring.io."
+  (interactive)
   (let ((language) (project-type) (dependencies))
     (setq language (completing-read "Select language: " idee-spring-languages))
     (setq project-type (completing-read "Select build tool: " idee-spring-project-types))
