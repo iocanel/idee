@@ -197,7 +197,7 @@
 
 ;;; Visitor
 (defun idee-java-project-p (root)
-  "Checks if ROOT is the root path of a java project."
+  "Check if ROOT is the root path of a java project."
   (seq-filter (lambda (x)
                 (or (equal pom-xml x)
                     (equal build-gradle x)
@@ -206,7 +206,7 @@
 
 (defun idee-visitor-java (root)
   "Check if a java project is available under the specified ROOT."
-  (if (idee-java-project-p root) 
+  (if (idee-java-project-p root)
       (idee-java-enable)))
 
 (add-to-list 'idee-project-visitors 'idee-visitor-java)
