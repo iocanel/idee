@@ -1,0 +1,17 @@
+# contributor: Ioannis Canellos <iocanel@gmail.com>
+# name: Kubernetes Service
+# key: service
+# --
+kind: "Service"
+metadata:
+  labels:
+    app: ${1:`(projectile-project-name)`}
+    version: "${2:`idee-project-version`}"
+  name: "$1"
+spec:
+  selector:
+    app: $1
+    version: "${2:`idee-project-version`}"
+  ports:
+  - port: ${2:8080}
+    targetPort: ${3:8080}

@@ -1,0 +1,10 @@
+# contributor: Ioannis Canellos <iocanel@gmail.com>
+# name: Kubernetes Namespace
+# key: namespace
+# --
+kind: "Namespace"
+metadata:
+  labels:
+    app: ${1:`(projectile-project-name)`}
+    version: "${2:`idee-project-version`}"
+  name: "$1"

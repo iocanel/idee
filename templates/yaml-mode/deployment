@@ -1,0 +1,32 @@
+# contributor: Ioannis Canellos <iocanel@gmail.com>
+# name: Kubernetes Deployment
+# key: deployment
+# --
+kind: "Deployment"
+metadata:
+  labels:
+    app: ${1:`(projectile-project-name)`}
+    version: "${2:`idee-project-version`}"
+  name: "$1"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "$1"
+      version: "$2"
+  template:
+    metadata:
+      labels:
+        app: $1
+        version: "$2"
+    spec:
+      containers:
+        image: "${3:`(user-login-name)`}/$1:$2"
+        name: "$1"
+        ports:
+        - containerPort: ${4:8080}
+          name: "http"
+          protocol: "TCP"
+          initialDelaySeconds: 0
+          periodSeconds: 30
+          timeoutSeconds: 10
