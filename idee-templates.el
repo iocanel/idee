@@ -26,9 +26,7 @@
 
 (require 'yasnippet)
 
-(defconst idee-templates-dir
-  (expand-file-name
-   "templates"
+(defconst idee-source-dir
    ;; If idee is installed using `straight-use-pacakge` we need to refer to the repo and not the build output.
    ;; TODO: have these get downloaded from github.
    (replace-regexp-in-string (regexp-quote "straight/build/idee") "straight/repos/idee"
@@ -38,18 +36,37 @@
                                (load-in-progress load-file-name)
                                ((and (boundp 'byte-compile-current-file) byte-compile-current-file)
                                 byte-compile-current-file)
-                               (:else (buffer-file-name)))))))
+                               (:else (buffer-file-name))))))
+
+(defconst idee-templates-source-dir (f-join idee-source-dir "templates") "The idee source template directory.")
+(defconst idee-snippets-source-dir (f-join idee-source-dir "snippets") "The idee source snippet directory.")
+
+(defconst idee-emacs-templates-dir (f-join idee-resources-dir "templates") "The directory where template files are stored.")
+(defconst idee-emacs-snippets-dir (f-join idee-resources-dir "snippets") "The directory where snippet files are stored.")
+
+;;
+;; Initialization
+;;
+(when (and
+       (file-exists-p idee-templates-source-dir)
+       (not (file-exists-p idee-emacs-templates-dir))) (copy-directory idee-templates-source-dir idee-emacs-templates-dir))
+
+(when (and
+       (file-exists-p idee-snippets-source-dir)
+       (not (file-exists-p idee-emacs-snippets-dir))) (copy-directory idee-snippets-source-dir idee-emacs-snippets-dir))
+
+(when (not (file-exists-p idee-emacs-templates-dir)) (mkdir idee-emacs-templates-dir))
+(when (not (file-exists-p idee-emacs-snippets-dir)) (mkdir idee-emacs-snippets-dir))
+
+(add-to-list 'yas-snippet-dirs idee-emacs-templates-dir)
+(add-to-list 'yas-snippet-dirs idee-emacs-snippets-dir)
+
+(yas-compile-directory idee-emacs-templates-dir)
+(yas-reload-all)
 
 ;;
 ;; State
 ;;
-(defconst idee-emacs-templates-dir (concat (file-name-as-directory idee-resources-dir) "templates") "The directory where template files are stored.")
-
-(when (not (file-exists-p idee-emacs-templates-dir)) (mkdir idee-emacs-templates-dir))
-(add-to-list 'yas-snippet-dirs idee-emacs-templates-dir)
-(yas-compile-directory idee-emacs-templates-dir)
-(yas-reload-all)
-
 (defvar idee-type-modes-alist '() "Association list for extension to mode.")
 (setq idee-type-modes-alist '(
                                 ("el" . "emacs-lisp-mode")
