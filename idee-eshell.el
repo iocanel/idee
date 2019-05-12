@@ -13,6 +13,7 @@
 ;;; Code:
 
 (require 'queue)
+(require 'eshell)
 (require 'async-await)
 
 (defvar idee-eshell-command-queue (queue-create))
@@ -144,10 +145,11 @@
       (current-kill 0)
     (idee-read-file f)))
 
-(when idee-eshell-cat-alias-enabled (eshell/alias "cat" "idee-eshell-cat $1"))
-
 (advice-add 'eshell-command-started :before 'idee-eshell-command-started)
 (advice-add 'eshell-command-finished :after 'idee-eshell-command-finished)
  
+
+(when idee-eshell-cat-alias-enabled (add-hook 'eshell-mode-hook (lambda () (eshell/alias "cat" "idee-eshell-cat $1"))))
+
 (provide 'idee-eshell)
 ;;; idee-eshell.el ends here
