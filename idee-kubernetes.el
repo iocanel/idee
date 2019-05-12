@@ -34,7 +34,7 @@
 (defun idee-kubernetes-create-from-region(start end)
   "Pass the selected region to kubectl/oc create."
   (interactive (if (use-region-p) (list (region-beginning) (region-end))))
-  (clipboard-kill-ring-save (point-min) (point-max))
+  (clipboard-kill-ring-save (region-beginning) (region-end))
   (idee-eshell-project-command-execute (format "cat /dev/clip | %s create -f -" idee-kubernetes-kubectl-binary)))
 
 (defun idee-kubernetes-create-from-buffer()
@@ -47,11 +47,11 @@
           
           (idee-eshell-project-command-enqueue (format "%s create -f %s" idee-kubernetes-kubectl-binary  relative-path))))))
 
-(defun idee-kubernetes-create-dwim(start end)
+(defun idee-kubernetes-create-dwim (&optional start end)
   "Pass the selected region or currnent buffer (if region not active) to kubectl/oc create."
   (interactive (if (use-region-p) (list (region-beginning) (region-end))))
   (if (region-active-p)
-      (idee-kubernetes-create-from-region start end)
+      (idee-kubernetes-create-from-region (region-beginning) (region-end))
     (idee-kubernetes-create-from-buffer)))
 
 (defun idee-kubernetes-delete-from-buffer()
@@ -69,11 +69,11 @@
   (clipboard-kill-ring-save (point-min) (point-max))
   (idee-eshell-project-command-execute (format "cat /dev/clip | %s delete -f -" idee-kubernetes-kubectl-binary)))
 
-(defun idee-kubernetes-delete-dwim(start end)
+(defun idee-kubernetes-delete-dwim(&optional start end)
   "Pass the selected region or currnent buffer (if region not active) to kubectl/oc delete."
   (interactive (if (use-region-p) (list (region-beginning) (region-end))))
   (if (region-active-p)
-      (idee-kubernetes-delete-from-region start end)
+      (idee-kubernetes-delete-from-region (region-beginning) (region-end))
     (idee-kubernetes-delete-from-buffer)))
 
 (defun idee-kubernetes-replace-from-buffer()
@@ -91,12 +91,12 @@
   (clipboard-kill-ring-save (point-min) (point-max))
   (idee-eshell-project-command-execute (format "cat /dev/clip | %s replace -f -" idee-kubernetes-kubectl-binary)))
 
-(defun idee-kubernetes-replace-dwim(start end)
+(defun idee-kubernetes-replace-dwim(&optional start end)
   "Pass the selected region or currnent buffer (if region not active) to kubectl/oc replace."
   (interactive (if (use-region-p) (list (region-beginning) (region-end))))
   (interactive "r")
   (if (region-active-p)
-      (idee-kubernetes-replace-from-region start end)
+      (idee-kubernetes-replace-from-region (region-beginning) (region-end))
     (idee-kubernetes-replace-from-buffer)))
 
 (defun idee-kubernetes--tmp-resource-name()
