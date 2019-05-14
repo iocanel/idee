@@ -89,19 +89,29 @@
   (evil-window-set-height 12))
 
 (defun idee-diagnostics-subview ()
- (flymake-show-diagnostics-buffer)
+  (flymake-show-diagnostics-buffer)
+  (let ((name (flymake--diagnostics-buffer-name)))
+  (idee-jump-to-non-ide-window)
+  (delete-other-windows)
+  (split-window-below)
   (other-window 1)
+  (switch-to-buffer name)
   (minimize-window)
-  (evil-window-set-height 12))
+  (evil-window-set-height 12)))
 
 (defun idee-errors-subview ()
   (flycheck-list-errors)
+  (idee-jump-to-non-ide-window)
+  (delete-other-windows)
+  (split-window-below)
   (other-window 1)
+  (switch-to-buffer "*Flycheck errors*")
   (minimize-window)
   (evil-window-set-height 12))
 
 (defun idee-messages-subview ()
-  (split-and-follow-vertically)
+  (split-window-below)
+  (other-window 1)
   (switch-to-buffer "*Messages*")
   (minimize-window)
  (evil-window-set-height 12))
@@ -109,12 +119,16 @@
  (defun idee-grep-subview ()
   (if (get-buffer "*grep*")
       (progn
-        (split-and-follow-vertically)
+        (split-window-below)
+        (other-window 1)
         (switch-to-buffer "*grep*"))
     (progn
       (projectile-grep)
+      (idee-jump-to-non-ide-window)
+      (delete-other-windows)
+      (split-window-below)
       (other-window 1)
-      (get-buffer-window "*grep*")))
+      (switch-to-buffer "*grep*")))
   (minimize-window)
   (evil-window-set-height 12))
 
@@ -313,7 +327,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 ;;
 ;; Create component view functions
 ;;
-(idee--create-view-component "errors" idee-errors-visible-p idee-rrors-enabled idee-bottom-area-switch-list 0)
+(idee--create-view-component "errors" idee-errors-visible-p idee-errors-enabled idee-bottom-area-switch-list 0)
 (idee--create-view-component "diagnostics" idee-diagnostics-visible-p idee-diagnostics-enabled idee-bottom-area-switch-list 0)
 (idee--create-view-component "cli"  idee-cli-visible-p idee-cli-enabled idee-bottom-area-switch-list 0)
 (idee--create-view-component "messages"  idee-messages-visible-p idee-messages-enabled idee-bottom-area-switch-list 0)
