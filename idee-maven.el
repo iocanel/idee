@@ -34,6 +34,7 @@
 (defvar idee-maven-offline nil)
 (defvar idee-maven-skip-tests nil)
 (defvar idee-maven-exec-history ())
+(defvar idee-maven-project-settings-commands ())
 
 (defun idee-maven-module-root-dir-p (f)
   "Return non-nil if F is a maven module directory."
@@ -220,6 +221,13 @@
   (let ((maven-command (completing-read "Maven command:" idee-maven-exec-history)))
     (idee-eshell-project-command-enqueue maven-command)))
 
+(defun idee-maven-exec-from-project-settings ()
+  "Prompt the user to execute previous maven build from history."
+  (interactive)
+  (idee-with-project-settings "maven.el" idee-maven-project-settings-commands
+    (let ((maven-command (completing-read "Maven command:" idee-maven-project-settings-commands)))
+      (idee-eshell-project-command-enqueue maven-command))))
+
 (cl-defun idee-maven-cmd (&key goals debug surefire-debug failsafe-debug build-scope also-make)
   (idee-with-project-settings "maven.el" idee-maven-profiles
                               (let* ((module-dir (idee-maven-module-root-dir))
@@ -280,7 +288,7 @@ or empty string other wise."
  Maven:   Project                     Module               Toggle          Execute 
         ------------------------------------------------------------------------------------
         _pc_: clean                  _mc_: clean              _to_: offline     _h_: from history
-        _pp_: package                _mp_: package            _tt_: tests
+        _pp_: package                _mp_: package            _tt_: tests       _s_: from project settings 
         _pi_: install                _mi_: install   
         _po_: edit pom               _mo_: edit pom
                                   _mrf_: resume from
@@ -312,6 +320,7 @@ or empty string other wise."
   ("tt" idee-maven-toggle-skip-tests)
 
   ("h" idee-maven-exec-from-history)
+  ("s" idee-maven-exec-from-project-settings)
   ("q" nil "quit"))
 
 ;;; Project Factory
