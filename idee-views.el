@@ -35,6 +35,8 @@
 ;; State
 ;;
 
+(defcustom idee-helm-ag-bindings-enabled t "Toggle to enable idee manage helm-ag bindings for q and RET." :group 'idee-helm :type 'boolean)
+
 (defvar idee-current-view 'idee-ide-view)
 
 ;; Toggles
@@ -46,10 +48,11 @@
 (defvar idee-errors-enabled t)
 (defvar idee-messages-enabled t)
 (defvar idee-grep-enabled nil)
+(defvar idee-helm-ag-enabled nil)
 (defvar idee-bottom-buffer-command 'projectile-run-eshell)
 
 ;; A list with all component switches that are meant to be placed in the bottom
-(defvar idee-bottom-area-switch-list '(idee-cli-enabled idee-repl-enabled idee-diagnostics-enabled idee-errors-enabled idee-messages-enabled idee-grep-enabled))
+(defvar idee-bottom-area-switch-list '(idee-cli-enabled idee-repl-enabled idee-diagnostics-enabled idee-errors-enabled idee-messages-enabled idee-grep-enabled idee-helm-ag-enabled))
 
 ;;
 ;; Functions
@@ -59,6 +62,9 @@
 (defun idee-project-open-view()
   "Switch to a traditional IDE view for the buffer.  (project tree, main buffer & terminal)."
  (interactive)
+ (dolist (b idee-bottom-area-switch-list)
+   (message (format "%s"b))
+   (setq b nil))
   (idee-ide-view)
   (idee-jump-to-non-ide-window)
   (magit-status-internal (projectile-project-root)))
@@ -77,6 +83,7 @@
   (idee-jump-to-non-ide-window)
   ;; bottom area
   (cond (idee-grep-enabled (idee-grep-subview))
+        (idee-helm-ag-enabled (idee-helm-ag-subview))
         (idee-cli-enabled (idee-cli-subview))
         (idee-diagnostics-enabled (idee-diagnostics-subview))
         (idee-errors-enabled (idee-errors-subview))
@@ -132,6 +139,25 @@
   (minimize-window)
   (evil-window-set-height 12))
 
+(defun idee-helm-ag-subview ()
+  (require 'helm-projectile)
+  (require 'helm-ag)
+
+  (if (get-buffer "*helm-ag*")
+      (progn
+        (split-window-below)
+        (other-window 1)
+        (switch-to-buffer "*helm-ag*"))
+    (progn
+      (helm-projectile-ag)
+      (idee-jump-to-non-ide-window)
+      (delete-other-windows)
+      (split-window-below)
+      (other-window 1)
+      (switch-to-buffer "*helm-ag*")))
+  (minimize-window)
+  (evil-window-set-height 12))
+
 (defun idee-side-by-side-view()
   "Open a new buffer from the project to the side for side by side view."
   (interactive)
@@ -184,7 +210,7 @@
   "Predicate to check if BUFFER-NAME is an ide buffer (e.g. tree, cli, repl, diagnostics etc)."
   (let ((mode (with-current-buffer buffer-name major-mode))
         (name (string-trim buffer-name)))
-  (cond ((provided-mode-derived-p 'prog-mode mode) t) 
+  (cond ((provided-mode-derived-p 'prog-mode mode) t)
         ((and (string-prefix-p "*" name)  (string-suffix-p "*" name)) t)
         (t nil))))
 
@@ -251,28 +277,32 @@ VISITED is an optional list with windows already visited."
 ;; Buffer providers
 ;;
 (defun idee-hyda-visible-p ()
-  "Predicate that returns true if hydra is visible."
+  "Return non-nil if hydra is visible."
   (get-buffer-window " *LV"))
 
 (defun idee-cli-visible-p ()
-  "Predicate that returns true if cli is visible."
+  "Return non-nil if cli is visible."
   (get-buffer-window (format "*eshell %s*" (projectile-project-name))))
 
 (defun idee-diagnostics-visible-p ()
-  "Predicate that returns true if diagnostics is visible."
+  "Return non-nil if diagnostics is visible."
   (get-buffer-window (flymake--diagnostics-buffer-name)))
 
 (defun idee-errors-visible-p ()
-  "Predicate that returns true if errors is visible."
+  "Return non-nil if errors is visible."
   (get-buffer-window "*Flycheck errors*"))
 
 (defun idee-messages-visible-p ()
-  "Predicate that returns true if messages is visible."
+  "Return non-nil if messages is visible."
   (get-buffer-window "*Messages*"))
 
 (defun idee-grep-visible-p ()
-  "Predicate that returns true if grep is visible."
+  "Return non-nil if grep is visible."
   (get-buffer-window "*grep*"))
+
+(defun idee-helm-ag-visible-p ()
+  "Return non-nil if helm-ag is visible."
+  (get-buffer-window "*helm-ag*"))
 
 (defun idee-after-next-error ()
   "Refresh the view each time next error is caled."
@@ -285,7 +315,7 @@ VISITED is an optional list with windows already visited."
   "Update the state of the FLAG (in case the winodw has been externally closed).
 
 NAME is the name of the view component.
-BUFFER-PREDICATE is a function that returns true if buffer is currently visible.
+BUFFER-PREDICATE is a function that returns non-nil if buffer is currently visible.
 FLAG is the variable that holds the  visibility state of the component (e.g. visible or not visible).
 CANDIDATES is a list containing all other flags that take up the same space as the target component (e.g. cli and  diagnostics use the same area).
 PIVOT indicates how many windows should be switched at the end of the operation."
@@ -332,6 +362,14 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 (idee--create-view-component "cli"  idee-cli-visible-p idee-cli-enabled idee-bottom-area-switch-list 0)
 (idee--create-view-component "messages"  idee-messages-visible-p idee-messages-enabled idee-bottom-area-switch-list 0)
 (idee--create-view-component "grep"  idee-grep-visible-p idee-grep-enabled idee-bottom-area-switch-list 0)
+(idee--create-view-component "helm-ag"  idee-helm-ag-visible-p idee-helm-ag-enabled idee-bottom-area-switch-list 0)
+
+(defun idee-toggle-helm-ag-or-grep  ()
+  "Toggle helm-ag if helm-ag is installed or fallback to projectile-grep."
+  (interactive)
+  (if (and (require 'helm-projectile nil 'noerror) (require 'helm-ag nil 'noerror))
+      (idee-toggle-helm-ag)
+    (idee-toggle-grep)))
 
 (defun idee-kill-grep-and-window ()
   "Kill the grep window and buffer.  Return t if grep window was found."
@@ -342,12 +380,27 @@ PIVOT indicates how many windows should be switched at the end of the operation.
           t)
       nil)))
 
-(defadvice quit-window (around idee-on-quit-window
-                                      (&optional kill window))
+(defun idee-kill-helm-ag-and-window ()
+  "Kill the helm-ag window and buffer.  Return t if helm-ag window was found."
+  (let ((buffer (current-buffer)))
+    (if (equal "*helm-ag*" (buffer-name buffer))
+        (progn
+          (kill-buffer-and-window)
+          t)
+      nil)))
+
+
+(defadvice quit-window (around idee-on-quit-window (&optional kill window))
   "Handles things when quiting window."
   (cond
    ((idee-kill-grep-and-window) t)
+   ((idee-kill-helm-ag-and-window) t)
    (t ad-do-it)))
+
+;; Let's set some bindings so that helm-projectile-ag and projectile-grep are consistent.
+(when idee-helm-ag-bindings-enabled
+  (evil-define-key 'normal helm-major-mode-map "q" 'quit-window)
+  (evil-define-key 'normal helm-major-mode-map (kbd "RET") '(lambda () (interactive) (helm-ag-mode-jump-other-window) (idee-refresh-view) (idee-jump-to-non-ide-window))))
 
 (ad-activate 'quit-window)
 (advice-add 'projectile-switch-project :after 'idee-project-open-view)
@@ -356,4 +409,3 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 
 (provide 'idee-views)
 ;;; idee-views.el ends here
-        
