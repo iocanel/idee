@@ -30,7 +30,7 @@
 (require 'idee-utils)
 (require 'idee-projects)
 
-(defcustom idee-quarkus-version "0.12.0" "The quarkus version." :group 'idee :type 'string)
+(defcustom idee-quarkus-version "0.15.0" "The quarkus version." :group 'idee :type 'string)
 
 (defconst idee-quarkus-extensions-list '("agroal"
                                          "amazon-lambda"
@@ -101,8 +101,7 @@
   "Add a quarkus extension to the project."
   (interactive)
   (let ((extension (completing-read "Extension:" idee-quarkus-extensions-list)))
-    (idee-eshell-project-command-enqueue (format "mvn quarkus:add-extension -Dextensions=\"io.quarkus:quarkus-%s\"" extension))))
-
+    (idee-eshell-project-command-enqueue (format "mvn quarkus:add-extension -Dextensions=\"%s\"" extension))))
 
 (defun idee-quarkus-init-maven-project-settings ()
   "Initialize project with project settings."
