@@ -67,7 +67,7 @@ should be started after the :port argument is taken.
   (idee-refresh-view)
   (idee-jump-to-non-ide-window)
   (recenter-top-bottom)
-  (when (not (idee-hyda-visibile-p)) (dap-hydra))
+  (when (not (idee-hydra-visible-p)) (dap-hydra))
   (when (not (get-buffer-window "*dap-ui-locals*") (dap-ui-locals))))
 
 (ad-activate 'dap--go-to-stack-frame)

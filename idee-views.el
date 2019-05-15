@@ -276,7 +276,7 @@ VISITED is an optional list with windows already visited."
 ;;
 ;; Buffer providers
 ;;
-(defun idee-hyda-visible-p ()
+(defun idee-hydra-visible-p ()
   "Return non-nil if hydra is visible."
   (get-buffer-window " *LV"))
 
