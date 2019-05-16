@@ -38,18 +38,35 @@
 
 (defun idee-maven-module-root-dir-p (f)
   "Return non-nil if F is a maven module directory."
-  (seq-filter (lambda (x)
-                (equal pom-xml x))
-              (directory-files f)))
+  (if (and f (file-directory-p f)) (seq-filter (lambda (x) (equal pom-xml x)) (directory-files f))
+    nil))
 
 (defun idee-maven-module-root-dir (&optional f)
   "Find the directory of the maven module that owns the source file F."
   (let* ((file-name (buffer-file-name (current-buffer)))
          (dir (if file-name (directory-file-name file-name) default-directory))
          (current-dir (f-full (if f f (file-name-directory dir)))))
-    (while (not (idee-maven-module-root-dir-p current-dir))
+    (while (and current-dir (not (idee-maven-module-root-dir-p current-dir)))
       (setq current-dir (file-name-directory (directory-file-name current-dir))))
-    current-dir)) 
+    current-dir))
+
+(defun idee-maven-enclosuing-module-root-dir (&optional f)
+  "Find the directory of the parent maven module that owns the source file F."
+  (let* ((file-name (buffer-file-name (current-buffer)))
+         (dir (if file-name (directory-file-name file-name) default-directory))
+         (current-dir (f-full (if f f (file-name-directory dir))))
+         (module-dir (idee-maven-module-root-dir current-dir))
+         (parent-dir (idee-maven-module-root-dir (file-name-directory  (directory-file-name module-dir)))))
+    (while (and parent-dir (not (idee-maven-module-root-dir-p parent-dir)))
+      (setq parent-dir (file-name-directory (directory-file-name parent-dir))))
+    parent-dir))
+
+(defun idee-maven-invoker-test-dir-p (&optional f)
+  "Return non-nil if the file is part of a maven-invoker integration test."
+  (let* ((file-name (buffer-file-name (current-buffer)))
+         (dir (if file-name (directory-file-name file-name) default-directory))
+         (current-dir (f-full (if f f (file-name-directory dir)))))
+    (string-match-p (regexp-quote (f-join "src" "it")) current-dir)))
 
 (defun idee-maven-pom-artifact-id (pom)
   "Get the artifactId of the specified POM."
@@ -231,17 +248,30 @@
 (cl-defun idee-maven-cmd (&key goals debug surefire-debug failsafe-debug build-scope also-make)
   (idee-with-project-settings "maven.el" idee-maven-profiles
                               (let* ((module-dir (idee-maven-module-root-dir))
+                                     (enclosuing-module-dir (idee-maven-enclosuing-module-root-dir))
                                      (module-pom (concat module-dir pom-xml))
+                                     (invoker-test (idee-maven-invoker-test-dir-p module-dir))
+                                     (enclosuing-module-pom (concat enclosuing-module-dir pom-xml))
                                      (artifact-id (idee-maven-pom-artifact-id module-pom))
+                                     (enclosing-artifact-id (idee-maven-pom-artifact-id enclosuing-module-pom))
                                      (profiles-opt (idee--maven-profiles-option))
                                      (mvn-cmd-builder nil))
-                                
-                                (add-to-list 'mvn-cmd-builder (if debug "mvnDebug" "mvn"))
+
+                                (cond
+                                 (invoker-test (add-to-list 'mvn-cmd-builder "mvn"))
+                                 (debug (add-to-list 'mvn-cmd-builder "mvnDebug"))
+                                 (t (add-to-list 'mvn-cmd-builder "mvn")))
+
+
                                 (add-to-list 'mvn-cmd-builder goals)
                                 (if profiles-opt
                                     (add-to-list 'mvn-cmd-builder profiles-opt))
                                 (if artifact-id
                                     (cond
+                                     (invoker-test
+                                      (progn
+                                        (add-to-list 'mvn-cmd-builder (format "-pl :%s -Dinvoker.test=%s" enclosing-artifact-id (file-name-nondirectory (directory-file-name module-dir))))
+                                        (when debug (add-to-list 'mvn-cmd-builder "-Dinvoker.mavenExecutable=mvnDebug"))))
                                       ((equal 'resume build-scope) (add-to-list 'mvn-cmd-builder (format "-rf :%s" artifact-id)))
                                       ((equal 'module build-scope) (add-to-list 'mvn-cmd-builder (format "-pl :%s" artifact-id)))))
                                 (if also-make
@@ -251,6 +281,7 @@
                                 (if failsafe-debug
                                     (add-to-list 'mvn-cmd-builder "-Dmaven.failsafe.debug"))
                                 (string-join (reverse mvn-cmd-builder) " "))))
+
 
 (cl-defun idee-maven-exec (&key goals debug surefire-debug failsafe-debug build-scope also-make)
   "Build the current maven module."
