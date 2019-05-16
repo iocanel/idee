@@ -60,6 +60,7 @@
 
 (defun idee-header ()
   "Return the header commented for the current buffer style."
+    (idee--set-header)
     (idee--comment idee--current-header (file-name-extension (buffer-file-name (current-buffer)))))
 
 (defun idee-select-project-header ()
