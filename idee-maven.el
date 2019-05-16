@@ -117,35 +117,47 @@
 (defun idee-maven-debug-project ()
   "Build the current maven project."
   (interactive)
-  (-> (list :type "java"
-            :request "attach"
-            :hostName "localhost"
-            :port 8000
-            :wait-forport t)
+  (let* ((module-dir (idee-maven-module-root-dir))
+                                     (module-pom (concat module-dir pom-xml))
+                                     (artifact-id (idee-maven-pom-artifact-id module-pom)))
+    (-> (list :type "java"
+              :request "attach"
+              :hostName "localhost"
+              :port 8000
+              :project-name artifact-id
+              :wait-for-port t)
       (append (list :program-to-start (idee-maven-cmd :goals "clean install" :debug t)))
-      dap-debug))
+      dap-debug)))
 
 (defun idee-maven-surefire-debug-project ()
   "Debug the current maven project."
   (interactive)
-  (-> (list :type "java"
-            :request "attach"
-            :hostName "localhost"
-            :port 5005
-            :wait-for-port t)
-      (append (list :program-to-start (idee-maven-cmd :goals "clean install" :surefire-debug t)))
-      dap-debug))
+  (let* ((module-dir (idee-maven-module-root-dir))
+                                     (module-pom (concat module-dir pom-xml))
+                                     (artifact-id (idee-maven-pom-artifact-id module-pom)))
+    (-> (list :type "java"
+              :request "attach"
+              :hostName "localhost"
+              :port 5005
+              :project-name artifact-id
+              :wait-for-port t)
+        (append (list :program-to-start (idee-maven-cmd :goals "clean install" :surefire-debug t)))
+        dap-debug)))
 
 (defun idee-maven-failsafe-debug-project ()
   "Debug the current maven project."
   (interactive)
-  (-> (list :type "java"
-            :request "attach"
-            :hostName "localhost"
-            :port 5005
-            :wait-for-port t)
+  (let* ((module-dir (idee-maven-module-root-dir))
+                                     (module-pom (concat module-dir pom-xml))
+                                     (artifact-id (idee-maven-pom-artifact-id module-pom)))
+    (-> (list :type "java"
+              :request "attach"
+              :hostName "localhost"
+              :port 5005
+              :project-name artifact-id
+              :wait-for-port t)
       (append (list :program-to-start (idee-maven-cmd :goals "clean install" :failsafe-debug t)))
-      dap-debug))
+      dap-debug)))
 
 (defun idee-maven-clean-module ()
   "Clean the current maven module."
@@ -192,12 +204,17 @@
   (interactive)
   (let* ((module-dir (idee-maven-module-root-dir))
                                      (module-pom (concat module-dir pom-xml))
-                                     (artifact-id (idee-maven-pom-artifact-id module-pom)))
+                                     (invoker-test (idee-maven-invoker-test-dir-p module-dir))
+                                     (enclosuing-module-dir (idee-maven-enclosuing-module-root-dir))
+                                     (enclosuing-module-pom (concat enclosuing-module-dir pom-xml))
+                                     (artifact-id (idee-maven-pom-artifact-id module-pom))
+                                     (enclosing-artifact-id (idee-maven-pom-artifact-id enclosuing-module-pom))
+                                     (project-name (if invoker-test enclosing-artifact-id artifact-id)))
     (-> (list :type "java"
               :request "attach"
               :hostName "localhost"
               :port 8000
-              :projectName artifact-id
+              :projectName project-name
               :wait-for-port t)
         (append (list :program-to-start (idee-maven-cmd :goals "clean install" :debug t :build-scope 'module)))
         dap-debug)))
@@ -207,12 +224,17 @@
   (interactive)
   (let* ((module-dir (idee-maven-module-root-dir))
                                      (module-pom (concat module-dir pom-xml))
-                                     (artifact-id (idee-maven-pom-artifact-id module-pom)))
+                                     (invoker-test (idee-maven-invoker-test-dir-p module-dir))
+                                     (enclosuing-module-dir (idee-maven-enclosuing-module-root-dir))
+                                     (enclosuing-module-pom (concat enclosuing-module-dir pom-xml))
+                                     (artifact-id (idee-maven-pom-artifact-id module-pom))
+                                     (enclosing-artifact-id (idee-maven-pom-artifact-id enclosuing-module-pom))
+                                     (project-name (if invoker-test enclosing-artifact-id artifact-id)))
     (-> (list :type "java"
               :request "attach"
               :hostName "localhost"
-              :port 8000
-              :projectName artifact-id
+              :port 5005
+              :projectName project-name
               :wait-for-port t)
         (append (list :program-to-start (idee-maven-cmd :goals "clean install" :surefire-debug t :build-scope 'module)))
         dap-debug)))
@@ -222,12 +244,17 @@
   (interactive)
   (let* ((module-dir (idee-maven-module-root-dir))
                                      (module-pom (concat module-dir pom-xml))
-                                     (artifact-id (idee-maven-pom-artifact-id module-pom)))
+                                     (invoker-test (idee-maven-invoker-test-dir-p module-dir))
+                                     (enclosuing-module-dir (idee-maven-enclosuing-module-root-dir))
+                                     (enclosuing-module-pom (concat enclosuing-module-dir pom-xml))
+                                     (artifact-id (idee-maven-pom-artifact-id module-pom))
+                                     (enclosing-artifact-id (idee-maven-pom-artifact-id enclosuing-module-pom))
+                                     (project-name (if invoker-test enclosing-artifact-id artifact-id)))
     (-> (list :type "java"
               :request "attach"
               :hostName "localhost"
               :port 5005
-              :projectName artifact-id
+              :projectName project-name
               :wait-for-port t)
         (append (list :program-to-start (idee-maven-cmd :goals "clean install" :failsafe-debug t :build-scope 'module)))
         dap-debug)))
