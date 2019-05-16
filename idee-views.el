@@ -35,7 +35,6 @@
 ;; State
 ;;
 
-(defcustom idee-helm-ag-bindings-enabled t "Toggle to enable idee manage helm-ag bindings for q and RET." :group 'idee-helm :type 'boolean)
 
 (defvar idee-current-view 'idee-ide-view)
 
@@ -397,10 +396,6 @@ PIVOT indicates how many windows should be switched at the end of the operation.
    ((idee-kill-helm-ag-and-window) t)
    (t ad-do-it)))
 
-;; Let's set some bindings so that helm-projectile-ag and projectile-grep are consistent.
-(when idee-helm-ag-bindings-enabled
-  (evil-define-key 'normal helm-major-mode-map "q" 'quit-window)
-  (evil-define-key 'normal helm-major-mode-map (kbd "RET") '(lambda () (interactive) (helm-ag-mode-jump-other-window) (idee-refresh-view) (idee-jump-to-non-ide-window))))
 
 (ad-activate 'quit-window)
 (advice-add 'projectile-switch-project :after 'idee-project-open-view)
