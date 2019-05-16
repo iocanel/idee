@@ -46,6 +46,10 @@
          (point-min)
          (point-max))) nil))
 
+(defun idee-filesystem-root-p (f)
+  "Check if file F is the filesystem root."
+  (equal f "/"))
+
 ;;; String Functions
 (defun idee-starts-with (string prefix)
   "Return t if STRING start with PREFIX."
