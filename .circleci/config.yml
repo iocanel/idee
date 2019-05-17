@@ -20,7 +20,7 @@ jobs:
       - run: cask install
       - save_cache:
           paths:
-            - ~/.cask
+            - .cask
           key: v1-dependencies-{{ checksum "Cask" }}
 
       # run tests!
