@@ -25,7 +25,6 @@
 ;;; Code:
 
 (require 'idee-vars)
-(require 'idee-navigation)
 
 ;;Project
 (defun idee-open()

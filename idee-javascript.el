@@ -1,4 +1,4 @@
-;;; idee-java.el --- JavaScript IDE
+;;; idee-javascript.el --- JavaScript IDE
 
 ;; Copyright (C) 2018 Ioannis Canellos
 

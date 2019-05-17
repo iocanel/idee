@@ -25,11 +25,10 @@
 ;;; Code:
 
 (require 'idee-vars)
-(require 'idee-actions)
 
 (require 'magit)
 (require 'treemacs-projectile)
-(require 'treemacs-core-utils)
+(require 'treemacs)
 
 ;;
 ;; State

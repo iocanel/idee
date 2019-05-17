@@ -18,6 +18,7 @@
 ;;; Code:
 
 (require 'test-helper)
+(require 'idee-vars (f-expand "idee-vars.el" root-code-path))
 (require 'idee-javascript (f-expand "idee-javascript.el" root-code-path))
 
 (ert-deftest idee-javascript-project-root/npm-test ()

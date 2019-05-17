@@ -67,7 +67,7 @@ install : $(TAR)
 
 test : $(SRCS)
 	${CASK} clean-elc
-	${CASK} exec ert-runner
+	${CASK} exec ert-runner --verbose
 
 
 clean :
