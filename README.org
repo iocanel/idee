@@ -21,7 +21,15 @@ Unified way to perform IDE-like tasks across multiple languages and frameworks i
    - File template support.
    - File header management.
    - Project factory support.
-  
+     - quarkus
+     - spring
+     - maven archetype
+     - npm
+   - Improved window management
+     - eshell
+     - flycheck & flymake
+     - projectile-grep
+     - helm-ag
 
 ** Installation
 
@@ -139,9 +147,12 @@ This is functionality already provided by existing plugins, so this plugin was m
 To make life with maven easier the following features have been added:
 
 - Per project profile management.
+- Integration with dap-mode for debugging maven projects.
 - Shortcut function to run maven project builds.
 - Shortcut function to run maven module builds.
-- Execute maven build from history.
+  - Support for running/debugging maven-invoker-pluggin managed projects.
+- Execute maven command build from history.
+- Execute maven command from project favorites.
 - Maven hydra.
 
 *** Per project profile management
