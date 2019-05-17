@@ -47,6 +47,8 @@
 ;;
 ;; Initialization
 ;;
+(when (not (file-exists-p idee-resources-dir)) (mkdir idee-resources-dir t))
+
 (when (and
        (file-exists-p idee-templates-source-dir)
        (not (file-exists-p idee-emacs-templates-dir))) (copy-directory idee-templates-source-dir idee-emacs-templates-dir))
