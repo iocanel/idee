@@ -275,7 +275,7 @@
 (cl-defun idee-maven-cmd (&key goals debug surefire-debug failsafe-debug build-scope also-make)
   (idee-with-project-settings "maven.el" idee-maven-profiles
                               (let* ((module-dir (idee-maven-module-root-dir))
-                                     (enclosuing-module-dir (idee-maven-enclosing-module-root-dir))
+                                     (enclosuing-module-dir (if module-dir (idee-maven-enclosing-module-root-dir) nil))
                                      (module-pom (concat module-dir pom-xml))
                                      (invoker-test (idee-maven-invoker-test-dir-p module-dir))
                                      (enclosuing-module-pom (concat enclosuing-module-dir pom-xml))
@@ -307,7 +307,7 @@
                                     (add-to-list 'mvn-cmd-builder "-Dmaven.surefire.debug"))
                                 (if failsafe-debug
                                     (add-to-list 'mvn-cmd-builder "-Dmaven.failsafe.debug"))
-                                (string-join (reverse mvn-cmd-builder) " "))))
+                                (string-trim (string-join (reverse mvn-cmd-builder) " ")))))
 
 
 (cl-defun idee-maven-exec (&key goals debug surefire-debug failsafe-debug build-scope also-make)

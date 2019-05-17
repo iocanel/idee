@@ -23,8 +23,7 @@
 
 (ert-deftest maven/should-return-mvn-clean-install ()
   "Should properly comment java."
-  (idee-maven-cmd :goals "clean")
-    (should (equal (idee-maven-cmd :goals "clean install"))))
+    (should (equal (idee-maven-cmd :goals "clean install") "mvn clean install")))
 
 (provide 'idee-maven-test)
 ;;; idee-maven-test.el ends here.

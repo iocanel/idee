@@ -40,7 +40,7 @@
 (ert-deftest util/should-not-find-projectile-project-root ()
   "Should not find project root."
   (with-sandbox
-   (should-not (projectile-project-root))))
+   (should-not (projectile-project-p (projectile-project-root)))))
 
 (ert-deftest util/should-find-project-settings ()
   "Should find project settings."
@@ -54,7 +54,7 @@
   "Should find not project settings."
   (with-sandbox
    (f-mkdir ".git")
-   (should (equal nil (idee-project-settings "settings.el")))))
+   (should-not (file-exists-p (idee-project-settings "settings.el")))))
 
 (ert-deftest util/should-load-project-settings ()
   "Should load project settings."
