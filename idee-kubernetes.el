@@ -27,6 +27,7 @@
 
 ;;; Code:
 
+(require 'eshell)
 (require 'idee-eshell)
 
 (defcustom idee-kubernetes-kubectl-binary "kubectl" "The kubectl binary to use (e.g kubectl. oc microk8s.kubectl)." :group 'idee-kubernetes :type 'string)
@@ -94,7 +95,6 @@
 (defun idee-kubernetes-replace-dwim(&optional start end)
   "Pass the selected region or currnent buffer (if region not active) to kubectl/oc replace."
   (interactive (if (use-region-p) (list (region-beginning) (region-end))))
-  (interactive "r")
   (if (region-active-p)
       (idee-kubernetes-replace-from-region (region-beginning) (region-end))
     (idee-kubernetes-replace-from-buffer)))

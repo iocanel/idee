@@ -27,6 +27,7 @@
 
 (require 'idee-utils)
 (require 'idee-projects)
+(require 'idee-dap)
 
 (defconst pom-xml "pom.xml")
 
@@ -405,8 +406,8 @@ or empty string other wise."
 (defun idee-maven-project-p (root)
   "Check if ROOT is the root path of a java project."
   (seq-filter (lambda (x)
-                (or (equal pom-xml x)
-              (directory-files root)))))
+                (or (equal pom-xml x)))
+              (directory-files root)))
 
 (defun idee-visitor-maven (root)
   "Check if a java project is available under the specified ROOT."

@@ -12,6 +12,7 @@
 
 ;;; Code:
 
+(require 's)
 (require 'queue)
 (require 'eshell)
 (require 'async-await)
@@ -54,10 +55,6 @@
 
   (idee-eshell-execute-next-command)
   (setq idee-eshell-command-running (not (queue-empty idee-eshell-command-queue))))
-
-(defun idee-eshell-prompt-promise (n)
-  (promise-new (lambda (resolve _reject) ((if (idee-eshell-ready-prompt-p) (funcall resove n) (funcall _reject))))))
-
 ;;
 ;; TODO: This is still buggy, as it appears that `idee-eshell-command-running` is getting nil value prematurely.
 (async-defun idee-eshell-await-command-finished ()
@@ -128,7 +125,7 @@
     (let ((comint-scroll-to-bottom-on-output t)
           (eshell-scroll-to-bottom-on-input t))
       (dolist (cmd (if (listp commands) commands (list commands)))
-        (queue-enqueue idee-eshell-command-queue cmd))
+        (when (not (s-blank? cmd)) (queue-enqueue idee-eshell-command-queue cmd)))
       (when (not idee-eshell-command-running) (idee-eshell-execute-next-command)))))
 
 (defun idee-eshell-insert (str)

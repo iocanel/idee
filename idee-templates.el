@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'yasnippet)
+(require 'idee-headers)
 
 (defconst idee-source-dir
    ;; If idee is installed using `straight-use-pacakge` we need to refer to the repo and not the build output.
@@ -116,7 +117,7 @@
   (let* ((headers (directory-files idee-emacs-headers-dir))
          (header (projectile-completing-read "Select header:" headers))
          (content (idee-read-and-eval-template (concat (file-name-as-directory idee-emacs-headers-dir) header))))
-    (idee--current-header content)))
+    (setq idee--current-header content)))
 
 
 ; (KEY TEMPLATE NAME CONDITION GROUP VARS LOAD-FILE KEYBINDING UUID)

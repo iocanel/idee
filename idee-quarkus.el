@@ -30,6 +30,7 @@
 (require 'idee-utils)
 (require 'idee-projects)
 (require 'idee-eshell)
+(require 's)
 
 (defcustom idee-quarkus-version "0.15.0" "The quarkus version." :group 'idee :type 'string)
 

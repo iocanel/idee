@@ -25,17 +25,28 @@
  (depends-on "use-package")
  (depends-on "markdown-mode")
  
+ ; Clojure
+ (depends-on "cider")
+
+; Debug
+(depends-on "dap-mode")
  ; Evil
  (depends-on "evil")
  (depends-on "evil-leader")
- 
- ; Clojure
- (depends-on "cider")
+
+; Eshell
+(depends-on "async-await")
 
  ; Golang
  (depends-on "go-mode")
  (depends-on "go-guru")
  
+ ; Java
+ (depends-on "lsp-java")
+
+ ; Javascript
+ (depends-on "tide")
+
  ; Meghanada
  (depends-on "meghanada")
  
@@ -43,12 +54,7 @@
  (depends-on "python-mode")
  (depends-on "anaconda-mode")
 
- ; Java
- (depends-on "lsp-java")
- (depends-on "lsp-intellij")
 
-; Eshell
-(depends-on "async-await")
  
  (depends-on "f")
  (depends-on "ecukes")

@@ -28,6 +28,7 @@
 ;;; Code:
 
 (require 'test-helper)
+(require 'idee-eshell (f-expand "idee-eshell.el" root-code-path))
 (require 'idee-views (f-expand "idee-views.el" root-code-path))
 (require 'idee-vars (f-expand "idee-vars.el" root-code-path))
 (require 'idee-actions (f-expand "idee-actions.el" root-code-path))

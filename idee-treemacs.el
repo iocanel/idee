@@ -94,10 +94,10 @@
                 ^Workspaces^             ^Toggles^                 ^Windows^                     ^Navigation^
                 ^^^^^^-----------------------------------------------------------------------------------------
                 _N_: new workspace       _t_: tree view toggle     _s_: select window            _b_: bookmark
-                _S_: switch workspace    _p_: projectile toggle    _d_: delete other windows     _f_: find file
-                _R_: remove workspace    _d_: show hidden files                                  _T_: find tag
-                _E_: edit workspace      _c_: collapse dirs
-                _F_: finish edit         _g_: magit
+                _S_: switch workspace    _d_: show hidden files    _d_: delete other windows     _f_: find file
+                _R_: remove workspace    _c_: collapse dirs                                      _T_: find tag
+                _E_: edit workspace      _g_: magit             
+                _F_: finish edit         
                "
                                         ; Toggles
   ("N" idee-treemacs-create-and-switch-to-workspace)
@@ -106,7 +106,6 @@
   ("E" treemacs-edit-workspaces)
   ("F" treemacs-finish-edit)
   ("t" idee-toggle-tree)
-  ("p" treemacs-projectile-toggle)
   ("d" treemacs-toggle-show-dotfiles)
   ("c" idee-treemacs-collapse-dir-toggle)
   ("g" magit-status)

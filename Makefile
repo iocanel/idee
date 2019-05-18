@@ -29,7 +29,7 @@ TAR     := dist/idee-$(VERSION).tar
 	git-release github-browse-release
 
 
-build : $(TARGETS) $(DEPS_PNG)
+build : $(TARGETS)
 
 $(TARGETS) : $(SRCS) $(CASKDIR)
 	${CASK} clean-elc
@@ -143,11 +143,6 @@ github-browse-release :
 
 $(CASKDIR) :
 	${CASK} install
-
-
-$(DEPS_PNG) : $(DEPS_SCRIPT) $(SRCS)
-	$(EMACS_BATCH) -f package-initialize -l $(DEPS_SCRIPT) -f project-deps-generate
-
 
 
 # Assert cask is installed
