@@ -65,36 +65,6 @@
          (target-dir (idee--select-new-project-dir))
          (parent-dir (file-name-directory (directory-file-name target-dir)))
          (dir-name (substring target-dir (length parent-dir)))
-         (generate-command (format "npm init %s %s" initializer target-dir)))
-
-    (make-directory temp-dir t)
-    (setq default-directory temp-dir)
-
-    (let ((progress-reporter (make-progress-reporter "Calling npm..." 0  100)))
-      (shell-command generate-command)
-      (progress-reporter-done progress-reporter))
-    
-    (shell-command (format "mv %s/* %s" temp-dir target-dir))m
-    (write-region "" nil (concat (file-name-as-directory target-dir) ".projectile"))
-    (projectile-add-known-project target-dir)
-    (setq projectile-project-root target-dir)
-    (setq default-directory (file-name-as-directory target-dir))
-    (call-process-shell-command "git init")
-    (projectile-switch-project-by-name target-dir)
-    (revert-buffer)
-    (dired target-dir)
-    (idee-ide-view)))
-
-(defun idee-new-npm-project ()
-  "Create a new npm project."
-  (interactive)
-  (let* ((initializer (read-string "Intializer:" "react-app"))
-         (recomended-dir (concat (file-name-as-directory default-directory) initializer))
-         (temp-dir (concat temporary-file-directory "npm-" (format "%06x-%06x" (random (expt 16 6)) (random (expt 16 6)))))
-         (generated-dir (concat (file-name-as-directory temp-dir) initializer))
-         (target-dir (idee--select-new-project-dir))
-         (parent-dir (file-name-directory (directory-file-name target-dir)))
-         (dir-name (substring target-dir (length parent-dir)))
          (generate-command (format "npm init %s ." initializer)))
 
     (idee-create-project-with-shell target-dir generate-command)))
