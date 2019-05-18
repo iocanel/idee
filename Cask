@@ -46,6 +46,9 @@
  ; Java
  (depends-on "lsp-java")
  (depends-on "lsp-intellij")
+
+; Eshell
+(depends-on "async-await")
  
  (depends-on "f")
  (depends-on "ecukes")

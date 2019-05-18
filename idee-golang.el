@@ -57,9 +57,8 @@
   (interactive)
   (let* ((module-name (read-string "Module:" "example.com/m"))
          (target-dir (idee--select-new-project-dir))
-         (generate-command (format "go mod init %s" module-name)))
-         (cleanup-command (format "mv %s/* . && rm -r %s" artifact-id artifact-id)))
-    (idee-create-project-with-shell target-dir generate-command cleanup-command))
+         (generate-command (format "go mod init %s" module-name))))
+    (idee-create-project-with-shell target-dir generate-command))
 
 (defconst idee-golang-module-factory
   (make-idee-project-factory

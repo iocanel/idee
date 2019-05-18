@@ -30,6 +30,7 @@
 (require 'ido)
 (require 'projectile)
 (require 'idee-views)
+(require 'idee-eshell)
 
 (cl-defstruct idee-project-factory
   name
@@ -98,7 +99,7 @@
     (projectile-add-known-project path)
     (setq projectile-project-root path)
     (projectile-switch-project-by-name path)
-    (when (treemacs-current-workspace) (treemacs-add-project path))
+    (when (treemacs-current-workspace) (treemacs-add-project-to-workspace path))
     (dired path)
     (auto-revert-mode 1)
     (idee-ide-view)

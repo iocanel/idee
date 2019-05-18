@@ -10,7 +10,9 @@
 ;;; Commentary:
 
 ;;; Code:
+(require 'idee-eshell)
 (require 'idee-utils)
+(require 'dap-mode)
 
 (eval-after-load "dap-mode"
  '(defun dap-start-debugging (launch-args)

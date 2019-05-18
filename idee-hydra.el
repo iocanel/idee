@@ -118,7 +118,7 @@
   ("i" idee-indent)
   ("r" idee-indent-region)
   ("w" idee-toggle-tab-width)
-  ("t" idee-toggle-use-tabs)
+  ("T" idee-toggle-use-tabs)
   ("s" company-yasnippet)
   ("h" idee-select-project-header)
   ("H" idee-apply-buffer-header)

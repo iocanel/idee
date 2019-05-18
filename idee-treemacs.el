@@ -105,9 +105,9 @@
   ("S" idee-treemacs-switch-to-project-workspace)
   ("E" treemacs-edit-workspaces)
   ("F" treemacs-finish-edit)
-  ("t" treemacs-toggle)
+  ("t" idee-toggle-tree)
   ("p" treemacs-projectile-toggle)
-  ("d" treemacs-toggle-show-dot-files)
+  ("d" treemacs-toggle-show-dotfiles)
   ("c" idee-treemacs-collapse-dir-toggle)
   ("g" magit-status)
                                         ; Windows
