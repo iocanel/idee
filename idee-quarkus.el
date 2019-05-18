@@ -116,9 +116,13 @@
     (if (not (file-exists-p settings-dir))
         (mkdir settings-dir))
     (with-temp-buffer
-      (insert (format "(setq idee-maven-project-settings-commands '(\"%s\"))" "mvn quarkus:dev"))
+      ;; Add to settings popular commands for quarkus
+      (insert (format "(setq idee-maven-project-settings-commands nil)"))
+      ;; Native image build
+      (insert (format "(push \"%s\" idee-maven-project-settings-commands)" "mvn clean package -Dnative=true -Dnative-image.docker-build=true"))
+      ;; Dev mode
+      (insert (format "(push \"%s\" idee-maven-project-settings-commands)" "mvn quarkus:dev"))
       (write-file maven-settings-file))))
-
 
 (add-to-list 'idee-project-factories-list idee-quarkus-rest-project-factory)
 
