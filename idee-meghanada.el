@@ -123,7 +123,7 @@
 
 (defun idee-visitor-meghanada (root)
   "Check if a meghanada project is available under the specified ROOT."
-  (if (and idee-meghanada-enabled (idee-meghanada-is-applicable root))
+  (if (and idee-meghanada-enabled (idee-meghanada-project-p root))
       (idee-meghanada-enable)))
 
 (add-to-list 'idee-project-visitors 'idee-visitor-meghanada)
