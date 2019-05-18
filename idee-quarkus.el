@@ -93,10 +93,14 @@
          (target-dir (idee--select-new-project-dir))
          (generate-command (format "mvn io.quarkus:quarkus-maven-plugin:%s:create -DprojectGroupId=%s -DprojectArtifactId=%s -DprojectVersion=%s -DclassName=%s.Endpoint -Dendpoint=%s" idee-quarkus-version group-id artifact-id version group-id endpoint))
          (cleanup-command (format "mv %s/* . && rm -r %s" artifact-id artifact-id))
-         (add-extension-command (format "mvn quarkus:add-extension -Dextensions=\"io.quarkus:quarkus-%s\"" (mapconcat 'identity (mapc (lambda (e) (format "io.quarkus:quarkus-%s" e)) extensions) ","))))
+         (add-extension-command (if (s-blank? extensions) nil
+                                    (format "mvn quarkus:add-extension -Dextensions=\"io.quarkus:quarkus-%s\"" (mapconcat 'identity (mapc (lambda (e) (format "io.quarkus:quarkus-%s" e)) extensions) ",")))))
 
-    (idee-create-project-with-shell target-dir generate-command cleanup-command add-extension-command)
-    (idee-quarkus-init-maven-project-settings)))
+    (if (not add-extension-command)
+        (idee-create-project-with-shell target-dir generate-command cleanup-command add-extension-command)
+      (idee-create-project-with-shell target-dir generate-command cleanup-command))
+
+      (idee-quarkus-init-maven-project-settings)))
 
 (defun idee-quarkus-add-extension ()
   "Add a quarkus extension to the project."
