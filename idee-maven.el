@@ -285,28 +285,28 @@
                                      (mvn-cmd-builder nil))
 
                                 (cond
-                                 (invoker-test (add-to-list 'mvn-cmd-builder "mvn"))
-                                 (debug (add-to-list 'mvn-cmd-builder "mvnDebug"))
-                                 (t (add-to-list 'mvn-cmd-builder "mvn")))
+                                 (invoker-test (push "mvn" mvn-cmd-builder))
+                                 (debug (push "mvnDebug" mvn-cmd-builder))
+                                 (t (push "mvn" mvn-cmd-builder)))
 
 
-                                (add-to-list 'mvn-cmd-builder goals)
+                                (push goals mvn-cmd-builder)
                                 (if profiles-opt
-                                    (add-to-list 'mvn-cmd-builder profiles-opt))
+                                    (push profiles-opt mvn-cmd-builder))
                                 (if artifact-id
                                     (cond
                                      (invoker-test
                                       (progn
-                                        (add-to-list 'mvn-cmd-builder (format "-pl :%s -Dinvoker.test=%s" enclosing-artifact-id (file-name-nondirectory (directory-file-name module-dir))))
-                                        (when debug (add-to-list 'mvn-cmd-builder "-Dinvoker.mavenExecutable=mvnDebug"))))
-                                      ((equal 'resume build-scope) (add-to-list 'mvn-cmd-builder (format "-rf :%s" artifact-id)))
-                                      ((equal 'module build-scope) (add-to-list 'mvn-cmd-builder (format "-pl :%s" artifact-id)))))
+                                        (push (format "-pl :%s -Dinvoker.test=%s" enclosing-artifact-id (file-name-nondirectory (directory-file-name module-dir))) mvn-cmd-builder)
+                                        (when debug (push "-Dinvoker.mavenExecutable=mvnDebug" mvn-cmd-builder))))
+                                      ((equal 'resume build-scope) (push (format "-rf :%s" artifact-id) mvn-cmd-builder))
+                                      ((equal 'module build-scope) (push (format "-pl :%s" artifact-id) mvn-cmd-builder))))
                                 (if also-make
-                                    (add-to-list 'mvn-cmd-builder "-am"))
+                                    (push "-am" mvn-cmd-builder))
                                 (if surefire-debug
-                                    (add-to-list 'mvn-cmd-builder "-Dmaven.surefire.debug"))
+                                    (push "-Dmaven.surefire.debug" mvn-cmd-builder))
                                 (if failsafe-debug
-                                    (add-to-list 'mvn-cmd-builder "-Dmaven.failsafe.debug"))
+                                    (push "-Dmaven.failsafe.debug" mvn-cmd-builder))
                                 (string-trim (string-join (reverse mvn-cmd-builder) " ")))))
 
 
@@ -314,7 +314,7 @@
   "Build the current maven module."
   (interactive)
   (let ((cmd (idee-maven-cmd :goals goals :debug debug :surefire-debug surefire-debug :failsafe-debug failsafe-debug :build-scope build-scope :also-make also-make)))
-    (add-to-list 'idee-maven-exec-history cmd)
+    (push cmd idee-maven-exec-history)
     (idee-eshell-project-command-enqueue cmd)))
 
 ;;; Toggles
@@ -399,7 +399,7 @@ or empty string other wise."
    :description "New Maven project from archetype."
    :func 'idee-new-maven-from-archetype-project))
 
-(add-to-list 'idee-project-factories-list idee-maven-project-factory)
+(push idee-maven-project-factory idee-project-factories-list)
 
 ;;; Project Visitor
 (defun idee-maven-project-p (root)
@@ -414,7 +414,7 @@ or empty string other wise."
     (when (file-exists-p project-pom)
          (setq idee-project-version (idee-maven-pom-version project-pom)))))
 
-(add-to-list 'idee-project-visitors 'idee-visitor-maven)
+(push 'idee-visitor-maven idee-project-visitors)
 
 (provide 'idee-maven)
 ;;; idee-maven.el ends here
