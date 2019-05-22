@@ -2,7 +2,7 @@
 # name: Empty Elisp
 # key:empty
 # --
-;;; `(file-name-nondirectory (buffer-file-name))` --- ${1:Description}
+;;; `(file-name-nondirectory (buffer-file-name))` --- ${1:Description} -*- lexical-binding: t -*-
 
 `(idee-header)`
 

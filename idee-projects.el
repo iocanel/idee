@@ -45,6 +45,7 @@
 (defconst idee-project-root-markers '(".idee" ".projectile" ".git"))
 (defvar idee-project-factories-list `(,idee-cask-project-factory))
 
+(defvar idee-project-name nil)
 (defvar idee-project-version nil)
 
 (defun idee-project-root-dir (&optional f)

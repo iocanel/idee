@@ -28,6 +28,7 @@
 (require 'yasnippet)
 (require 'editorconfig)
 
+;;; File funtcionts
 (defun idee-read-file (f)
   "Read the content of file F."
   (with-temp-buffer
@@ -62,6 +63,16 @@
   (and (string-match (rx-to-string `(: ,suffix eos) t)
                      string)
        t))
+
+;;; List functions
+(defun idee-strip-duplicates (list)
+  "Strip duplicate items from LIST."
+  (let ((new-list nil))
+    (while list
+      (when (and (car list) (not (member (car list) new-list)))
+        (setq new-list (cons (car list) new-list)))
+      (setq list (cdr list)))
+    (nreverse new-list)))
 
 (defun idee-http-post (url args callback)
   "Send ARGS to URL as a POST request."

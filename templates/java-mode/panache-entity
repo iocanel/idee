@@ -6,21 +6,20 @@
 `(idee-java-package-line)`
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.Column;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
 @Entity
-public class `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {
+public class `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` extends PanacheEntity {
 
-    @Id
-    private Long id;
+  @Column
+  String name;
 
-    public Long getId() {
-      return this.id;
-    }
+  public `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`() {
+  }
 
-    public void setId(Long id) {
-       this.id=id; 
-    }
+  public `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`(String name) {
+    this.name=name;
+  }
 }
