@@ -34,6 +34,9 @@
  (depends-on "evil")
  (depends-on "evil-leader")
 
+; Docker
+(depends-on "dockerfile-mode")
+
 ; Eshell
 (depends-on "async-await")
 

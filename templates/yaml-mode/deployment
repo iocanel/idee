@@ -21,7 +21,7 @@ spec:
         version: "$2"
     spec:
       containers:
-        image: "${3:`(user-login-name)`}/$1:$2"
+        image: "${3:`(idee-docker-get-image-name)`"
         name: "$1"
         ports:
         - containerPort: ${4:8080}
