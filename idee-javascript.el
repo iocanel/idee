@@ -91,7 +91,7 @@
 (defun idee-visitor-javascript (root)
   "Check if a javascript project is available under the specified ROOT."
   (when (idee-javascript-project-p root)
-    (setq idee-project-version (idee-javascript-pacakge-json-version (concat root package-json)))
+    (idee-project-set-version (idee-javascript-pacakge-json-version (concat root package-json)))
     (idee-javascript-enable)))
 
 (add-to-list 'idee-project-visitors 'idee-visitor-javascript)

@@ -37,6 +37,12 @@
   description
   func)
 
+(cl-defstruct idee-project-info
+  name
+  version
+  path
+  properties)
+
 (defconst idee-cask-project-factory (make-idee-project-factory
   :name "Cask"
   :description "Create an elisp project based on Cask."
@@ -45,7 +51,9 @@
 (defconst idee-project-root-markers '(".idee" ".projectile" ".git"))
 (defvar idee-project-factories-list `(,idee-cask-project-factory))
 
-(defvar idee-project-name nil)
+(defvar idee-project-info-alist nil)
+
+(defvar idee-project-get-name nil)
 (defvar idee-project-version nil)
 
 (defun idee-project-root-dir (&optional f)
@@ -120,9 +128,64 @@
             (set-buffer buffer)
             (when (derived-mode-p 'dired-mode) (revert-buffer)))))))
 
-(defun idee-project-version()
+
+(defun idee-project-info ()
+  "Initialize project."
+  (let* ((path (or (projectile-project-root) default-directory))
+         (name (or (projectile-project-name)  (file-name-nondirectory (directory-file-name path))))
+         (info (alist-get (intern name) idee-project-info-alist)))
+
+    (when (not info)
+      (setq info (make-idee-project-info
+                   :name name
+                   :path path))
+      (add-to-list 'idee-project-info-alist `(,(intern name) . ,info)))
+    info))
+
+(defun idee-project-get-version ()
   "Return the project version variable."
-  idee-project-version)
+  (let ((info (idee-project-info)))
+    (if info (idee-project-info-version info) nil)))
+
+(defun idee-project-set-version (version)
+  "Set the project VERSION."
+  (let ((name (idee-project-get-name))
+        (info (idee-project-info)))
+    (when info
+      (setf (idee-project-info-version info) version)
+      (setq idee-project-info-alist (delq (assoc (intern name) idee-project-info-alist) idee-project-info-alist))
+      (add-to-list 'idee-project-info-alist `(,(intern name). ,info)))))
+
+(defun idee-project-get-name ()
+  "Return the project name variable."
+  (let ((info (idee-project-info)))
+    (if info (idee-project-info-name info) nil)))
+
+(defun idee-project-set-name (name)
+  "Set the project NAME."
+  (let ((info (idee-project-info)))
+    (when info (setf (idee-project-info-name info) name))))
+
+(defun idee-project-get-property (key)
+  "Return the project name property with KEY."
+  (let ((info (idee-project-info)))
+    (if info
+        (alist-get (intern key) (idee-project-info-properties info))
+      nil)))
+
+(defun idee-project-set-property (key value)
+  "Set the project VALUE for KEY."
+  (let* ((name (idee-project-get-name))
+        (info (idee-project-info))
+        (props (idee-project-info-properties info)))
+    (when info
+      (setq props (delq (assoc key props) props))
+      (add-to-list 'props `(,(intern key) . ,value))
+      (setf (idee-project-info-properties info) props)
+      (setq idee-project-info-alist (delq (assoc (intern name) idee-project-info-alist) idee-project-info-alist))
+      (add-to-list 'idee-project-info-alist `(,(intern name) . ,info)))))
+
+(add-to-list 'projectile-after-switch-project-hook 'idee-project-info)
 
 (provide 'idee-projects)
 ;;; idee-projects.el ends here

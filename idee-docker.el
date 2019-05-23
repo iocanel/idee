@@ -1,4 +1,4 @@
-;;; idee-docker.el --- Docker integration -*- lexical-binding: t -*-
+j
 
 ;; Copyright (C) 2019 Ioannis Canellos 
 ;;     
@@ -32,6 +32,8 @@
 (defvar idee-docker-last-edited-dockerfile nil)
 (defvar idee-docker-registry nil)
 
+(defconst idee-last-visited-dockerfile "last-visited-dockerfile" "The property key that marks the last visited Dockerfile.")
+
 (defun idee-docker-get-dockerfiles-from-providers()
   "Call all registered dockerfile providers."
   (interactive)
@@ -50,8 +52,8 @@
                               (let  ((docker-image idee-docker-image))
                                 (or  docker-image
                                      (if idee-docker-registry
-                                         (format "%s/%s/%s:%s" idee-docker-registry (user-login-name) idee-project-name idee-project-version)
-                                       (format "%s/%s:%s" (user-login-name) idee-project-name idee-project-version))))))
+                                         (format "%s/%s/%s:%s" idee-docker-registry (user-login-name) (idee-project-get-name) (idee-project-get-version))
+                                       (format "%s/%s:%s" (user-login-name) (idee-project-get-name) (idee-project-get-version)))))))
 
 (defun idee-docker-find-dockerfile()
   "Find the dockerfile.
@@ -64,11 +66,12 @@ The criteria are the following:
          (path default-directory)
          (buffer (buffer-file-name))
          (relative-path (if buffer (file-relative-name (buffer-file-name) path) nil))
-         (provider-dockerfile (car (idee-docker-get-dockerfiles-from-providers))))
+         (provider-dockerfile (car (idee-docker-get-dockerfiles-from-providers)))
+         (last-visited-dockerfile (idee-project-get-property idee-last-visited-dockerfile)))
     (cond
      ((equal "dockerfile-mode" major-mode) relative-path)
      (provider-dockerfile provider-dockerfile)
-     ((file-exists-p idee-docker-last-edited-dockerfile) idee-docker-last-edited-dockerfile)
+     ((file-exists-p last-visited-dockerfile) last-visited-dockerfile)
      (t nil))))
 
 (defun idee-docker-dockerfile-from-project-root ()
@@ -76,7 +79,7 @@ The criteria are the following:
   (f-join (projectile-project-root) "Dockerfile"))         
 
 (add-to-list 'idee-dockerfile-provider-list 'idee-docker-dockerfile-from-project-root)
-(add-hook 'dockerfile-mode-hook (lambda () (setq idee-docker-last-edited-dockerfile (buffer-file-name))))
+(add-hook 'dockerfile-mode-hook (lambda () (idee-project-set-property idee-last-visited-dockerfile (buffer-file-name))))
 
 (define-key dockerfile-mode-map (kbd" C-c C-b") 'idee-docker-build)
 

@@ -6,5 +6,5 @@ kind: "Namespace"
 metadata:
   labels:
     app: ${1:`(projectile-project-name)`}
-    version: "${2:`idee-project-version`}"
+    version: "${2:`(idee-project-get-version)`}"
   name: "$1"

@@ -55,5 +55,41 @@
    (let ((current-dir (concat (file-name-as-directory root-sandbox-path) "module/src")))
    (should (equal (idee-project-root-dir current-dir) (f-full root-sandbox-path))))))
 
+(ert-deftest project-state-test/intial-name ()
+  "Should use `default-directory' when no argument."
+  (with-sandbox
+   (f-mkdir "test-project")
+   (let ((default-directory (f-join default-directory "test-project")))
+     (f-mkdir ".git")
+     (should (equal "test-project" (idee-project-get-name))))))
+
+(ert-deftest project-state-test/intial-path ()
+  "Should use `default-directory' when no argument."
+  (with-sandbox
+   (f-mkdir "test-project")
+   (let ((default-directory (f-join default-directory "test-project")))
+     (f-mkdir ".git")
+     (should (equal (projectile-project-root) (idee-project-info-path (idee-project-info)))))))
+
+(ert-deftest project-state-test/set-version ()
+  "Should use `default-directory' when no argument."
+  (with-sandbox
+   (f-mkdir "test-project")
+   (let ((default-directory (f-join default-directory "test-project")))
+     (f-mkdir ".git")
+     (should-not (idee-project-get-version))
+     (idee-project-set-version "1.0")
+     (should (equal (idee-project-get-version) "1.0")))))
+
+(ert-deftest project-state-test/set-property ()
+  "Should successfully set a property on the project."
+  (with-sandbox
+   (f-mkdir "test-project")
+   (let ((default-directory (f-join default-directory "test-project")))
+     (f-mkdir ".git")
+     (should-not (idee-project-get-property "foo"))
+     (idee-project-set-property "foo" "bar")
+     (should (equal (idee-project-get-property "foo") "bar")))))
+
 (provide 'idee-projects-test)
 ;;; idee-projects-test.el ends here

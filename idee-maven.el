@@ -413,7 +413,8 @@ or empty string other wise."
   "Check if a java project is available under the specified ROOT."
   (let ((project-pom (concat root pom-xml)))
     (when (file-exists-p project-pom)
-         (setq idee-project-version (idee-maven-pom-version project-pom)))))
+      (idee-project-set-version (idee-maven-pom-version project-pom))
+      (idee-project-set-name (idee-maven-pom-artifact-id project-pom)))))
 
 (push 'idee-visitor-maven idee-project-visitors)
 
