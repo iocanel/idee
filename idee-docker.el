@@ -42,8 +42,9 @@
   "Perform a docker build."
   (interactive)
   (let ((dockerfile (idee-docker-find-dockerfile))
+        (dockerfile-relative-path (file-relative-name dockerfile (projectile-project-root)))
         (docker-image (idee-docker-get-image-name)))
-    (idee-eshell-project-command-enqueue (format "docker build -f %s -t %s ." dockerfile docker-image))))
+    (idee-eshell-project-command-enqueue (format "docker build -f %s -t %s ." dockerfile-relative-path docker-image))))
 
 (defun idee-docker-run-dockerfile ()
   "Perform a docker run using a know dockerfile."
@@ -86,7 +87,8 @@
 
 (defun idee-docker-get-exposed-ports(dockerfile)
   "Get the port numbers that are exposed in the DOCKERFILE as list."
-  (let ((abs-dockerfile  (f-join (projectile-project-root) dockerfile)))
+  (let ((abs-dockerfile
+         (if (file-name-absolute-p dockerfile) dockerfile (f-join (projectile-project-root) dockerfile))))
     (with-temp-buffer
       (insert-file abs-dockerfile)
       (let* ((begin (point-min))
@@ -115,7 +117,8 @@ The criteria are the following:
      (provider-dockerfile provider-dockerfile)
      ((file-exists-p last-visited-dockerfile) last-visited-dockerfile)
      (t nil)))
-    (file-relative-name dockerfile (projectile-project-root))))
+    dockerfile))
+    
 
 (defun idee-docker-dockerfile-from-project-root ()
   "Return the path of Dockerfile at the project root."
