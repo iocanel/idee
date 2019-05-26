@@ -30,6 +30,8 @@
 (defvar root-test-path
   (f-dirname (f-this-file)))
 
+(defvar root-test-assets-path (f-join root-test-path "assets"))
+
 (defvar root-code-path
   (f-parent root-test-path))
 

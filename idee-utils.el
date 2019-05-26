@@ -64,6 +64,24 @@
                      string)
        t))
 
+;;
+;; Original source: https://emacs.stackexchange.com/questions/7148/get-all-regexp-matches-in-buffer-as-a-list
+(defun idee-string-match-as-list (regexp string)
+  "Get a list of all regexp matches in a string"
+  (save-match-data
+    (let ((matches)
+          (index 0)
+          (match " "))
+      (string-match regexp string)
+      (while match
+        (setq match (match-string index string))
+        (if match
+            (progn
+              (message (format "match:%s" match))
+            (add-to-list 'matches match t)
+            (incf index))))
+      matches)))
+
 ;;; List functions
 (defun idee-strip-duplicates (list)
   "Strip duplicate items from LIST."
