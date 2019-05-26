@@ -30,9 +30,9 @@
 (require 'idee-utils)
 (require 'idee-projects)
 (require 'idee-eshell)
-(require 's)
 
-(defcustom idee-quarkus-version "0.15.0" "The quarkus version." :group 'idee :type 'string)
+(defcustom idee-quarkus-version "0.15.0" "The quarkus version." :group 'idee-quarkus :type 'string)
+(defcustom idee-quarkus-init-group-id "org.acme" "The initial value for group-id in the quarkus project factory." :group 'idee-quarkus :type 'string)
 
 (defconst idee-quarkus-extensions-list '("agroal"
                                          "amazon-lambda"
@@ -86,7 +86,7 @@
 (defun idee-new-quarkus-rest-project ()
   "Create a new quarkus rest project."
   (interactive)
-  (let* ((group-id (read-string "Group Id:"))
+  (let* ((group-id (read-string "Group Id:" idee-quarkus-init-group-id))
          (artifact-id (read-string "Artifact Id:"))
          (version (read-string "Version:" "0.1-SNAPSHOT"))
          (endpoint (read-string "Endpoint:" "/hello"))

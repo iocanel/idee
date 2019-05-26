@@ -37,6 +37,8 @@
 (defvar idee-maven-exec-history ())
 (defvar idee-maven-project-settings-commands ())
 
+(defcustom idee-maven-init-group-id "org.acme" "The initial value for group-id in the maven project factory." :group 'idee-maven :type 'string)
+
 (defun idee-maven-module-root-dir-p (f)
   "Return non-nil if F is a maven module directory."
   (if (and f (file-directory-p f)) (seq-filter (lambda (x) (equal pom-xml x)) (directory-files f))
@@ -386,7 +388,7 @@ or empty string other wise."
 (defun idee-new-maven-from-archetype-project ()
   "Create a new maven from archetype project."
   (interactive)
-  (let* ((group-id (read-string "Group Id:"))
+  (let* ((group-id (read-string "Group Id:") idee-maven-init-group-id)
          (artifact-id (read-string "Artifact Id:"))
          (version (read-string "Version:" "0.1-SNAPSHOT"))
          (target-dir (idee--select-new-project-dir))

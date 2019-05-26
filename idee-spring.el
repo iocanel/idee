@@ -35,13 +35,15 @@
 (defvar idee-spring-extract-dir nil)
 (defvar idee-spring-extract-dir-buffer nil)
 
+(defcustom idee-spring-init-group-id "org.acme" "The initial value for group-id in the spring project factory." :group 'idee-spring :type 'string)
+
 (defun idee-new-spring-starter-project ()
   "Create a new project from https://start.spring.io."
   (interactive)
   (let* ((language (completing-read "Select language: " idee-spring-languages))
          (project-type (completing-read "Select build tool: " idee-spring-project-types))
          (dependencies (completing-read-multiple "Select dependencies: " idee-spring-dependencies))
-         (group-id (read-string "Group Id:"))
+         (group-id (read-string "Group Id:" idee-spring-init-group-id))
          (artifact-id (read-string "Artifact Id:"))
          (version (read-string "Version:" "0.1-SNAPSHOT"))
          (target-dir (idee--select-new-project-dir))
