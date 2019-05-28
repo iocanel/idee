@@ -88,7 +88,7 @@
 (defun idee-docker-get-exposed-ports(dockerfile)
   "Get the port numbers that are exposed in the DOCKERFILE as list."
   (let ((abs-dockerfile
-         (if (file-name-absolute-p dockerfile) dockerfile (f-join (projectile-project-root) dockerfile))))
+         (if (not (file-name-absolute-p dockerfile)) dockerfile (f-join (projectile-project-root) dockerfile))))
     (with-temp-buffer
       (insert-file abs-dockerfile)
       (let* ((begin (point-min))

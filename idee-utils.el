@@ -79,7 +79,7 @@
             (progn
               (message (format "match:%s" match))
             (add-to-list 'matches match t)
-            (incf index))))
+            (setq index (+ 1 index)))))
       matches)))
 
 ;;; List functions
