@@ -41,7 +41,7 @@
 (defun idee-docker-build ()
   "Perform a docker build."
   (interactive)
-  (let ((dockerfile (idee-docker-find-dockerfile))
+  (let* ((dockerfile (idee-docker-find-dockerfile))
         (dockerfile-relative-path (file-relative-name dockerfile (projectile-project-root)))
         (docker-image (idee-docker-get-image-name)))
     (idee-eshell-project-command-enqueue (format "docker build -f %s -t %s ." dockerfile-relative-path docker-image))))
