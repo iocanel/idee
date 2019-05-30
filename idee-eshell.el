@@ -21,6 +21,7 @@
 (defvar idee-eshell-command-running nil)
 
 (defcustom idee-eshell-cat-alias-enabled t "/dev/clip aware cat alias toggle " :group 'idee-eshell :type 'boolean)
+(defcustom idee-eshell-save-on-shell-enabled t "Save on shell toggle. Save on shell witll save all buffers each time the shell is used " :group 'idee-eshell :type 'boolean)
 (defcustom idee-eshell-demo-it-enabled nil "Demo-it for eshell feature toggle" :group 'idee-eshell :type 'string)
 (defcustom idee-eshell-demo-it-speed :fast "Demo-it for eshell typing speed" :group 'idee-eshell  :type '(choice (const :tag "fast" :fast)
                  (const :tag "faster"  :faster)
@@ -100,6 +101,7 @@
   "Load a SETTINGS-FILE as local OPTIONS and evaluate BODY."
   (declare (indent 1) (debug t))
   `(let ()
+  (when idee-eshell-save-on-shell (idee-save-all)) 
   (idee-switch-cli-on) 
   (with-current-buffer (format "*eshell %s*" (projectile-project-name))
     (let ((comint-scroll-to-bottom-on-output t))
@@ -114,6 +116,7 @@
   (idee-switch-cli-on)
   (with-current-buffer (format "*eshell %s*" (projectile-project-name))
     (let ((comint-scroll-to-bottom-on-output t))
+      (setf eshell-copy-old-input nil)
       (eshell-return-to-prompt)
       (idee-eshell-insert command)
       (eshell-send-input))))
