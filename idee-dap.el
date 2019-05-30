@@ -27,9 +27,9 @@ should be started after the :port argument is taken.
                       :wait-for-port :type :request :port
                       :environment-variables :hostName host) launch-args)
              (default-directory (or cwd default-directory)))
-       (mapc (-lambda ((env . value)) (setenv env value)) environment-variables)
        
        (when program-to-start (idee-with-project-shell
+                                  (mapc (-lambda ((env . value)) (setenv env value)) environment-variables)
                                   (when cwd (insert (format "cd %s\n" cwd)))
                                   (insert program-to-start)))
 
