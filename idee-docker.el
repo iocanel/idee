@@ -63,6 +63,13 @@
     (add-to-list 'cmd-builder docker-image t)
     (idee-eshell-project-command-enqueue (string-trim (string-join cmd-builder " ")))))
 
+(defun idee-docker-push-dockerfile ()
+  "Perform a docker push using a known docker-image."
+  (interactive)
+  (let* ((docker-image (idee-docker-get-image-name)))
+    (idee-eshell-project-command-enqueue (format "docker push %s" docker-image))))
+
+
 (defun idee-docker-get-image-name ()
   "Get the docker image name from settings or project parameters."
   (idee-with-project-settings "docker.el" idee-docker-image
@@ -129,6 +136,7 @@ The criteria are the following:
 
 (define-key dockerfile-mode-map (kbd" C-c C-b") 'idee-docker-build)
 (define-key dockerfile-mode-map (kbd" C-c C-r") 'idee-docker-run-dockerfile)
+(define-key dockerfile-mode-map (kbd" C-c C-p") 'idee-docker-push-dockerfile)
 
 (provide 'idee-docker)
 ;;; idee-docker.el ends here
