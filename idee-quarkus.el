@@ -32,6 +32,7 @@
 (require 'idee-eshell)
 
 (defcustom idee-quarkus-version "0.15.0" "The quarkus version." :group 'idee-quarkus :type 'string)
+(defcustom idee-quarkus-remote-dev-url nil "The remote dev url." :group 'idee-quarkus :type 'string)
 (defcustom idee-quarkus-init-group-id "org.acme" "The initial value for group-id in the quarkus project factory." :group 'idee-quarkus :type 'string)
 
 (defconst idee-quarkus-extensions-list '("agroal"
@@ -123,7 +124,47 @@
       (insert (format "(push \"%s\" idee-maven-project-settings-commands)" "mvn clean package -Dnative=true -Dnative-image.docker-build=true"))
       ;; Dev mode
       (insert (format "(push \"%s\" idee-maven-project-settings-commands)" "mvn quarkus:dev"))
+      ;; Remove Dev mode
+      (when idee-quarkus-remote-dev-url
+        (insert (format "(push \"%s\" idee-maven-project-settings-commands)" (format "mvn quarkus:remote-dev -Dquarkus.live-reload.url=%s" idee-quarkus-remote-dev-url))))
       (write-file maven-settings-file))))
+
+(defun idee-quarkus-aws-lambda-deploy ()
+  "Deploy the application to aws lambda."
+  (interactive)
+  (let* ((module-dir (idee-maven-module-root-dir))
+                                     (module-pom (concat module-dir pom-xml))
+                                     (artifact-id (idee-maven-pom-artifact-id module-pom)))
+    (idee-eshell-project-command-enqueue `("mkdir -p target/function"
+                                         "cp target/wiring-classes/bootstrap target/*-runner target/function"
+                                         "chmod 755 target/function/bootstrap"
+                                         "pushd target/function"
+                                         "zip -q function.zip bootstrap *-runner*"
+                                         "popd"
+                                         ,(format "aws lambda delete-function --function-name %s" artifact-id)
+                                         ,(format "aws lambda create-function --function-name %s --timeout 10 --zip-file fileb://target/function/function.zip --handler bootstrap --runtime provided" artifact-id)))))
+
+;;
+;; Output filters
+;;
+(defun idee-quarkus-highlight-time ()
+  "Highlight time."
+  (idee-quarkus-highlight-time-on-region eshell-last-output-start
+                                         eshell-last-output-end))
+
+(defconst idee-time-regexp "[0-9]+([\.][0-9]+)?m?s")
+
+(defun idee-quarkus-highlight-time-on-region (start end)
+  "Highlight time in region between START and END."
+  (let ((start-marker (copy-marker start))
+        (end-marker (copy-marker end)))
+    (save-excursion
+      (goto-char start-marker)
+      (while (re-search-forward idee-time-regexp end-marker t))
+        (message (buffer-substring (match-beginning 0) (match-end 0))))))
+
+; TODO: Implement filter correctly
+;(add-to-list 'eshell-output-filter-functions 'idee-quarkus-highlight-time)
 
 (add-to-list 'idee-project-factories-list idee-quarkus-rest-project-factory)
 
