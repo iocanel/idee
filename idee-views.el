@@ -77,7 +77,7 @@
       (progn
         (treemacs--init (projectile-project-root))
         ;; we remove the mode-line to hide the treemacs label
-        (setq mode-line-format "")))
+        (setq mode-line-format nil)))
   (idee-jump-to-non-ide-window)
   ;; bottom area
   (cond (idee-grep-enabled (idee-grep-subview))
