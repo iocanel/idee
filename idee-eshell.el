@@ -101,7 +101,7 @@
   "Load a SETTINGS-FILE as local OPTIONS and evaluate BODY."
   (declare (indent 1) (debug t))
   `(let ()
-  (when idee-eshell-save-on-shell (idee-save-all)) 
+  (when idee-eshell-save-on-shell-enabled (idee-save-all)) 
   (idee-switch-cli-on) 
   (with-current-buffer (format "*eshell %s*" (projectile-project-name))
     (let ((comint-scroll-to-bottom-on-output t))
