@@ -37,8 +37,9 @@
 
 (defcustom idee-spring-init-group-id "org.acme" "The initial value for group-id in the spring project factory." :group 'idee-spring :type 'string)
 
-(defun idee-new-spring-starter-project ()
-  "Create a new project from https://start.spring.io."
+(defun idee-new-spring-starter-project (&optional create-function)
+  "Create a new project from https://start.spring.io.
+The command supports accepting an external CREATE-FUNCTION or defaults to idee-create-project-with-shell."
   (interactive)
   (let* ((language (completing-read "Select language: " idee-spring-languages))
          (project-type (completing-read "Select build tool: " idee-spring-project-types))
@@ -50,7 +51,7 @@
          (generate-command (format "spring init -g %s -a %s -v %s -d%s %s" group-id artifact-id version (mapconcat 'identity dependencies ",") artifact-id))
          (cleanup-command (format "mv %s/* . && rm -r %s" artifact-id artifact-id)))
     (message generate-command)
-    (idee-create-project-with-shell target-dir generate-command cleanup-command)))
+    (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command cleanup-command)))
 
 (defun idee-new-spring-starter-project-internal ()
   "Create a new project from https://start.spring.io."

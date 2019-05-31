@@ -57,8 +57,9 @@
   (add-to-list 'idee-function-alist '(idee-optimize-imports-function . tide-organize-imports)))
 
 ;;; Project Factory
-(defun idee-new-npm-project ()
-  "Create a new npm project."
+(defun idee-new-npm-project (&optional create-function)
+  "Create a new npm project.
+The command supports accepting an external CREATE-FUNCTION or defaults to idee-create-project-with-shell."
   (interactive)
   (let* ((initializer (read-string "Intializer:" "react-app"))
          (recomended-dir (concat (file-name-as-directory default-directory) initializer))
@@ -69,7 +70,7 @@
          (dir-name (substring target-dir (length parent-dir)))
          (generate-command (format "npm init %s ." initializer)))
 
-    (idee-create-project-with-shell target-dir generate-command)))
+    (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command)))
 
 
 (defconst idee-npm-project-factory

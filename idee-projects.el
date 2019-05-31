@@ -77,6 +77,14 @@
     ;; Make sure we are pointing to a non ide buffer.
     (idee-jump-to-non-ide-window)))
 
+(defun idee-new-module-function()
+  "Create a new module."
+  (interactive)
+  (let ((factory (idee--select-project-factory)))
+    (funcall (idee-project-factory-func factory) 'idee-create-module-with-shell)
+    ;; Make sure we are pointing to a non ide buffer.
+    (idee-jump-to-non-ide-window)))
+
 (defun idee--select-new-project-dir()
  "Select a new project directory."
   (interactive)
@@ -109,6 +117,23 @@
     (setq projectile-project-root path)
     (projectile-switch-project-by-name path)
     (when (treemacs-current-workspace) (treemacs-add-project-to-workspace path))
+    (dired path)
+    (auto-revert-mode 1)
+    (idee-ide-view)
+    (idee-switch-cli-on)
+    (idee-refresh-view)
+    (idee-eshell-project-command-enqueue commands)
+    (idee-jump-to-non-ide-window)))
+
+(defun idee-create-module-with-shell (path &rest commands)
+  "Create a new module with in the specified PATH and the specified COMMANDS."
+  (let* ((project-path (projectile-project-root path))
+        (relative-path (file-relative-name path project-path))
+        (dired-auto-revert-buffer t))
+    (idee-eshell-project-command-execute (format "cd %s" relative-path))
+    (make-directory path t)
+    (setq default-directory path)
+    (idee-jump-to-non-ide-window)
     (dired path)
     (auto-revert-mode 1)
     (idee-ide-view)

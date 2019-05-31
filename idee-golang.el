@@ -52,13 +52,14 @@
   (add-to-list 'idee-function-alist '(idee-mode-hydra-function . go-hydra/body)))
 
 ;;; Project Factory
-(defun idee-new-golang-module ()
-  "Create a new golang module."
+(defun idee-new-golang-module (&optional create-function)
+  "Create a new golang module.
+The command supports accepting an external CREATE-FUNCTION or defaults to idee-create-project-with-shell."
   (interactive)
   (let* ((module-name (read-string "Module:" "example.com/m"))
          (target-dir (idee--select-new-project-dir))
          (generate-command (format "go mod init %s" module-name))))
-    (idee-create-project-with-shell target-dir generate-command))
+    (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command))
 
 (defconst idee-golang-module-factory
   (make-idee-project-factory

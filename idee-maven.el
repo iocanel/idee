@@ -266,14 +266,14 @@
   "Prompt the user to execute previous maven build from history."
   (interactive)
   (let ((maven-command (completing-read "Maven command:" idee-maven-exec-history)))
-    (idee-eshell-project-command-enqueue maven-command)))
+    (idee-eshell-project-command-execute maven-command)))
 
 (defun idee-maven-exec-from-project-settings ()
   "Prompt the user to execute previous maven build from history."
   (interactive)
   (idee-with-project-settings "maven.el" idee-maven-project-settings-commands
     (let ((maven-command (completing-read "Maven command:" idee-maven-project-settings-commands)))
-      (idee-eshell-project-command-enqueue maven-command))))
+      (idee-eshell-project-command-execute maven-command))))
 
 (cl-defun idee-maven-cmd (&key goals debug surefire-debug failsafe-debug build-scope also-make)
   (idee-with-project-settings "maven.el" idee-maven-profiles
@@ -318,7 +318,7 @@
   (interactive)
   (let ((cmd (idee-maven-cmd :goals goals :debug debug :surefire-debug surefire-debug :failsafe-debug failsafe-debug :build-scope build-scope :also-make also-make)))
     (push cmd idee-maven-exec-history)
-    (idee-eshell-project-command-enqueue cmd)))
+    (idee-eshell-project-command-execute cmd)))
 
 ;;; Toggles
 (defun idee-maven-toggle-offline ()
@@ -385,8 +385,9 @@ or empty string other wise."
   ("q" nil "quit"))
 
 ;;; Project Factory
-(defun idee-new-maven-from-archetype-project ()
-  "Create a new maven from archetype project."
+(defun idee-new-maven-from-archetype-project (&optional create-function)
+  "Create a new maven from archetype project.
+The command supports accepting an external CREATE-FUNCTION or defaults to idee-create-project-with-shell."
   (interactive)
   (let* ((group-id (read-string "Group Id:") idee-maven-init-group-id)
          (artifact-id (read-string "Artifact Id:"))
@@ -394,7 +395,7 @@ or empty string other wise."
          (target-dir (idee--select-new-project-dir))
          (generate-command (format "mvn archetype:generate -DgroupId=%s -DartifactId=%s -Dversion=%s -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false" group-id artifact-id version))
          (cleanup-command (format "mv %s/* . && rm -r %s" artifact-id artifact-id)))
-    (idee-create-project-with-shell target-dir generate-command cleanup-command)))
+    (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command cleanup-command)))
 
 (defconst idee-maven-project-factory
   (make-idee-project-factory
@@ -417,6 +418,7 @@ or empty string other wise."
     (when (file-exists-p project-pom)
       (idee-project-set-version (idee-maven-pom-version project-pom))
       (idee-project-set-name (idee-maven-pom-artifact-id project-pom)))))
+
 
 (push 'idee-visitor-maven idee-project-visitors)
 
