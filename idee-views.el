@@ -33,8 +33,6 @@
 ;;
 ;; State
 ;;
-
-
 (defvar idee-current-view 'idee-ide-view)
 
 ;; Toggles
@@ -140,19 +138,22 @@
 (defun idee-helm-ag-subview ()
   (require 'helm-projectile)
   (require 'helm-ag)
-
-  (if (get-buffer "*helm-ag*")
-      (progn
+  (cond
+   ((get-buffer "*helm-ag-edit*") (progn
+                                    (split-window-below)
+                                    (other-window 1)
+                                    (switch-to-buffer "*helm-ag-edit*")))
+   ((get-buffer "*helm-ag*") (progn
+                                    (split-window-below)
+                                    (other-window 1)
+                                    (switch-to-buffer "*helm-ag*")))
+   (t (progn
+        (helm-projectile-ag)
+        (idee-jump-to-non-ide-window)
+        (delete-other-windows)
         (split-window-below)
         (other-window 1)
-        (switch-to-buffer "*helm-ag*"))
-    (progn
-      (helm-projectile-ag)
-      (idee-jump-to-non-ide-window)
-      (delete-other-windows)
-      (split-window-below)
-      (other-window 1)
-      (switch-to-buffer "*helm-ag*")))
+        (switch-to-buffer "*helm-ag*"))))
   (minimize-window)
   (evil-window-set-height 12))
 
@@ -379,14 +380,13 @@ PIVOT indicates how many windows should be switched at the end of the operation.
       nil)))
 
 (defun idee-kill-helm-ag-and-window ()
-  "Kill the helm-ag window and buffer.  Return t if helm-ag window was found."
+  "Kill the helm-ag window and buffer.  Return t if helm-ag/edit window was found."
   (let ((buffer (current-buffer)))
-    (if (equal "*helm-ag*" (buffer-name buffer))
+    (if (or (equal "*helm-ag*" (buffer-name buffer)) (equal "*helm-ag-edit*" (buffer-name buffer)))
         (progn
           (kill-buffer-and-window)
           t)
       nil)))
-
 
 (defadvice quit-window (around idee-on-quit-window (&optional kill window))
   "Handles things when quiting window."
@@ -400,6 +400,10 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 (advice-add 'projectile-switch-project :after 'idee-project-open-view)
 (advice-add 'treemacs-switch-workspace :after 'idee-project-open-view)
 (advice-add 'next-error :after 'idee-after-next-error)
+
+(advice-add 'helm-ag-edit :after 'idee-refresh-view)
+(advice-add 'helm-ag-edit--commit :after 'idee-refresh-view)
+(advice-add 'helm-ag-edit--abort :after 'idee-refresh-view)
 
 (provide 'idee-views)
 ;;; idee-views.el ends here
