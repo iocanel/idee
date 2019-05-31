@@ -133,6 +133,12 @@
 
 (defun idee-eshell-insert (str)
   "Insert STR into the current project eshell buffer."
+
+  ;; Sometimes eshell decided to insert the last command when trying to insert the new one.
+  ;; Not, sure exactly why this happens, but let's kill the line if it does.
+  ;; This also helps, if left over chars or half written commands are there.
+  (when (< (point) (point-max)) (kill-line))
+
   (if (and idee-eshell-demo-it-enabled (require 'demo-it nil t))
       (demo-it-insert str idee-eshell-demo-it-speed)
     (insert str)))
