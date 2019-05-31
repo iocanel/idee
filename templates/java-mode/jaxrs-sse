@@ -1,0 +1,27 @@
+# contributor: Ioannis Canellos <iocanel@gmail.com>
+# name: JAX-RS SSE
+# key: jaxrs-sse
+# --
+`(idee-header)`
+`(idee-java-package-line)`
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Flowable;
+import org.reactivestreams.Publisher;
+
+@Path("/${1:hello}")
+public class `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {
+
+    @GET
+    @Path("/stream")
+    @Produces(MediaType.SERVER_SENT_EVENTS)
+    public Publisher<String> $1() {
+        return Flowable.interval(1, TimeUnit.SECONDS).map(t -> "$1");
+    }
+}

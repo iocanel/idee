@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: Quarkus Postgresql JPA properties 
+# key: quarkus-postgres-jpa
+# --
+quarkus.datasource.url=jdbc:postgresql:${1:database}
+quarkus.datasource.driver=org.postgresql.Driver
+quarkus.datasource.username=${2:root}
+quarkus.datasource.password=${3:password}

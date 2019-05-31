@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: Quarkus Postgresql Reactive JDBC properties 
+# key: quarkus-postgres-reactive-jdbc
+# --
+quarkus.datasource.url=vertx-reactive:postgresql://:5432/${1:database}
+quarkus.datasource.driver=org.postgresql.Driver
+quarkus.datasource.username=${2:root}
+quarkus.datasource.password=${3:password}
