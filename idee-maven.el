@@ -395,7 +395,9 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
          (target-dir (idee--select-new-project-dir))
          (generate-command (format "mvn archetype:generate -DgroupId=%s -DartifactId=%s -Dversion=%s -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false" group-id artifact-id version))
          (cleanup-command (format "mv %s/* . && rm -r %s" artifact-id artifact-id)))
-    (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command cleanup-command)))
+    (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command cleanup-command)
+    (idee-project-set-name artifact-id)
+    (idee-project-set-version version)))
 
 (defconst idee-maven-project-factory
   (make-idee-project-factory

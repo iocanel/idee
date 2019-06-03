@@ -93,17 +93,20 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
          (version (read-string "Version:" "0.1-SNAPSHOT"))
          (endpoint (read-string "Endpoint:" "/hello"))
          (extensions (completing-read-multiple "Select extensions: " idee-quarkus-extensions-list))
+         (extension-names (mapcar 'idee-quarkus-extension-qualified-name extensions))
          (target-dir (idee--select-new-project-dir))
          (generate-command (format "mvn io.quarkus:quarkus-maven-plugin:%s:create -DprojectGroupId=%s -DprojectArtifactId=%s -DprojectVersion=%s -DclassName=%s.Endpoint -Dendpoint=%s" idee-quarkus-version group-id artifact-id version group-id endpoint))
          (cleanup-command (format "mv %s/* . && mv %s/.[^.]* . && rm -r %s" artifact-id artifact-id artifact-id))
-         (add-extension-command (if (not extensions) nil
-                                    (format "mvn quarkus:add-extension -Dextensions=\"io.quarkus:quarkus-%s\"" (mapconcat 'identity (mapc (lambda (e) (format "io.quarkus:quarkus-%s" e)) extensions) ",")))))
+         (add-extension-command (if (not extension-names) nil
+                                    (format "mvn quarkus:add-extension -Dextensions=\"%s\"" (mapconcat 'identity extension-names ",")))))
 
-    (if (not add-extension-command)
+    (if add-extension-command
         (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command cleanup-command add-extension-command)
       (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command cleanup-command))
 
-      (idee-quarkus-init-maven-project-settings)))
+    (idee-project-set-name artifact-id)
+    (idee-project-set-version version)
+    (idee-quarkus-init-maven-project-settings)))
 
 (defun idee-new-quarkus-remote-dev-project (&optional create-function)
   "Create a new quarkus rest project.

@@ -50,8 +50,9 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
          (target-dir (idee--select-new-project-dir))
          (generate-command (format "spring init -g %s -a %s -v %s -d%s %s" group-id artifact-id version (mapconcat 'identity dependencies ",") artifact-id))
          (cleanup-command (format "mv %s/* . && rm -r %s" artifact-id artifact-id)))
-    (message generate-command)
-    (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command cleanup-command)))
+    (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command cleanup-command)
+    (idee-project-set-name artifact-id)
+    (idee-project-set-version version)))
 
 (defun idee-new-spring-starter-project-internal ()
   "Create a new project from https://start.spring.io."

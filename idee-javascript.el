@@ -70,7 +70,9 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
          (dir-name (substring target-dir (length parent-dir)))
          (generate-command (format "npm init %s ." initializer)))
 
-    (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command)))
+    (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command)
+    (idee-project-set-name dir-name)
+    (idee-project-set-version "1.0.0")))
 
 
 (defconst idee-npm-project-factory
