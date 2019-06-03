@@ -1,4 +1,4 @@
-;;; idee-eshell.el --- Eshell integration  -*- lexical-binding: t -*-
+;;; idee-eshell.el --- Eshell integration -*- lexical-binding: t -*-
 
 
 
@@ -21,6 +21,7 @@
 (defvar idee-eshell-command-running nil)
 
 (defcustom idee-eshell-cat-alias-enabled t "/dev/clip aware cat alias toggle " :group 'idee-eshell :type 'boolean)
+(defcustom idee-eshell-edit-alias-enabled t "edit alias toggle " :group 'idee-eshell :type 'boolean)
 (defcustom idee-eshell-save-on-shell-enabled t "Save on shell toggle. Save on shell witll save all buffers each time the shell is used " :group 'idee-eshell :type 'boolean)
 (defcustom idee-eshell-demo-it-enabled nil "Demo-it for eshell feature toggle" :group 'idee-eshell :type 'string)
 (defcustom idee-eshell-demo-it-speed :fast "Demo-it for eshell typing speed" :group 'idee-eshell  :type '(choice (const :tag "fast" :fast)
@@ -144,6 +145,7 @@
     (insert str)))
 
 ;;
+;; Aliases
 ;;
 (defun idee-eshell-cat (f)
   "Display the contents of file F."
@@ -154,8 +156,22 @@
 (advice-add 'eshell-command-started :before 'idee-eshell-command-started)
 (advice-add 'eshell-command-finished :after 'idee-eshell-command-finished)
  
+(when idee-eshell-cat-alias-enabled
+  (add-hook 'eshell-mode-hook (lambda () (eshell/alias "cat" "idee-eshell-cat $1"))))
 
-(when idee-eshell-cat-alias-enabled (add-hook 'eshell-mode-hook (lambda () (eshell/alias "cat" "idee-eshell-cat $1"))))
+(defun idee-eshell-edit (&rest files)
+  "Edit the the specified FILES."
+  (let ((file (car files))
+        (remaining (cdr files)))
+    (idee-refresh-view)
+    (idee-jump-to-non-ide-window)
+    (find-file file)
+    (mapc (lambda (f) (split-window-horizontally) (find-file f)) remaining))
+    ;; We don't want to return anything back, so let's just return nil.
+    nil)
+
+(when idee-eshell-edit-alias-enabled
+  (add-hook 'eshell-mode-hook (lambda () (eshell/alias "edit" "idee-eshell-edit $*"))))
 
 (provide 'idee-eshell)
 ;;; idee-eshell.el ends here
