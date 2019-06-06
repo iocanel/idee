@@ -102,8 +102,8 @@
   "Load a SETTINGS-FILE as local OPTIONS and evaluate BODY."
   (declare (indent 1) (debug t))
   `(let ()
-  (when idee-eshell-save-on-shell-enabled (idee-save-all)) 
-  (idee-switch-cli-on) 
+  (when idee-eshell-save-on-shell-enabled (idee-save-all))
+  (idee-switch-cli-on)
   (with-current-buffer (format "*eshell %s*" (projectile-project-name))
     (let ((comint-scroll-to-bottom-on-output t))
      (eshell/clear-scrollback)
@@ -172,6 +172,25 @@
 
 (when idee-eshell-edit-alias-enabled
   (add-hook 'eshell-mode-hook (lambda () (eshell/alias "edit" "idee-eshell-edit $*"))))
+
+(defun idee-eshell-open (file)
+  "Edit the the specified FILES."
+  (let* ((is-directory (file-directory-p file))
+        (path (expand-file-name file))
+        (git (f-join path ".git")))
+    (message (format "open:%s directory:%s" path is-directory)
+    (if is-directory
+        (progn
+          (setq default-directory path)
+          (when (not (file-exists-p git)) (shell-command "git init"))
+          (projectile-add-known-project path)
+          (setq projectile-project-root path)
+          (projectile-switch-project-by-name path)
+          (idee-refresh-view))
+      (idee-eshell-edit path)))))
+
+(when idee-eshell-edit-alias-enabled
+  (add-hook 'eshell-mode-hook (lambda () (eshell/alias "open" "idee-eshell-open $1"))))
 
 (provide 'idee-eshell)
 ;;; idee-eshell.el ends here
