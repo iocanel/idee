@@ -28,12 +28,16 @@
 ;;; Code:
 
 (require 'idee-utils)
+(require 'idee-maven)
 (require 'idee-projects)
 (require 'idee-eshell)
+(require 'demo-it)
 
 (defcustom idee-quarkus-version "0.15.0" "The quarkus version." :group 'idee-quarkus :type 'string)
 (defcustom idee-quarkus-remote-dev-url nil "The remote dev url." :group 'idee-quarkus :type 'string)
 (defcustom idee-quarkus-init-group-id "org.acme" "The initial value for group-id in the quarkus project factory." :group 'idee-quarkus :type 'string)
+
+(defconst idee-quarkus-maven-plugin "quarkus-maven-plugin")
 
 (defconst idee-quarkus-extensions-list '("agroal"
                                          "amazon-lambda"
@@ -60,6 +64,7 @@
                                          "kubernetes"
                                          "narayana-jta"
                                          "netty"
+                                         "reactive-pg-client"
                                          "resteasy"
                                          "resteasy-jsonb"
                                          "scheduler"
@@ -129,7 +134,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
   "Add a quarkus extension to the project."
   (interactive)
   (let ((extension (completing-read "Extension:" idee-quarkus-extensions-list)))
-    (idee-eshell-project-command-enqueue (format "mvn quarkus:add-extension -Dextensions=\"%s\"" extension))))
+    (idee-eshell-project-command-enqueue (format "mvn quarkus:add-extension -Dextensions=\"io.quarkus:quarkus-%s\"" extension))))
 
 (defun idee-quarkus-init-maven-project-settings ()
   "Initialize project with project settings."
@@ -138,17 +143,18 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
          (maven-settings-file (f-join settings-dir "maven.el")))
     (if (not (file-exists-p settings-dir))
         (mkdir settings-dir))
-    (with-temp-buffer
-      ;; Add to settings popular commands for quarkus
-      (insert (format "(setq idee-maven-project-settings-commands nil)"))
-      ;; Native image build
-      (insert (format "(push \"%s\" idee-maven-project-settings-commands)" "mvn clean package -Dnative=true -Dnative-image.docker-build=true"))
-      ;; Dev mode
-      (insert (format "(push \"%s\" idee-maven-project-settings-commands)" "mvn quarkus:dev"))
-      ;; Remove Dev mode
-      (when idee-quarkus-remote-dev-url
-        (insert (format "(push \"%s\" idee-maven-project-settings-commands)" (format "mvn quarkus:remote-dev -Dquarkus.live-reload.url=%s" idee-quarkus-remote-dev-url))))
-      (write-file maven-settings-file))))
+    (if (not (file-exists-p maven-settings-file))
+        (with-temp-buffer
+          ;; Add to settings popular commands for quarkus
+          (insert (format "(setq idee-maven-project-settings-commands nil)"))
+          ;; Native image build
+          (insert (format "(push \"%s\" idee-maven-project-settings-commands)" "mvn clean package -Dnative=true -Dnative-image.docker-build=true"))
+          ;; Dev mode
+          (insert (format "(push \"%s\" idee-maven-project-settings-commands)" "mvn quarkus:dev"))
+          ;; Remove Dev mode
+          (when idee-quarkus-remote-dev-url
+            (insert (format "(push \"%s\" idee-maven-project-settings-commands)" (format "mvn quarkus:remote-dev -Dquarkus.live-reload.url=%s" idee-quarkus-remote-dev-url))))
+          (write-file maven-settings-file)))))
 
 (defun idee-quarkus-aws-lambda-deploy ()
   "Deploy the application to aws lambda."
@@ -188,6 +194,34 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
 ;(add-to-list 'eshell-output-filter-functions 'idee-quarkus-highlight-time)
 
 (add-to-list 'idee-project-factories-list idee-quarkus-rest-project-factory)
+
+
+(evil-leader/set-key "q a" 'idee-quarkus-add-extension)
+(evil-leader/set-key "q b" 'idee-quarkus-build)
+(evil-leader/set-key "q d" 'idee-quarkus-dev)
+(evil-leader/set-key "q r" 'idee-quarkus-remote-dev)
+(evil-leader/set-key "q n" 'idee-quarkus-native-build)
+
+
+;;; Project Visitor
+(defun idee-quarkus-project-p (root)
+  "Check if ROOT is the root path of a quarkus project."
+  (if (idee-maven-project-p root)
+    (let* ((pom (f-join root pom-xml))
+           (content (idee-read-file pom)))
+      (string-match-p (regexp-quote idee-quarkus-maven-plugin) content))
+    nil))
+
+(defun idee-visitor-quarkus (root)
+  "Check if a java project is available under the specified ROOT."
+  (let ((project-pom (concat root pom-xml)))
+    (when (idee-quarkus-project-p root)
+      (message (format "quarkus root:%s" root))
+      (idee-project-set-version (idee-maven-pom-version project-pom))
+      (idee-project-set-name (idee-maven-pom-artifact-id project-pom))
+      (idee-quarkus-init-maven-project-settings))))
+
+(push 'idee-visitor-quarkus idee-project-visitors)
 
 (provide 'idee-quarkus)
 ;;; idee-quarkus.el ends here
