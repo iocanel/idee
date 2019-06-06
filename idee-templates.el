@@ -41,9 +41,11 @@
 
 (defconst idee-templates-source-dir (f-join idee-source-dir "templates") "The idee source template directory.")
 (defconst idee-snippets-source-dir (f-join idee-source-dir "snippets") "The idee source snippet directory.")
+(defconst idee-headers-source-dir (f-join idee-source-dir "headers") "The idee source header directory.")
 
 (defconst idee-emacs-templates-dir (f-join idee-resources-dir "templates") "The directory where template files are stored.")
 (defconst idee-emacs-snippets-dir (f-join idee-resources-dir "snippets") "The directory where snippet files are stored.")
+(defconst idee-emacs-headers-dir (f-join idee-resources-dir "headers") "The directory where header files are stored.")
 
 ;;
 ;; Initialization
