@@ -54,6 +54,7 @@
 (defconst java-comment-style (make-idee-comment-style :block-beginning "/*" :block-ending "*/"
                                                       :custom-block-beginning idee-comment-java-custom-block-beginning :custom-line-prefix idee-comment-java-custom-line-prefix :custom-block-ending idee-comment-java-custom-block-ending))
 (defvar idee--java-symbols)
+(defvar idee-java-last-visited-class nil)
 
 (defun idee-java-enable()
   "Enable java bindings."
@@ -68,6 +69,13 @@
   (add-to-list 'idee-type-modes-alist '("java" . "java-mode"))
   (add-to-list 'idee-type-comment-styles-alist `("java" . ,java-comment-style)))
 
+(defun idee-java-visit-file(&optional f)
+  "Enable java bindings."
+  (interactive)
+  (when (idee-java-source-p (or f (buffer-file-name)))
+    (let* ((package (idee-java-package-of default-directory))
+           (classname (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))))
+      (setq idee-java-last-visited-class (format "%s.%s" package classname)))))
 
 ;;; Formatting
 (defun idee-java-set-tab-width (&optional w)
@@ -123,9 +131,13 @@
 
 (defun idee-java-source-p (f)
   "Return non-nil if F is a source file."
-  (let ((source-dir (idee-java-find-src-dir f)))
-    (message (format "file: %s source dir: %s." f source-dir))
-    (and source-dir (string-prefix-p source-dir f))))
+  (if (string-suffix-p ".java" f)
+
+      (progn
+      (message (format "checking if valid java file:%s" f))
+      (let ((source-dir (idee-java-find-src-dir f)))
+        (message (format "file: %s source dir: %s." f source-dir))
+        (and source-dir (string-prefix-p source-dir f))))))
 
 (defun idee-java-find-test-dir (f)
   "Return the test root of F."
@@ -213,6 +225,9 @@
 
 ;;; Hook
 (add-hook 'java-mode-hook 'idee-java-enable)
+(add-hook 'java-mode-hook 'idee-java-visit-file)
+
+(advice-add 'projectile-switch-to-buffer :after #'idee-java-visit-file)
 
 (provide 'idee-java)
 ;;; idee-java.el ends here
