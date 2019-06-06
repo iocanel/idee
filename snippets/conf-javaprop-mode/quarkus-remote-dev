@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Quarkus remote dev properties 
+# key: quarkus-remote-dev
+# --
+quarkus.live-reload.password=${1:secret}

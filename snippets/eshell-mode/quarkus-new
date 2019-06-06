@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Create new quarkus project
+# key: quarkus-new
+# --
+mvn io.quarkus:quarkus-maven-plugin:${1:`idee-quarkus-version`}:create -DprojectGroupId=${2:org.acme} -DprojectArtifactId=${3:hello-world} -DprojectVersion=${4:0.1-SNAPSHOT} -Dendpoint=${5:/hello} -DclassName=${2:$(yas-text)}.${5:$(idee-capitalize-first (replace-regexp-in-string "[^[:alnum:]]" "" yas-text))}

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Quarkus add extension
+# key: quarkus-add
+# --
+mvn quarkus:add-extension -Dextensions="${1:io.quarkus:quarkus-$$(yas-choose-value idee-quarkus-extensions-list)}"

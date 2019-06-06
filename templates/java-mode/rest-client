@@ -1,0 +1,23 @@
+# contributor: Ioannis Canellos <iocanel@gmail.com>
+# name: Rest Client
+# key: rest-client
+# --
+`(idee-header)`
+`(idee-java-package-line)`
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+
+@Path("/")
+@RegisterRestClient
+public interface `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {
+
+    @GET
+    @Path("/${1:path}")
+    @Produces("text/plain")
+    String ${1:$(replace-regexp-in-string "[^[:alnum:]]" "" yas-text)}();
+
+}

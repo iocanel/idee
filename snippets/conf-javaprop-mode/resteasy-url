@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Resteasy URL
+# key: rest-easy-url
+# --
+${1:`idee-java-last-visited-class`}/mp-rest/url=${2:url}
