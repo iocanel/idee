@@ -304,6 +304,10 @@
                                         (when debug (push "-Dinvoker.mavenExecutable=mvnDebug" mvn-cmd-builder))))
                                       ((equal 'resume build-scope) (push (format "-rf :%s" artifact-id) mvn-cmd-builder))
                                       ((equal 'module build-scope) (push (format "-pl :%s" artifact-id) mvn-cmd-builder))))
+                                (if idee-maven-skip-tests
+                                    (push "-DskipTests" mvn-cmd-builder))
+                                (if idee-maven-offline
+                                    (push "-o" mvn-cmd-builder))
                                 (if also-make
                                     (push "-am" mvn-cmd-builder))
                                 (if surefire-debug
