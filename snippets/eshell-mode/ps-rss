@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ps with resident set size
+# key: ps-rss
+# --
+ps ax -o pid,rss,command | numfmt --header --from-unit=1024 --to=iec --field 2 | grep -v grep | grep ${1:<what to grep>}
