@@ -6,11 +6,12 @@
 `(idee-java-package-line)`
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
 @Entity
-@Table("${1:`(downcase (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))`})
+@Table(name="${1:`(downcase (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))`}")
 public class `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` extends PanacheEntity {
   $0
 }
