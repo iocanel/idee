@@ -36,7 +36,6 @@
     (dolist (v idee-project-visitors)
       (funcall v default-directory))))
 
-(add-to-list 'idee-project-visitors 'idee-visitor-clojure)
 (add-to-list 'projectile-after-switch-project-hook 'idee-project-visit)
 
 (provide 'idee-visitors)
