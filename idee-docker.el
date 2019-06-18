@@ -32,6 +32,12 @@
         (docker-image (idee-docker-get-image-name)))
     (idee-eshell-project-command-enqueue (format "docker build -f %s -t %s ." dockerfile-relative-path docker-image))))
 
+(defun idee-docker-kill ()
+  "Perform a docker kill for all containers using the applications docker image."
+  (interactive)
+  (let* ((docker-image (idee-docker-get-image-name)))
+    (shell-command (format "docker ps | grep %s | cut -f1 -d \" \" | while read id; do docker kill $id; done" docker-image))))
+
 (defun idee-docker-run-dockerfile ()
   "Perform a docker run using a know dockerfile."
   (interactive)
@@ -121,6 +127,7 @@ The criteria are the following:
 (add-hook 'dockerfile-mode-hook (lambda () (idee-project-set-property idee-last-visited-dockerfile (buffer-file-name))))
 
 (define-key dockerfile-mode-map (kbd" C-c C-b") 'idee-docker-build)
+(define-key dockerfile-mode-map (kbd" C-c C-k") 'idee-docker-kill)
 (define-key dockerfile-mode-map (kbd" C-c C-r") 'idee-docker-run-dockerfile)
 (define-key dockerfile-mode-map (kbd" C-c C-p") 'idee-docker-push-dockerfile)
 
