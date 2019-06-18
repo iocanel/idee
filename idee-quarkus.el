@@ -172,6 +172,36 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
                                          ,(format "aws lambda create-function --function-name %s --timeout 10 --zip-file fileb://target/function/function.zip --handler bootstrap --runtime provided" artifact-id)))))
 
 ;;
+;; Shortcuts
+;;
+(defun idee-quarkus-build ()
+  "Run the quarkus build."
+  (interactive)
+  (idee-eshell-project-command-enqueue "mvn clean install"))
+
+(defun idee-quarkus-dev ()
+  "Run the quarkus dev mode."
+  (interactive)
+  (idee-eshell-project-command-enqueue "mvn quarkus:dev"))
+
+(defun idee-quarkus-remote-dev ()
+  "Run the quarkus remote dev mode."
+  (interactive)
+  (when idee-quarkus-remote-dev-url (idee-eshell-project-command-enqueue (format "mvn quarkus:remote-dev -Dquarkus.live-reload.url=%s" idee-quarkus-remote-dev-url))))
+
+(defun idee-quarkus-native-build ()
+  "Run the quarkus native build."
+  (interactive)
+  (idee-eshell-project-command-enqueue "mvn clean package -Dnative=true -Dnative-image.docker-build=true"))
+
+;;
+;; Utils
+;;
+(defun idee-quarkus-extension-qualified-name (extension)
+  "Return the qualified name of the EXTENSION."
+  (format "io.quarkus:quarkus-%s" extension))
+
+;;
 ;; Output filters
 ;;
 (defun idee-quarkus-highlight-time ()
