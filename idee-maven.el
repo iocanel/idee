@@ -272,8 +272,17 @@
   "Prompt the user to execute previous maven build from history."
   (interactive)
   (idee-with-project-settings "maven.el" idee-maven-project-settings-commands
-    (let ((maven-command (completing-read "Maven command:" idee-maven-project-settings-commands)))
-      (idee-eshell-project-command-execute maven-command))))
+                              (let* ((maven-command nil)
+                                     (mvn-cmd-builder nil))
+
+                                (push (completing-read "Maven command:" idee-maven-project-settings-commands) mvn-cmd-builder)
+                                
+                                (if idee-maven-skip-tests
+                                    (push "-DskipTests" mvn-cmd-builder))
+                                (if idee-maven-offline
+                                    (push "-o" mvn-cmd-builder))
+                                (setq maven-command (string-trim (string-join (reverse mvn-cmd-builder) " ")))
+                                (idee-eshell-project-command-execute maven-command))))
 
 (cl-defun idee-maven-cmd (&key goals debug surefire-debug failsafe-debug build-scope also-make)
   (idee-with-project-settings "maven.el" idee-maven-profiles
