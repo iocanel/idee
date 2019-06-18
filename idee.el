@@ -34,9 +34,9 @@
 (defcustom idee-repo-url "git@github.com:iocanel/idee.git" "The repository url of the idee project." :group 'idee :type 'string)
 
 (defun idee-resources-init ()
+  (interactive)
   "Initialize idee resources."
   (idee--git-checkout idee-repo-url idee-resources-dir '("headers" "templates" "snippets")))
 
-(idee-resources-init)
 (provide 'idee)
 ;;; idee.el ends here

@@ -52,6 +52,26 @@ This project is not available on any emacs package repository so you will either
   (require 'idee-golang)
 #+end_src
 
+*** Installing required resources
+The first time idee gets installed it needs to install
+
+- snippets
+- templates
+- license headers
+
+To install these:
+
+#+begin_src emacs-lisp
+(idee-resources-init)
+#+end_src
+
+After this step these resources can be updated via git:
+
+#+begin_src sh
+  cd ~/.emacs.d/idee
+  git pull --rebase origin master
+#+end_src
+
 ** Overview
 
 The initial idea behind this project was to provide an IDE-like window layout (project tree, editor & command line interface).
