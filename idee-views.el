@@ -45,7 +45,7 @@
 (defvar idee-messages-enabled t)
 (defvar idee-grep-enabled nil)
 (defvar idee-helm-ag-enabled nil)
-(defvar idee-bottom-buffer-command 'projectile-run-eshell)
+(defvar idee-bottom-buffer-command 'idee-projectile-run-eshell)
 
 ;; A list with all component switches that are meant to be placed in the bottom
 (defvar idee-bottom-area-switch-list '(idee-cli-enabled idee-repl-enabled idee-diagnostics-enabled idee-errors-enabled idee-messages-enabled idee-grep-enabled idee-helm-ag-enabled))
@@ -88,7 +88,7 @@
 (defun idee-cli-subview ()
   (idee-split-and-follow-vertically)
   (minimize-window)
-  (projectile-run-eshell)
+  (idee-projectile-run-eshell)
   (evil-window-set-height 12))
 
 (defun idee-diagnostics-subview ()
@@ -199,7 +199,7 @@
   (interactive)
   (setq idee-current-view 'idee-terminal-view)
   (delete-other-windows-internal)
-  (projectile-run-eshell))
+  (idee-projectile-run-eshell))
 
 ;;
 ;;
@@ -272,6 +272,17 @@ VISITED is an optional list with windows already visited."
   (balance-windows)
   (other-window 1))
 
+(defun idee-projectile-run-eshell ()
+  "Invoke `eshell' in the project's root.
+
+Switch to the project specific eshell buffer if it already exists."
+  (interactive)
+  (projectile-with-default-dir (projectile-ensure-project (projectile-project-root))
+    (let ((eshell-buffer-name (concat "*eshell " (projectile-project-name) "*")))
+      ;; If running inside doom use +eshell/here.
+      (if (fboundp '+eshell/here)
+          (+eshell/here nil)
+        (eshell)))))
 ;;
 ;; Buffer providers
 ;;
