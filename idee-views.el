@@ -86,10 +86,11 @@
         (idee-messages-enabled (idee-messages-subview))))
 
 (defun idee-cli-subview ()
-  (idee-split-and-follow-vertically)
-  (minimize-window)
-  (idee-projectile-run-eshell)
-  (evil-window-set-height 12))
+  (when (not (idee-cli-visible-p))
+    (idee-split-and-follow-vertically)
+    (minimize-window)
+    (idee-projectile-run-eshell)
+    (evil-window-set-height 12)))
 
 (defun idee-diagnostics-subview ()
   (flymake-show-diagnostics-buffer)
@@ -279,10 +280,12 @@ Switch to the project specific eshell buffer if it already exists."
   (interactive)
   (projectile-with-default-dir (projectile-ensure-project (projectile-project-root))
     (let ((eshell-buffer-name (concat "*eshell " (projectile-project-name) "*")))
-      ;; If running inside doom use +eshell/here.
-      (if (fboundp '+eshell/here)
-          (+eshell/here nil)
-        (eshell)))))
+      (when (not (idee-cli-visible-p))
+        (if (not (string-prefix-p "*eshell" (buffer-name)))
+            ;; If running inside doom use +eshell/here.
+            (if (fboundp '+eshell/here)
+                (+eshell/here nil)
+              (eshell)))))))
 ;;
 ;; Buffer providers
 ;;
@@ -292,7 +295,7 @@ Switch to the project specific eshell buffer if it already exists."
 
 (defun idee-cli-visible-p ()
   "Return non-nil if cli is visible."
-  (get-buffer-window (format "*eshell %s*" (projectile-project-name))))
+  (seq-filter (lambda (w) (string-prefix-p "*eshell" (buffer-name (window-buffer w)))) (get-buffer-window-list)))
 
 (defun idee-diagnostics-visible-p ()
   "Return non-nil if diagnostics is visible."

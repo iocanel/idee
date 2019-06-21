@@ -116,12 +116,9 @@
     (projectile-add-known-project path)
     (setq projectile-project-root path)
     (projectile-switch-project-by-name path)
-    (when (treemacs-current-workspace) (treemacs-add-project-to-workspace path))
+    (delete-other-windows-internal)
     (dired path)
     (auto-revert-mode 1)
-    (idee-ide-view)
-    (idee-switch-cli-on)
-    (idee-refresh-view)
     (idee-eshell-project-command-enqueue commands)
     (idee-jump-to-non-ide-window)))
 
