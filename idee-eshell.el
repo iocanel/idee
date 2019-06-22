@@ -18,6 +18,7 @@
 (require 'async-await)
 
 (defvar idee-eshell-command-queue (queue-create))
+(defvar idee-eshell-command-inserting nil)
 (defvar idee-eshell-command-running nil)
 
 (defcustom idee-eshell-cat-alias-enabled t "/dev/clip aware cat alias toggle " :group 'idee-eshell :type 'boolean)
@@ -47,16 +48,10 @@
   "Mark that an eshell command is running."
 
  (await (wait-async 0.1))
- ; TODO: comment out until we have a working version of idee-eshell-prompt-ready-p
- ; (let ((i 0)
- ;       (ready (idee-eshell-prompt-ready-p)))
- ;   (while (and (< i 100)(not ready))
- ;     (await (wait-async 0.1))
- ;     (setq i (+ i 1))
- ;     (setq ready (idee-eshell-prompt-ready-p))))
+  (when (and (not idee-eshell-command-inserting) idee-eshell-command-running)
+    (idee-eshell-execute-next-command))
+  (setq idee-eshell-command-running (and idee-eshell-command-running (not (queue-empty idee-eshell-command-queue)))))
 
-  (idee-eshell-execute-next-command)
-  (setq idee-eshell-command-running (not (queue-empty idee-eshell-command-queue))))
 ;;
 ;; TODO: This is still buggy, as it appears that `idee-eshell-command-running` is getting nil value prematurely.
 (async-defun idee-eshell-await-command-finished ()
@@ -67,20 +62,6 @@
       (await (wait-async 0.1))
       (setq running idee-eshell-command-running)))
       (await (wait-async 0.1)))
-                 
-(defun idee-eshell-prompt-ready-p ()
-  "Return non-nil if the prompt is visible."
-  (interactive)
-  (with-current-buffer (format "*eshell %s*" (projectile-project-name))
-    (let ((current (point))
-          (col (current-column))
-          (found (get-text-property (point) 'history)))
-      (save-excursion
-        (while  (and (> col 0) (not found))
-          (goto-char (- (point) 1))
-          (setq col (- col 1))
-          (setq found (get-text-property (point) 'history))))
-        found)))
 
 (defun idee-eshell-execute-next-command ()
   "Execute the next command found in the queue."
@@ -138,11 +119,14 @@
   ;; Sometimes eshell decided to insert the last command when trying to insert the new one.
   ;; Not, sure exactly why this happens, but let's kill the line if it does.
   ;; This also helps, if left over chars or half written commands are there.
+  (setq idee-eshell-command-inserting t)
   (when (< (point) (point-max)) (kill-line))
 
   (if (and idee-eshell-demo-it-enabled (require 'demo-it nil t))
       (demo-it-insert str idee-eshell-demo-it-speed)
-    (insert str)))
+    (insert str))
+
+  (setq idee-eshell-command-inserting nil))
 
 ;;
 ;; Aliases
@@ -154,8 +138,9 @@
     (idee-read-file f)))
 
 (advice-add 'eshell-command-started :before 'idee-eshell-command-started)
-(advice-add 'eshell-command-finished :after 'idee-eshell-command-finished)
- 
+;(advice-add 'eshell-command-finished :after 'idee-eshell-command-finished)
+(add-hook 'eshell-after-prompt-hook 'idee-eshell-command-finished)
+
 (when idee-eshell-cat-alias-enabled
   (add-hook 'eshell-mode-hook (lambda () (eshell/alias "cat" "idee-eshell-cat $1"))))
 
