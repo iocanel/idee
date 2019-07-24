@@ -268,6 +268,17 @@
   (let ((maven-command (completing-read "Maven command:" idee-maven-exec-history)))
     (idee-eshell-project-command-execute maven-command)))
 
+(defun idee-maven-exec-java ()
+  "Run the current main class using mvn exec:java."
+  (interactive)
+  (let* ((file-name (buffer-file-name (current-buffer)))
+         (classname (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))
+         (packagename (idee-java-package-of default-directory))
+         (fqcn (if packagename (format "%s.%s" packagename classname) classname)))
+
+    (message (format "fqcn:%s" fqcn))
+  (idee-maven-exec :goals (format "clean package exec:java -Dexec.mainClass=%s" fqcn) :build-scope 'module)))
+
 (defun idee-maven-exec-from-project-settings ()
   "Prompt the user to execute previous maven build from history."
   (interactive)
@@ -363,7 +374,7 @@ or empty string other wise."
         ------------------------------------------------------------------------------------
         _pc_: clean                  _mc_: clean              _to_: offline     _h_: from history
         _pp_: package                _mp_: package            _tt_: tests       _s_: from project settings 
-        _pi_: install                _mi_: install   
+        _pi_: install                _mi_: install                            _j_: java class
         _po_: edit pom               _mo_: edit pom
                                   _mrf_: resume from
                                   _mai_: also install
@@ -395,6 +406,7 @@ or empty string other wise."
 
   ("h" idee-maven-exec-from-history)
   ("s" idee-maven-exec-from-project-settings)
+  ("j" idee-maven-exec-java)
   ("q" nil "quit"))
 
 ;;; Project Factory
