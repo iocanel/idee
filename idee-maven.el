@@ -331,7 +331,9 @@
                                 (if also-make
                                     (push "-am" mvn-cmd-builder))
                                 (if surefire-debug
-                                    (push "-Dmaven.surefire.debug" mvn-cmd-builder))
+                                    (if invoker-test 
+                                        (push "-Dinvoker.mavenOpts=\"-Dmaven.surefire.debug\"" mvn-cmd-builder)
+                                      (push "-Dmaven.surefire.debug" mvn-cmd-builder)))
                                 (if failsafe-debug
                                     (push "-Dmaven.failsafe.debug" mvn-cmd-builder))
                                 (string-trim (string-join (reverse mvn-cmd-builder) " ")))))
