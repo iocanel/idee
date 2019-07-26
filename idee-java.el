@@ -107,12 +107,14 @@
                               (replace-regexp-in-string ".$" ""
                                                         (replace-regexp-in-string "\/" "." relative-path)))))
 
-(defun idee-java-find-module-dir (f)
-  "Find the directory of the module that owns the source file F."
-  (let ((current-dir f))
-    (while (not (idee-java-module-dir-p current-dir))
+(defun idee-java-module-root-dir (&optional f)
+  "Find the directory of the java module that owns the source file F."
+  (let* ((file-name (buffer-file-name (current-buffer)))
+         (dir (if file-name (directory-file-name file-name) default-directory))
+         (current-dir (f-full (if f f (file-name-directory dir)))))
+    (while (and current-dir (not (idee-filesystem-root-p current-dir)) (not (idee-java-module-dir-p current-dir)))
       (setq current-dir (file-name-directory (directory-file-name current-dir))))
-    current-dir))
+    (if (idee-filesystem-root-p current-dir) nil current-dir)))
 
 (defun idee-java-module-dir-p (f)
   "Return non-nil if F is a module directory."
@@ -122,7 +124,7 @@
 
 (defun idee-java-find-src-dir (f)
   "Return the source root of F."
-  (let* ((module-dir (idee-java-find-module-dir f))
+  (let* ((module-dir (idee-java-module-root-dir f))
          (source-dir  (concat (file-name-as-directory module-dir) source-main-prefix)))
 
     (if (file-exists-p source-dir)
@@ -132,12 +134,9 @@
 (defun idee-java-source-p (f)
   "Return non-nil if F is a source file."
   (if (string-suffix-p ".java" f)
-
       (progn
-      (message (format "checking if valid java file:%s" f))
-      (let ((source-dir (idee-java-find-src-dir f)))
-        (message (format "file: %s source dir: %s." f source-dir))
-        (and source-dir (string-prefix-p source-dir f))))))
+        (let ((source-dir (idee-java-find-src-dir f)))
+          (and source-dir (string-prefix-p source-dir f))))))
 
 (defun idee-java-find-test-dir (f)
   "Return the test root of F."
