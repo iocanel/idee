@@ -107,7 +107,7 @@
                               (replace-regexp-in-string ".$" ""
                                                         (replace-regexp-in-string "\/" "." relative-path)))))
 
-(defun idee-java-module-root-dir (&optional f)
+(defun idee-java-find-module-dir (&optional f)
   "Find the directory of the java module that owns the source file F."
   (let* ((file-name (buffer-file-name (current-buffer)))
          (dir (if file-name (directory-file-name file-name) default-directory))
@@ -124,7 +124,7 @@
 
 (defun idee-java-find-src-dir (f)
   "Return the source root of F."
-  (let* ((module-dir (idee-java-module-root-dir f))
+  (let* ((module-dir (idee-java-find-module-dir f))
          (source-dir  (concat (file-name-as-directory module-dir) source-main-prefix)))
 
     (if (file-exists-p source-dir)
