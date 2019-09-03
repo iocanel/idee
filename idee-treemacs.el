@@ -79,13 +79,14 @@
 
 (defun idee-treemacs-open-project-workspace (workspace)
   "Open the first project of the WORKSPACE."
-  (let* ((selected workspace)
-         (name (treemacs-project->name selected))
-         (project (treemacs-project->path selected))
-         (path (treemacs-project->path (car project))))
-    (projectile-switch-project-by-name path)
-    (idee-refresh-view)
-    (idee-jump-to-non-ide-window)))
+  (when (and workspace (treemacs-project->path workspace))
+      (let* ((name (treemacs-project->name workspace))
+             (project (treemacs-project->path workspace))
+             (path (treemacs-project->path (car project))))
+        (when path
+          (projectile-switch-project-by-name path)
+          (idee-refresh-view)
+          (idee-jump-to-non-ide-window)))))
 
 (defhydra treemacs-hydra (:hint nil :exit t)
   ;; The '_' character is not displayed. This affects columns alignment.
