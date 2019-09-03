@@ -415,7 +415,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 (advice-add 'treemacs-switch-workspace :after 'idee-project-open-view)
 (advice-add 'next-error :after 'idee-after-next-error)
 
-(advice-add 'helm-ag-edit :after 'idee-refresh-view)
+(advice-add 'helm-ag--edit :after 'idee-refresh-view)
 (advice-add 'helm-ag-edit--commit :after 'idee-refresh-view)
 (advice-add 'helm-ag-edit--abort :after 'idee-refresh-view)
 
