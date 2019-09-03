@@ -10,6 +10,9 @@
 
 ;;; Code:
 
+(require 'treemacs-projectile)
+(require 'treemacs)
+
 (defun idee-treemacs-collapse-dir-toggle ()
   "Toggle value of treemacs-collapse-dir between 3 0."
   (interactive)
@@ -21,6 +24,7 @@
 (defun idee-treemacs-create-and-switch-to-workspace ()
   "Create and switch to a new treemacs workspace."
   (interactive)
+  (when (not (equal (treemacs-current-visibility) 'visible)) (treemacs))
   (let* ((response (treemacs-do-create-workspace))
          (workspace (car (cdr response))))
     (setf (treemacs-current-workspace) workspace)
@@ -51,6 +55,7 @@
 (defun idee-treemacs-switch-to-project-workspace ()
     "Select a different workspace for treemacs."
     (interactive)
+    (when (not (equal (treemacs-current-visibility) 'visible)) (treemacs))
     (pcase (treemacs-do-switch-workspace)
       ('only-one-workspace
        (treemacs-pulse-on-failure "There are no other workspaces to select."))
