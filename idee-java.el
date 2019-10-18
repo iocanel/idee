@@ -210,18 +210,19 @@
      (split-string (replace-regexp-in-string "\\([A-Z]\\)" " \\1" s) " "))))
 
 (defun idee-java-switch-workspace (&optional w)
-  "Switch to workspace."
+  "Switch to workspace W."
   (let* ((current (treemacs-current-workspace))
          (name (if current (treemacs-workspace->name current) nil))
          (workspace
           (cond
            (w w)
-           ((and name idee-java-treemacs-workspace-sync-enabled (f-join (locate-user-emacs-file "workspace") name)))
+           ((and name idee-java-treemacs-workspace-sync-enabled (f-join (f-join (locate-user-emacs-file "lsp") "workspace") name)))
            (t (locate-user-emacs-file "workspace")))))
 
     (message (format "Using LSP Java workspace: %s." workspace))
     (setq lsp-java-workspace-dir workspace)
     (setq lsp-java-workspace-cache-dir (f-join lsp-java-workspace-dir ".cache"))
+    (setq lsp-session-file (f-join lsp-java-workspace-dir ".lsp-session-v1"))
     (when (lsp-workspaces) (lsp-restart-workspace))))
 
 ;;; Visitor
