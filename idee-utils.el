@@ -149,6 +149,40 @@
   "Return the path of a local SETTINGS-FILE."
   (concat (file-name-as-directory (concat (projectile-project-root) ".idee")) settings-file))
 
+(defun idee-region-copy-to-other-window (start end)
+  "Copy selected text from START to END over to other non IDE window."
+  (interactive "r")
+  (if (use-region-p) 
+      (let* ((count (count-words-region start end))
+            (buffer (current-buffer))
+            (name (buffer-name buffer))
+            (current-window (selected-window)))
+        (save-excursion
+          (kill-ring-save start end)
+          (other-window 1)
+          (idee-jump-to-non-ide-window (list name))
+          (evil-end-of-line)
+          (evil-insert-newline-below)
+          (yank)
+          (select-window current-window)))))
+
+(defun idee-region-move-to-other-window (start end)
+  "Move selected text from START to END over to other non IDE window."
+  (interactive "r")
+  (if (use-region-p) 
+      (let* ((count (count-words-region start end))
+            (buffer (current-buffer))
+            (name (buffer-name buffer))
+            (current-window (selected-window)))
+        (save-excursion
+          (kill-region start end)
+          (other-window 1)
+          (idee-jump-to-non-ide-window (list name))
+          (evil-end-of-line)
+          (evil-insert-newline-below)
+          (yank)
+          (select-window current-window)))))
+
 ;;; Macros
 (defmacro idee-with-project-settings (settings-file options &rest body)
   "Load a SETTINGS-FILE as local OPTIONS and evaluate BODY."
