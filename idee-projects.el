@@ -150,6 +150,13 @@
             (set-buffer buffer)
             (when (derived-mode-p 'dired-mode) (revert-buffer)))))))
 
+(defun idee-close-project-buffers (&optional project-dir)
+  (interactive)
+  (projectile-kill-buffers)
+  (let* ((project (projectile-ensure-project (or project-dir (projectile-project-root))))
+         (project-name (projectile-project-name project)))
+    (kill-buffer (format "*eshell %s*" project-name))
+    (kill-buffer project-name)))
 
 (defun idee-project-info ()
   "Initialize project."

@@ -38,7 +38,7 @@
                               (idee-new-file-function . idee-new-file-function)
                               (idee-recent-function . projectile-recentf)
                               (idee-save-all-function . projectile-save-project-buffers)
-                              (idee-close-function . projectile-kill-buffers)
+                              (idee-close-function . idee-close-project-buffers)
                               (idee-build-function . projectile-compile-project)
                               (idee-run-or-eval-function . projectile-run-project)
                               (idee-vcs-function . magit-status)

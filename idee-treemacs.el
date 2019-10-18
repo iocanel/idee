@@ -93,6 +93,13 @@
           (idee-refresh-view)
           (idee-jump-to-non-ide-window)))))
 
+
+(defun idee-workspace-close ()
+  (interactive)
+  (let* ((projects (treemacs-workspace->projects (treemacs-current-workspace))))
+      (dolist (project projects)
+        (idee-close-project-buffers (treemacs-project->path project)))))
+
 (defhydra treemacs-hydra (:hint nil :exit t)
   ;; The '_' character is not displayed. This affects columns alignment.
   ;; Remove s many spaces as needed to make up for the '_' deficit.
