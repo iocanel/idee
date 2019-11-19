@@ -24,6 +24,7 @@
 (defun idee-treemacs-create-and-switch-to-workspace ()
   "Create and switch to a new treemacs workspace."
   (interactive)
+  (idee-workspace-close)
   (when (not (equal (treemacs-current-visibility) 'visible)) (treemacs))
   (let* ((response (treemacs-do-create-workspace))
          (workspace (car (cdr response))))
@@ -55,6 +56,7 @@
 (defun idee-treemacs-switch-to-project-workspace ()
     "Select a different workspace for treemacs."
     (interactive)
+    (idee-workspace-close)
     (when (not (equal (treemacs-current-visibility) 'visible)) (treemacs))
     (pcase (treemacs-do-switch-workspace)
       ('only-one-workspace
@@ -96,9 +98,11 @@
 
 (defun idee-workspace-close ()
   (interactive)
+  (idee-view-reset)
+  (when (treemacs-current-workspace)
   (let* ((projects (treemacs-workspace->projects (treemacs-current-workspace))))
       (dolist (project projects)
-        (idee-close-project-buffers (treemacs-project->path project)))))
+        (idee-close-project-buffers (treemacs-project->path project))))))
 
 (defhydra treemacs-hydra (:hint nil :exit t)
   ;; The '_' character is not displayed. This affects columns alignment.

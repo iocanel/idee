@@ -50,16 +50,25 @@
 ;; A list with all component switches that are meant to be placed in the bottom
 (defvar idee-bottom-area-switch-list '(idee-cli-enabled idee-repl-enabled idee-diagnostics-enabled idee-errors-enabled idee-messages-enabled idee-grep-enabled idee-helm-ag-enabled))
 
+(setq idee-current-view 'idee-ide-view)
 ;;
 ;; Functions
 ;;
-(setq idee-current-view 'idee-ide-view)
+
+(defun idee-view-reset()
+    "Reset view variables."
+    (setq idee-cli-enabled nil
+          idee-repl-enabled nil
+          idee-output-enabled nil
+          idee-diagnostics-enabled nil
+          idee-errors-enabled nil
+          idee-grep-enabled nil
+          idee-helm-ag-enabled nil))
 
 (defun idee-project-open-view()
   "Switch to a traditional IDE view for the buffer.  (project tree, main buffer & terminal)."
  (interactive)
  (dolist (b idee-bottom-area-switch-list)
-   (message (format "%s"b))
    (setq b nil))
   (idee-ide-view)
   (idee-jump-to-non-ide-window)

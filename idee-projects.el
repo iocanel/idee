@@ -153,10 +153,22 @@
 (defun idee-close-project-buffers (&optional project-dir)
   (interactive)
   (projectile-kill-buffers)
+  ;; Kill all buffers containing the PROJECT-DIR.
+  (when (get-buffer project-dir) (kill-buffer project-dir))
+  (dolist (buffer (buffer-list))
+    (let* ((name (buffer-name buffer)))
+      (cond
+       ((cl-search project-dir name) (kill-buffer name))
+       ((cl-search "*helm-ag*" name) (kill-buffer name))
+       ((cl-search "*grep*" name) (kill-buffer name))
+       (t (message "buffer %s not a project buffer" name)))))
+
+  ;; Kill all buffers containing the project name
   (let* ((project (projectile-ensure-project (or project-dir (projectile-project-root))))
          (project-name (projectile-project-name project)))
-    (kill-buffer (format "*eshell %s*" project-name))
-    (kill-buffer project-name)))
+    (dolist (buffer (buffer-list))
+      (let* ((name (buffer-name buffer)))
+        (when (cl-search project-name name) (kill-buffer name))))))
 
 (defun idee-project-info ()
   "Initialize project."
