@@ -62,6 +62,7 @@
           idee-output-enabled nil
           idee-diagnostics-enabled nil
           idee-errors-enabled nil
+          idee-messages-enabled nil
           idee-grep-enabled nil
           idee-helm-ag-enabled nil))
 
