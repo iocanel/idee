@@ -33,7 +33,7 @@
 (require 'idee-eshell)
 (require 'demo-it)
 
-(defcustom idee-quarkus-version "0.16.1" "The quarkus version." :group 'idee-quarkus :type 'string)
+(defcustom idee-quarkus-version "1.0.0.CR1" "The quarkus version." :group 'idee-quarkus :type 'string)
 (defcustom idee-quarkus-remote-dev-url nil "The remote dev url." :group 'idee-quarkus :type 'string)
 (defcustom idee-quarkus-init-group-id "org.acme" "The initial value for group-id in the quarkus project factory." :group 'idee-quarkus :type 'string)
 
@@ -62,6 +62,7 @@
                                          "keycloak"
                                          "kotlin"
                                          "kubernetes"
+                                         "kubernetes-client"
                                          "narayana-jta"
                                          "netty"
                                          "reactive-pg-client"
@@ -77,7 +78,7 @@
                                          "smallrye-reactive-messaging"
                                          "smallrye-reactive-messaging-kafka"
                                          "smallrye-reactive-streams-operators"
-                                         "smallrye-rest-client"
+                                         "rest-client"
                                          "spring-di"
                                          "undertow"
                                          "undertow-websockets"
