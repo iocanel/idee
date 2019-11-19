@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: Smallrye messaging incoming
+# key: mp-messaging-incoming
+# --
+mp.messaging.incoming.in-${1:topic}.topic=${1:$(plural-pluralize yas-text)}
+mp.messaging.incoming.in-$1.connector=smallrye-kafka
+mp.messaging.incoming.in-$1.bootstrap.servers=${2:localhost}:9092
+mp.messaging.incoming.in-$1.key.deserializer=org.apache.kafka.common.serialization.StringDeserializer
+mp.messaging.incoming.in-$1.value.deserializer=org.apache.kafka.common.serialization.StringDeserializer
+mp.messaging.incoming.in-$1.group.id=${3:`(idee-project-get-name)`}
