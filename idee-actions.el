@@ -181,14 +181,19 @@
 
 (defun idee-global-set-tab-width-function (width)
   "Set the tab WIDTH."
-  (setq standard-indent width))
+  (setq standard-indent width
+        tab-width width
+        evil-shift-width width
+        c-basic-offset width))
 
 (defun idee-toggle-use-tabs ()
     "Toggle between tabs and spaces."
   (interactive)
   (if idee-use-tabs
-      (setq idee-use-tabs nil)
-    (setq idee-use-tabs t))
+      (setq idee-use-tabs nil
+            evil-indent-convert-tabs t)
+    (setq idee-use-tabs t
+          evil-indent-convert-tabs nil))
 
   (setq indent-tabs-mode idee-use-tabs)
   (if idee-use-tabs
