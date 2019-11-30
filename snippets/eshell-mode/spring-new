@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Create new spring project
+# key: spring-new
+# --
+spring init -g ${1:org.acme} -a ${2:hello-world} -v ${4:0.1-SNAPSHOT} -dweb $2

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: create new vert.x project
+# key: vertx-new
+# --
+curl -s -o $2.zip https://start.vertx.io/starter.zip?groupId=${1:org.acme}&artifactId=${2:hello-world}&buildTool=maven&jdkVersion=1.8&language=java&packageName=$2&vertxDependencies=vertx-web&vertxVersion=${3:3.8.4}

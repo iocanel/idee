@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: create new thorntail project
+# key: thorntail-new
+# --
+curl -s -o $2 http://generator.thorntail.io/generator?g=${1:org.acme}&a=${2:hello-world}&sv=2.5.0.Final&d=jaxrs
