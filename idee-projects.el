@@ -152,7 +152,10 @@
 
 (defun idee-close-project-buffers (&optional project-dir)
   (interactive)
-  (projectile-kill-buffers)
+  (when project-dir
+    (progn
+      (setq projectile-project-root project-dir)
+      (projectile-kill-buffers)))
   ;; Kill all buffers containing the PROJECT-DIR.
   (when (get-buffer project-dir) (kill-buffer project-dir))
   (dolist (buffer (buffer-list))
