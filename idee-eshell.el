@@ -159,7 +159,7 @@
   (add-hook 'eshell-mode-hook (lambda () (eshell/alias "edit" "idee-eshell-edit $*"))))
 
 (defun idee-eshell-open (file)
-  "Edit the the specified FILES."
+  "Edit the the specified FILE."
   (let* ((is-directory (file-directory-p file))
         (path (expand-file-name file))
         (git (f-join path ".git")))
