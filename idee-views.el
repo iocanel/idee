@@ -394,6 +394,24 @@ PIVOT indicates how many windows should be switched at the end of the operation.
       (idee-toggle-helm-ag)
     (idee-toggle-grep)))
 
+(defun idee-kill-eshell-and-window ()
+  "Kill the eshell window and buffer.  Return t if grep window was found."
+  (let ((buffer (current-buffer)))
+    (if (string-prefix-p "*eshell" (buffer-name buffer))
+        (progn
+          (kill-buffer-and-window)
+          t)
+      nil)))
+
+(defun idee-kill-messages-and-window ()
+  "Kill the eshell window and buffer.  Return t if grep window was found."
+  (let ((buffer (current-buffer)))
+    (if (equal "*Messages*" (buffer-name buffer))
+        (progn
+          (kill-buffer-and-window)
+          t)
+      nil)))
+
 (defun idee-kill-grep-and-window ()
   "Kill the grep window and buffer.  Return t if grep window was found."
   (let ((buffer (current-buffer)))
@@ -414,11 +432,16 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 
 (defadvice quit-window (around idee-on-quit-window (&optional kill window))
   "Handles things when quiting window."
+  (message "quit-window....")
   (cond
+   ((idee-kill-messages-and-window) t)
+   ((idee-kill-eshell-and-window) t)
    ((idee-kill-grep-and-window) t)
    ((idee-kill-helm-ag-and-window) t)
    (t ad-do-it)))
 
+; Close all windows when pressing q on normal mode
+(define-key evil-normal-state-map (kbd "q") #'quit-window)
 
 (ad-activate 'quit-window)
 (advice-add 'projectile-switch-project :after 'idee-project-open-view)
