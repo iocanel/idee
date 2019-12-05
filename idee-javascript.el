@@ -81,7 +81,6 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
    :description "A project factory that creates a new project using npm."
    :func 'idee-new-npm-project))
 
-(add-to-list 'idee-project-factories-list idee-npm-project-factory)
 
 ;;; Visitor
 (defun idee-javascript-project-p (root)
@@ -97,17 +96,22 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
     (idee-project-set-version (idee-javascript-pacakge-json-version (concat root package-json)))
     (idee-javascript-enable)))
 
-(add-to-list 'idee-project-visitors 'idee-visitor-javascript)
 
 (defun idee-javascript-package-json-version (p-json)
   "Get the project version from P-JSON."
   (let* ((p (json-read-file p-json)))
     (car (gethash "version" p))))
 
+;;; Init
+(defun idee-javascript-init ()
+  "Initialize IDEE javascript."
+  (interactive)
+  (idee-register-project-factory idee-npm-project-factory)
+  (idee-register-visitor 'idee-visitor-javascript)
 ;; Hooks
-(add-hook 'javascipt-mode-hook 'idee-javascript-hook)
-(add-hook 'js2-mode-hook 'idee-javascript-hook)
-(add-hook 'typescirpt-mode-hook 'idee-javascript-hook)
+  (add-hook 'javascipt-mode-hook 'idee-javascript-hook)
+  (add-hook 'js2-mode-hook 'idee-javascript-hook)
+  (add-hook 'typescirpt-mode-hook 'idee-javascript-hook))
 
 (provide 'idee-javascript)
 ;;; idee-javascript.el ends here

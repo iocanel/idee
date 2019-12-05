@@ -25,10 +25,14 @@
 ;;; Code:
 
 (require 'projectile)
+(require 'idee-vars)
 
-(defvar idee-project-visitors)
-(setq idee-project-visitors ())
+;;;###autoload (autoload 'idee-register-visitor "idee-visitors")
+(defmacro idee-register-visitor (visitor)
+  "Register a VISITOR."
+  (list 'push  visitor 'idee-project-visitors))
 
+;;;###autoload
 (defun idee-project-visit()
   "Call all registered visitors."
   (interactive)
@@ -36,7 +40,9 @@
     (dolist (v idee-project-visitors)
       (funcall v default-directory))))
 
-(add-to-list 'projectile-after-switch-project-hook 'idee-project-visit)
+;;;###autoload
+(defun idee--visitor-init ()
+  (add-to-list 'projectile-after-switch-project-hook 'idee-project-visit))
 
 (provide 'idee-visitors)
 ;;;  idee-visitors.el ends here

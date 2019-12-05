@@ -23,20 +23,25 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'idee-hydra)
-(require 'idee-headers)
-(require 'idee-navigation)
-(require 'idee-projects)
-(require 'idee-templates)
 (require 'idee-vars)
-(require 'idee-utils)
+(require 'idee-projects)
 
 (defcustom idee-repo-url "git@github.com:iocanel/idee.git" "The repository url of the idee project." :group 'idee :type 'string)
 
 (defun idee-resources-init ()
   (interactive)
   "Initialize idee resources."
-  (idee--git-checkout idee-repo-url idee-resources-dir '("headers" "templates" "snippets")))
+  (idee-git-checkout idee-repo-url idee-resources-dir '("headers" "templates" "snippets")))
+
+(defun idee-init ()
+  (interactive)
+  "Initialize idee"
+  (idee--projects-init)
+  (idee--treemacs-init)
+  (idee--templates-init)
+  (idee--headers-init)
+  (idee--views-init)
+  (idee--evil-init))
 
 (provide 'idee)
 ;;; idee.el ends here

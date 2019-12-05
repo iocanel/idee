@@ -27,7 +27,6 @@
 
 ;;; Code:
 
-(require 'idee-utils)
 (require 'idee-maven)
 (require 'idee-projects)
 (require 'idee-eshell)
@@ -224,9 +223,6 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
 ; TODO: Implement filter correctly
 ;(add-to-list 'eshell-output-filter-functions 'idee-quarkus-highlight-time)
 
-(add-to-list 'idee-project-factories-list idee-quarkus-rest-project-factory)
-
-
 (evil-leader/set-key "q a" 'idee-quarkus-add-extension)
 (evil-leader/set-key "q b" 'idee-quarkus-build)
 (evil-leader/set-key "q d" 'idee-quarkus-dev)
@@ -247,12 +243,14 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
   "Check if a java project is available under the specified ROOT."
   (let ((project-pom (concat root pom-xml)))
     (when (idee-quarkus-project-p root)
-      (message (format "quarkus root:%s" root))
       (idee-project-set-version (idee-maven-pom-version project-pom))
       (idee-project-set-name (idee-maven-pom-artifact-id project-pom))
       (idee-quarkus-init-maven-project-settings))))
 
-(push 'idee-visitor-quarkus idee-project-visitors)
+;;;###autoload
+(defun idee--quarkus-init ()
+  (idee-register-visitor 'idee-visitor-quarkus) 
+  (idee-register-project-factory idee-quarkus-rest-project-factory))
 
 (provide 'idee-quarkus)
 ;;; idee-quarkus.el ends here

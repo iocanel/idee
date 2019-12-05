@@ -32,6 +32,64 @@
 
 (defvar idee-source-file-extensions '(java kt groovy scala clojure xml go py js el))
 
+;;
+;; Projects
+;;
+(cl-defstruct idee-project-factory
+  name
+  description
+  func)
+
+(cl-defstruct idee-project-info
+  name
+  version
+  path
+  properties)
+
+(defconst idee-cask-project-factory (make-idee-project-factory
+  :name "Cask"
+  :description "Create an elisp project based on Cask."
+  :func ()))
+
+(defconst idee-project-root-markers '(".idee" ".projectile" ".git"))
+(defvar idee-project-factories-list `(,idee-cask-project-factory))
+
+(defvar idee-project-info-alist nil)
+
+(defvar idee-project-get-name nil)
+(defvar idee-project-version nil)
+
+(defvar idee-project-visitors ())
+
+;;
+;; Headers
+;;
+(defvar idee--current-header nil)
+;;
+;; Comments
+;;
+
+;; General purpose comment styles
+(defcustom idee-comment-elisp-custom-line-prefix ";; " "Custom line comment prefix to use when commenting elisp code." :group 'idee-elisp :type 'string)
+(defcustom idee-comment-shell-custom-line-prefix "# " "Custom line comment prefix to use when commenting shell code." :group 'idee-shell :type 'string)
+
+(defcustom idee-comment-xml-custom-block-beginning "<!--\n" "Custom block comment beginning to use when commenting xml code." :group 'idee-xml :type 'string)
+(defcustom idee-comment-xml-custom-block-ending "-->\n" "Custom block comment ending to use when commenting xml code." :group 'idee-xml :type 'string)
+(defcustom idee-comment-xml-custom-line-prefix "~ " "Custom line prefix to use when commenting xml code." :group 'idee-xml :type 'string)
+
+(defconst elisp-comment-style (make-idee-comment-style :line-prefix ";" :custom-line-prefix idee-comment-elisp-custom-line-prefix))
+(defconst shell-comment-style (make-idee-comment-style :line-prefix "#" :custom-line-prefix idee-comment-shell-custom-line-prefix))
+(defconst xml-comment-style (make-idee-comment-style :block-beginning "<!-" :block-ending "-->"
+                                                     :custom-block-beginning idee-comment-xml-custom-block-beginning :custom-block-ending idee-comment-xml-custom-block-ending))
+
+(defvar idee-type-comment-styles-alist `(
+                                         ("el" . ,elisp-comment-style)
+                                         ("html" . ,shell-comment-style)
+                                         ("sh" . ,shell-comment-style)
+                                         ("xml" . ,xml-comment-style)))
+
+(defvar idee-current-comment-style elisp-comment-style)
+
 ;; Functions
 (defvar idee-function-alist '((idee-open-function . projectile-switch-project)
                               (idee-new-project-function . idee-new-project-function)
@@ -60,6 +118,7 @@
 
 ;; On Event Command Association List
 (defvar idee-on-event-command-alist '())
+
 
 ;;; File Types
 

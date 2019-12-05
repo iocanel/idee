@@ -78,14 +78,17 @@
                  (equal "build.gradle" x)
                  (equal ".project" x))) (directory-files root)))
 
+;;;###autoload
 (defun idee-visitor-lsp-java (root)
   "Check if a lsp-java project is available under the specified ROOT."
   (if (and idee-lsp-java-enabled (idee-lsp-java-project-p root))
       (idee-lsp-java-enable)))
 
-(add-hook 'java-mode-hook 'idee-lsp-java-hook)
-(add-to-list 'idee-project-visitors 'idee-visitor-lsp-java)
-(advice-add 'save-buffer :after #'idee--lsp-java--on-save-buffer)
+;;;###autoload
+(defun idee--lsp-java-init ()
+  (idee-register-visitor 'idee-visitor-lsp-java)
+  (add-hook 'java-mode-hook 'idee-lsp-java-hook)
+  (advice-add 'save-buffer :after #'idee--lsp-java--on-save-buffer))
 
 (provide 'idee-lsp-java)
 ;;; idee-lsp-java.el ends here

@@ -29,32 +29,12 @@
 
 (require 'ido)
 (require 'projectile)
-(require 'idee-views)
-(require 'idee-eshell)
+(require 'idee-vars)
 
-(cl-defstruct idee-project-factory
-  name
-  description
-  func)
-
-(cl-defstruct idee-project-info
-  name
-  version
-  path
-  properties)
-
-(defconst idee-cask-project-factory (make-idee-project-factory
-  :name "Cask"
-  :description "Create an elisp project based on Cask."
-  :func ()))
-
-(defconst idee-project-root-markers '(".idee" ".projectile" ".git"))
-(defvar idee-project-factories-list `(,idee-cask-project-factory))
-
-(defvar idee-project-info-alist nil)
-
-(defvar idee-project-get-name nil)
-(defvar idee-project-version nil)
+;;;###autoload (autoload 'idee-register-project-factory "idee-projects")
+(defmacro idee-register-project-factory (project-factory)
+  "Register a PROJECT-FACTORY."
+  (list 'push project-factory 'idee-project-factories-list))
 
 (defun idee-project-root-dir (&optional f)
   "Find the directory of the module that owns the source file F."
@@ -229,7 +209,11 @@
       (setq idee-project-info-alist (delq (assoc (intern name) idee-project-info-alist) idee-project-info-alist))
       (add-to-list 'idee-project-info-alist `(,(intern name) . ,info)))))
 
-(add-to-list 'projectile-after-switch-project-hook 'idee-project-info)
+
+;;;###autoload
+(defun idee--projects-init ()
+  "Initialize idee projects."
+  (add-to-list 'projectile-after-switch-project-hook 'idee-project-info))
 
 (provide 'idee-projects)
 ;;; idee-projects.el ends here

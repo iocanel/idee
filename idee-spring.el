@@ -25,9 +25,6 @@
 
 ;;; Code:
 
-(require 'idee-utils)
-(require 'idee-projects)
-
 (defvar idee-spring-languages '("java" "groovy" "kotlin"))
 (defvar idee-spring-project-types '("maven-project" "gradle-project"))
 (defvar idee-spring-dependencies '("web" "security" "data-jpa" "actuator" "postgresql" "data-rest"))
@@ -94,7 +91,9 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
   (dired idee-spring-extract-dir)
   (idee-ide-view)))
 
-(add-to-list 'idee-project-factories-list idee-spring-starter-project-factory)
+;;;###autoload
+(defun idee--spring-init ()
+  (idee-register-project-factory idee-spring-starter-project-factory))
 
 (provide 'idee-spring)
 ;;; idee-spring.el ends here

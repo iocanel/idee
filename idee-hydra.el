@@ -1,6 +1,6 @@
 ;;; idee-hydra.el --- Hydra for Emacs IDE.
 
-;; Copyright (C) 2018 Ioannis Canellos
+; Copyright (C) 2018 Ioannis Canellos
 
 ;; Licensed under the Apache License, Version 2.0 (the "License");
 ;; you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 ;; Author: Ioannis Canellos
 
 ;; Version: 0.0.1
-
 ;; Package-Requires: ((emacs "25.1"))
 
 ;;; Commentary:
@@ -24,15 +23,11 @@
 ;; Code:
 
 (require 'idee-vars)
-(require 'idee-actions)
-(require 'idee-navigation)
-(require 'idee-views)
-(require 'idee-templates)
-(require 'idee-headers)
 
 (require 'hydra)
 (require 'company-yasnippet)
 
+;;;###autoload (autoload 'idee-project-hydra/body "idee-hydra")
 (defhydra idee-project-hydra (:hint nil :exit t)
 "
         ^ Project      
@@ -52,6 +47,7 @@
   ("v" idee-vcs)
   ("q" nil "quit"))
 
+;;;###autoload (autoload 'idee-file-hydra/body "idee-hydra")
 (defhydra idee-file-hydra (:hint nil :exit t)
 "
         ^ File
@@ -69,6 +65,7 @@
   ("c" kill-buffer)
   ("q" nil "quit"))
  
+;;;###autoload (autoload 'idee-navigation-hydra/body "idee-hydra")
 (defhydra idee-navigation-hydra (:hint nil :exit t)
 "
         ^ Navigation
@@ -89,6 +86,7 @@
   ("q" nil "quit"))
  
 
+;;;###autoload (autoload 'idee-hydra/body "idee-hydra")
 (defhydra idee-hydra (:hint nil :exit t)
   "
         ^ Project      ^Source^                 ^Navigate^         ^Search^             ^Task^              ^Layout^

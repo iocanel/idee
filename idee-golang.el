@@ -23,7 +23,6 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'idee-vars)
 (require 'projectile)
 (require 'go-mode)
 
@@ -67,7 +66,6 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
    :description "A project factory that creates a new golang module."
    :func 'idee-new-golang-module))
 
-(add-to-list 'idee-project-factories-list idee-golang-module-factory)
 
 ;;; Visitor
 (defun idee-visitor-golang (root)
@@ -79,10 +77,14 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
                       (directory-files root))
                     (idee-golang-enable)))
 
-(add-to-list 'idee-project-visitors 'idee-visitor-golang)
-
-;; Hooks
-(add-hook 'go-mode-hook 'idee-golang-hook)
+;;; Init
+(defun idee-golang-init ()
+  "Initialize IDEE golang."
+  (interactive)
+  (idee-register-visitor 'idee-visitor-golang)
+  (idee-register-project-factory idee-golang-module-factory)
+  ;; Hooks
+  (add-hook 'go-mode-hook 'idee-golang-hook))
 
 (provide 'idee-golang)
 ;;; idee-golang.el ends here

@@ -79,6 +79,7 @@
       (when cmd (idee-eshell-project-command-execute cmd)))
     should-ignore))
 
+ ;;;###autoload (autoload 'idee-with-project-shell "idee-eshell")
 (defmacro idee-with-project-shell (&rest body)
   "Load a SETTINGS-FILE as local OPTIONS and evaluate BODY."
   (declare (indent 1) (debug t))
@@ -93,6 +94,7 @@
       ,@body
       (eshell-send-input)))))
 
+ ;;;###autoload 
 (defun idee-eshell-project-command-execute (command)
   "Run a single COMMAND in the current project shell."
   (idee-switch-cli-on)
@@ -103,6 +105,7 @@
       (idee-eshell-insert command)
       (eshell-send-input))))
 
+ ;;;###autoload 
 (defun idee-eshell-project-command-enqueue (commands)
   "Execute COMMANDS on eshell."
   (idee-switch-cli-on)
@@ -113,6 +116,8 @@
         (when (not (s-blank? cmd)) (queue-enqueue idee-eshell-command-queue cmd)))
       (when (not idee-eshell-command-running) (idee-eshell-execute-next-command)))))
 
+
+ ;;;###autoload 
 (defun idee-eshell-insert (str)
   "Insert STR into the current project eshell buffer."
 

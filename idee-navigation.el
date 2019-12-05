@@ -42,6 +42,7 @@
 ;;
 ;; Functions
 ;;
+;;;###autoload
 (defun idee-back-push()
   "Push the current point to the back stack."
   (interactive)
@@ -49,6 +50,7 @@
       (setq ignore-current-buffer nil)
     (setq idee-back-stack (cons (make-idee-buffer-point :buffer (current-buffer) :line (line-number-at-pos (point)) :column (current-column)) idee-back-stack))))
 
+;;;###autoload
 (defun idee-back-pop()
   "Pop the back stack."
   (interactive)
@@ -56,6 +58,7 @@
     (setq idee-back-stack (cdr idee-back-stack))
     p))
 
+;;;###autoload
 (defun idee-forward-push()
   "Push the current point to the forward stack."
   (interactive)
@@ -63,6 +66,7 @@
       (setq ignore-current-buffer nil)
     (setq idee-forward-stack (cons (make-idee-buffer-point :buffer (current-buffer) :line (line-number-at-pos (point)) :column (current-column)) idee-back-stack))))
 
+;;;###autoload
 (defun idee-forward-pop()
   "Pop the forward stack."
   (interactive)
@@ -70,6 +74,7 @@
     (setq idee-forward-stack (cdr idee-forward-stack))
     p))
 
+;;;###autoload
 (defun idee-forget-current-buffer()
   "Remove references to the current buffer from all navigation stacks."
   (interactive)
@@ -80,6 +85,7 @@
   (setq ignore-current-buffer t))
 
 
+;;;###autoload
 (defun idee-jump-back()
   "Jump back."
   (interactive)
@@ -92,6 +98,7 @@
             (move-to-column (idee-buffer-point-column p))
             (point)))))
 
+;;;###autoload
 (defun idee-jump-forward()
   "Jump forward."
   (interactive)

@@ -50,31 +50,34 @@
 ;;
 ;; Initialization
 ;;
-(when (not (file-exists-p idee-resources-dir)) (mkdir idee-resources-dir t))
 
-(when (and
-       (file-exists-p idee-templates-source-dir)
-       (not (file-exists-p idee-emacs-templates-dir))) (copy-directory idee-templates-source-dir idee-emacs-templates-dir))
+;;;###autoload
+(defun idee--templates-init ()
+  "Initialize idee templates."
+  (when (not (file-exists-p idee-resources-dir)) (mkdir idee-resources-dir t))
 
-(when (and
-       (file-exists-p idee-snippets-source-dir)
-       (not (file-exists-p idee-emacs-snippets-dir))) (copy-directory idee-snippets-source-dir idee-emacs-snippets-dir))
+  (when (and
+         (file-exists-p idee-templates-source-dir)
+         (not (file-exists-p idee-emacs-templates-dir))) (copy-directory idee-templates-source-dir idee-emacs-templates-dir))
 
-(when (and
-       (file-exists-p idee-headers-source-dir)
-       (not (file-exists-p idee-emacs-headers-dir))) (copy-directory idee-headers-source-dir idee-emacs-headers-dir))
+  (when (and
+         (file-exists-p idee-snippets-source-dir)
+         (not (file-exists-p idee-emacs-snippets-dir))) (copy-directory idee-snippets-source-dir idee-emacs-snippets-dir))
+
+  (when (and
+         (file-exists-p idee-headers-source-dir)
+         (not (file-exists-p idee-emacs-headers-dir))) (copy-directory idee-headers-source-dir idee-emacs-headers-dir))
 
 
-(when (not (file-exists-p idee-emacs-templates-dir)) (mkdir idee-emacs-templates-dir))
-(when (not (file-exists-p idee-emacs-snippets-dir)) (mkdir idee-emacs-snippets-dir))
-(when (not (file-exists-p idee-emacs-headers-dir)) (mkdir idee-emacs-headers-dir))
+  (when (not (file-exists-p idee-emacs-templates-dir)) (mkdir idee-emacs-templates-dir))
+  (when (not (file-exists-p idee-emacs-snippets-dir)) (mkdir idee-emacs-snippets-dir))
+  (when (not (file-exists-p idee-emacs-headers-dir)) (mkdir idee-emacs-headers-dir))
 
-(add-to-list 'yas-snippet-dirs idee-emacs-templates-dir)
-(add-to-list 'yas-snippet-dirs idee-emacs-snippets-dir)
+  (add-to-list 'yas-snippet-dirs idee-emacs-templates-dir)
+  (add-to-list 'yas-snippet-dirs idee-emacs-snippets-dir)
 
-(yas-compile-directory idee-emacs-templates-dir)
-(yas-reload-all)
-
+  (yas-compile-directory idee-emacs-templates-dir)
+  (yas-reload-all))
 ;;
 ;; State
 ;;

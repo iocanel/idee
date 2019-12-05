@@ -370,6 +370,7 @@ or empty string other wise."
       (concat "-P" (string-join idee-maven-profiles ",")) ""))
 
 ;;; Maven Hydra
+;;;###autoload (autoload 'idee-maven-hydra/body "idee-maven")
 (defhydra idee-maven-hydra (:hint nil :exit t)
   "
  Maven:   Project                     Module               Toggle          Execute 
@@ -432,7 +433,6 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
    :description "New Maven project from archetype."
    :func 'idee-new-maven-from-archetype-project))
 
-(push idee-maven-project-factory idee-project-factories-list)
 
 ;;; Project Visitor
 (defun idee-maven-project-p (root)
@@ -448,8 +448,11 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
       (idee-project-set-version (idee-maven-pom-version project-pom))
       (idee-project-set-name (idee-maven-pom-artifact-id project-pom)))))
 
-
-(push 'idee-visitor-maven idee-project-visitors)
+;;;###autoload
+(defun idee--maven-init ()
+  (evil-leader/set-key "m" 'idee-maven-hydra/body)
+  (idee-register-project-factory idee-maven-project-factory)
+  (idee-register-visitor 'idee-visitor-maven))
 
 (provide 'idee-maven)
 ;;; idee-maven.el ends here

@@ -35,21 +35,14 @@ Unified way to perform IDE-like tasks across multiple languages and frameworks i
 
 This project is not available on any emacs package repository so you will either have to install it manually, or using something like [[https://github.com/raxod502/straight.el][straight-use-package]]:
 #+begin_src emacs-lisp
-  (use-package idee :straight (idee :host github :repo "iocanel/idee"))
-  (require 'idee-evil)
-  (require 'idee-elisp)
-  (require 'idee-java)
-  (require 'idee-lsp-java)
-  (require 'idee-maven)
-  (require 'idee-spring)
-  (require 'idee-quarkus)
-#+end_src
+  (use-package idee :straight (idee :host github :repo "iocanel/idee") :config idee-init)
 
-    Using `require` you can enable additional modules, for example:
+#+end_src
+    Using `use-package` you can enable additional modules, for example:
 #+begin_src emacs-lisp
-  (require 'idee-javascript)
-  (require 'idee-python)
-  (require 'idee-golang)
+  (use-package idee-java :straight (idee :host github :repo "iocanel/idee") :config idee-java-init)
+  (use-package idee-javascript :straight (idee :host github :repo "iocanel/idee") :config idee-javascript-init)
+  (use-package idee-golang :straight (idee :host github :repo "iocanel/idee") :config idee-golang-init)
 #+end_src
 
 *** Installing required resources

@@ -12,7 +12,6 @@ SRCS = $(wildcard *.el)
 TARGETS = $(SRCS:.el=.elc)
 
 MAIN_PACKAGE_FILE = idee.el
-EVIL_PACKAGE_FILE = idee-evil.el
 ELISP_PACKAGE_FILE = idee-elisp.el
 CLOJURE_PACKAGE_FILE = idee-clojure.el
 GOLANG_PACKAGE_FILE = idee-golang.el
@@ -100,16 +99,13 @@ set-package-version :
 		echo 'Must supply a semver tag, e.g. 1.2.3'; exit 1; \
 	fi && \
 	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(MAIN_PACKAGE_FILE)" && \
-	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(EVIL_PACKAGE_FILE)" && \
 	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(ELISP_PACKAGE_FILE)" && \
 	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(CLOJURE_PACKAGE_FILE)" && \
 	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(GOLANG_PACKAGE_FILE)" && \
 	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(MEGHANADA_PACKAGE_FILE)" && \
 	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(PYTHON_PACKAGE_FILE)" && \
-	sed -i.bak "s/^;; Package-Requires:[^)]*)/;; Package-Requires: ((idee \"$${NEXT}\")/" "$(EVIL_PACKAGE_FILE)"
 
 	@rm "$(MAIN_PACKAGE_FILE).bak"
-	@rm "$(EVIL_PACKAGE_FILE).bak"
 	@rm "$(ELISP_PACKAGE_FILE).bak"
 	@rm "$(CLOJURE_PACKAGE_FILE).bak"
 	@rm "$(GOLANG_PACKAGE_FILE).bak"
@@ -118,7 +114,6 @@ set-package-version :
 
 git-release :
 	@git add "$(MAIN_PACKAGE_FILE)"
-	@git add "$(EVIL_PACKAGE_FILE)"
 	@git add "$(ELISP_PACKAGE_FILE)"
 	@git add "$(CLOJURE_PACKAGE_FILE)"
 	@git add "$(GOLANG_PACKAGE_FILE)"

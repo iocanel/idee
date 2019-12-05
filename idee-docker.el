@@ -11,7 +11,6 @@
 
 ;;; Code:
 (require 'dockerfile-mode)
-(require 'idee-projects)
 
 (defvar idee-dockerfile-provider-list nil)
 (defvar idee-docker-last-edited-dockerfile nil)
@@ -46,13 +45,13 @@
         (ports (idee-docker-get-exposed-ports dockerfile))
         (cmd-builder nil))
 
-    (add-to-list 'cmd-builder "docker run -it" t)
+    (push 'cmd-builder "docker run -it")
     (if ports
         (progn
-          (add-to-list 'cmd-builder "-p" t)
+          (push 'cmd-builder "-p")
           (dolist (p ports)
-                  (add-to-list 'cmd-builder (format "%s:%s" p p) t))))
-    (add-to-list 'cmd-builder docker-image t)
+                  (push 'cmd-builder (format "%s:%s" p p)))))
+    (push 'cmd-builder docker-image t)
     (idee-eshell-project-command-enqueue (string-trim (string-join cmd-builder " ")))))
 
 (defun idee-docker-push-dockerfile ()
@@ -123,13 +122,14 @@ The criteria are the following:
   "Return the path of Dockerfile at the project root."
   (f-join (projectile-project-root) "Dockerfile"))         
 
+(defun idee-docker-init ()
 (add-to-list 'idee-dockerfile-provider-list 'idee-docker-dockerfile-from-project-root)
 (add-hook 'dockerfile-mode-hook (lambda () (idee-project-set-property idee-last-visited-dockerfile (buffer-file-name))))
 
 (define-key dockerfile-mode-map (kbd" C-c C-b") 'idee-docker-build)
 (define-key dockerfile-mode-map (kbd" C-c C-k") 'idee-docker-kill)
 (define-key dockerfile-mode-map (kbd" C-c C-r") 'idee-docker-run-dockerfile)
-(define-key dockerfile-mode-map (kbd" C-c C-p") 'idee-docker-push-dockerfile)
+(define-key dockerfile-mode-map (kbd" C-c C-p") 'idee-docker-push-dockerfile))
 
 (provide 'idee-docker)
 ;;; idee-docker.el ends here

@@ -29,7 +29,6 @@
 (require 'magit)
 (require 'treemacs-projectile)
 (require 'treemacs)
-
 ;;
 ;; State
 ;;
@@ -55,6 +54,7 @@
 ;; Functions
 ;;
 
+;;;###autoload
 (defun idee-view-reset()
     "Reset view variables."
     (setq idee-cli-enabled nil
@@ -66,6 +66,7 @@
           idee-grep-enabled nil
           idee-helm-ag-enabled nil))
 
+;;;###autoload
 (defun idee-project-open-view()
   "Switch to a traditional IDE view for the buffer.  (project tree, main buffer & terminal)."
  (interactive)
@@ -75,6 +76,7 @@
   (idee-jump-to-non-ide-window)
   (magit-status-internal (projectile-project-root)))
 
+;;;###autoload
 (defun idee-ide-view()
   "Switch to a traditional IDE view for the buffer.  (project tree, main buffer & terminal)."
   (interactive)
@@ -95,6 +97,7 @@
         (idee-errors-enabled (idee-errors-subview))
         (idee-messages-enabled (idee-messages-subview))))
 
+;;;###autoload
 (defun idee-cli-subview ()
   (when (not (idee-cli-visible-p))
     (idee-split-and-follow-vertically)
@@ -102,6 +105,7 @@
     (idee-projectile-run-eshell)
     (evil-window-set-height 12)))
 
+;;;###autoload
 (defun idee-diagnostics-subview ()
   (flymake-show-diagnostics-buffer)
   (let ((name (flymake--diagnostics-buffer-name)))
@@ -113,6 +117,7 @@
   (minimize-window)
   (evil-window-set-height 12)))
 
+;;;###autoload
 (defun idee-errors-subview ()
   (flycheck-list-errors)
   (idee-jump-to-non-ide-window)
@@ -123,6 +128,7 @@
   (minimize-window)
   (evil-window-set-height 12))
 
+;;;###autoload
 (defun idee-messages-subview ()
   (split-window-below)
   (other-window 1)
@@ -146,6 +152,7 @@
   (minimize-window)
   (evil-window-set-height 12))
 
+;;;###autoload
 (defun idee-helm-ag-subview ()
   (require 'helm-projectile)
   (require 'helm-ag)
@@ -168,6 +175,7 @@
   (minimize-window)
   (evil-window-set-height 12))
 
+;;;###autoload
 (defun idee-side-by-side-view()
   "Open a new buffer from the project to the side for side by side view."
   (interactive)
@@ -177,6 +185,7 @@
   (idee-new-empty-buffer)
   (projectile-find-file-dwim))
 
+;;;###autoload
 (defun idee-repl-view()
   "Just like IDE view but with a REPL instead of a terminal (project tree, main buffer & repl)."
   (interactive)
@@ -205,6 +214,7 @@
                                                                            (goto-char (point-min)))))
           (idee-repl)))))
 
+;;;###autoload
 (defun idee-terminal-view()
   "Maximize terminal in the project root."
   (interactive)
@@ -224,6 +234,7 @@
         ((and (string-prefix-p "*" name)  (string-suffix-p "*" name)) t)
         (t nil))))
 
+;;;###autoload
 (defun idee-jump-to-non-ide-window(&optional visited)
   "Jump to a non IDE window.
 VISITED is an optional list with windows already visited."
@@ -245,6 +256,7 @@ VISITED is an optional list with windows already visited."
     (setq idee-tree-enabled nil)))
 
 
+;;;###autoload
 (defun idee-toggle-tree ()
   "Toggle the tree."
   (interactive)
@@ -258,16 +270,19 @@ VISITED is an optional list with windows already visited."
       (idee-refresh-view))))
 
 
+;;;###autoload
  (defun idee-refresh-view ()
   "Refresh the current view."
   (interactive)
   (funcall idee-current-view))
 
+;;;###autoload
 (defun idee-new-empty-buffer()
   "Create an empty buffer."
   (let ((fl (make-temp-file "Untitled")))
     (switch-to-buffer fl)))
 
+;;;###autoload
 (defun idee-split-and-follow-horizontally ()
   "Split window horizontally and follow."
   (interactive)
@@ -276,6 +291,7 @@ VISITED is an optional list with windows already visited."
   (other-window 1))
 
 
+;;;###autoload
 (defun idee-split-and-follow-vertically ()
   "Split window vertically and follow."
   (interactive)
@@ -283,6 +299,7 @@ VISITED is an optional list with windows already visited."
   (balance-windows)
   (other-window 1))
 
+;;;###autoload
 (defun idee-projectile-run-eshell ()
   "Invoke `eshell' in the project's root.
 
@@ -331,6 +348,41 @@ Switch to the project specific eshell buffer if it already exists."
   "Refresh the view each time next error is caled."
   (if next-error-last-buffer
       (idee-refresh-view)))
+
+;;;###autoload
+(defun idee-region-copy-to-other-window (start end)
+  "Copy selected text from START to END over to other non IDE window."
+  (interactive "r")
+  (if (use-region-p) 
+      (let* ((buffer (current-buffer))
+            (name (buffer-name buffer))
+            (current-window (selected-window)))
+        (save-excursion
+          (kill-ring-save start end)
+          (other-window 1)
+          (idee-jump-to-non-ide-window (list name))
+          (evil-end-of-line)
+          (evil-insert-newline-below)
+          (yank)
+          (select-window current-window)))))
+
+;;;###autoload
+(defun idee-region-move-to-other-window (start end)
+  "Move selected text from START to END over to other non IDE window."
+  (interactive "r")
+  (if (use-region-p) 
+      (let* ((buffer (current-buffer))
+            (name (buffer-name buffer))
+            (current-window (selected-window)))
+        (save-excursion
+          (kill-region start end)
+          (other-window 1)
+          (idee-jump-to-non-ide-window (list name))
+          (evil-end-of-line)
+          (evil-insert-newline-below)
+          (yank)
+          (select-window current-window)))))
+
 ;;
 ;; Macros
 ;;
@@ -380,13 +432,21 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 ;;
 ;; Create component view functions
 ;;
+ ;;;###autoload (autoload 'idee-toggle-errors "idee-views")
 (idee--create-view-component "errors" idee-errors-visible-p idee-errors-enabled idee-bottom-area-switch-list 0)
+ ;;;###autoload (autoload 'idee-toggle-diagnostics "idee-views")
 (idee--create-view-component "diagnostics" idee-diagnostics-visible-p idee-diagnostics-enabled idee-bottom-area-switch-list 0)
+ ;;;###autoload (autoload 'idee-toggle-cli "idee-views")
+ ;;;###autoload (autoload 'idee-switch-cli-on "idee-views")
 (idee--create-view-component "cli"  idee-cli-visible-p idee-cli-enabled idee-bottom-area-switch-list 0)
+ ;;;###autoload (autoload 'idee-toggle-messages "idee-views")
 (idee--create-view-component "messages"  idee-messages-visible-p idee-messages-enabled idee-bottom-area-switch-list 0)
+ ;;;###autoload (autoload 'idee-toggle-grep "idee-views")
 (idee--create-view-component "grep"  idee-grep-visible-p idee-grep-enabled idee-bottom-area-switch-list 0)
+ ;;;###autoload (autoload 'idee-toggle-helm-ag "idee-views")
 (idee--create-view-component "helm-ag"  idee-helm-ag-visible-p idee-helm-ag-enabled idee-bottom-area-switch-list 0)
 
+;;;###autoload
 (defun idee-toggle-helm-ag-or-grep  ()
   "Toggle helm-ag if helm-ag is installed or fallback to projectile-grep."
   (interactive)
@@ -432,7 +492,6 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 
 (defadvice quit-window (around idee-on-quit-window (&optional kill window))
   "Handles things when quiting window."
-  (message "quit-window....")
   (cond
    ((idee-kill-messages-and-window) t)
    ((idee-kill-eshell-and-window) t)
@@ -440,17 +499,19 @@ PIVOT indicates how many windows should be switched at the end of the operation.
    ((idee-kill-helm-ag-and-window) t)
    (t ad-do-it)))
 
-; Close all windows when pressing q on normal mode
-(define-key evil-normal-state-map (kbd "q") #'quit-window)
+;;;###autoload
+(defun idee--views-init ()
+  "Initialize idee views."
+  (define-key evil-normal-state-map (kbd "q") #'quit-window)
 
-(ad-activate 'quit-window)
-(advice-add 'projectile-switch-project :after 'idee-project-open-view)
-(advice-add 'treemacs-switch-workspace :after 'idee-project-open-view)
-(advice-add 'next-error :after 'idee-after-next-error)
+  (ad-activate 'quit-window)
+  (advice-add 'projectile-switch-project :after 'idee-project-open-view)
+  (advice-add 'treemacs-switch-workspace :after 'idee-project-open-view)
+  (advice-add 'next-error :after 'idee-after-next-error)
 
-(advice-add 'helm-ag--edit :after 'idee-refresh-view)
-(advice-add 'helm-ag-edit--commit :after 'idee-refresh-view)
-(advice-add 'helm-ag-edit--abort :after 'idee-refresh-view)
+  (advice-add 'helm-ag--edit :after 'idee-refresh-view)
+  (advice-add 'helm-ag-edit--commit :after 'idee-refresh-view)
+  (advice-add 'helm-ag-edit--abort :after 'idee-refresh-view))
 
 (provide 'idee-views)
 ;;; idee-views.el ends here

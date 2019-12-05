@@ -104,7 +104,8 @@
       (dolist (project projects)
         (idee-close-project-buffers (treemacs-project->path project))))))
 
-(defhydra treemacs-hydra (:hint nil :exit t)
+;;;###autoload (autoload 'idee-treemacs-hydra/body "idee-treemacs")
+(defhydra idee-treemacs-hydra (:hint nil :exit t)
   ;; The '_' character is not displayed. This affects columns alignment.
   ;; Remove s many spaces as needed to make up for the '_' deficit.
   "
@@ -135,7 +136,9 @@
   ("T" treemacs-find-tag)
   ("q" nil "quit"))
 
-(evil-leader/set-key "t" 'treemacs-hydra/body)
+;;;###autoload
+(defun idee--treemacs-init ()
+(evil-leader/set-key "t" 'idee-treemacs-hydra/body))
 
 (provide 'idee-treemacs)
 ;;; idee-treemacs.el ends here.

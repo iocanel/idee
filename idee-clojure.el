@@ -28,7 +28,6 @@
 (require 'cider)
 
 (require 'idee-vars)
-(require 'idee-visitors)
 
 (defun cider-jack-in-and-switch ()
   "Jack in cider REPL and switch to the current projects REPL buffer."
@@ -58,8 +57,9 @@
   (when (seq-filter (lambda (x) (equal "project.clj" x)) (directory-files root))
     (clojure-ide))) 
 
+(defun idee--clojure-init ()
 (add-hook 'clojure-mode-hook 'idee-clojure-hook)
-(add-to-list 'idee-project-visitors 'idee-visitor-clojure)
+(idee-register-visitor 'idee-visitor-clojure))
 
 (provide 'idee-clojure)
 ;;; idee-clojure.el ends here

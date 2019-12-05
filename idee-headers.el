@@ -24,20 +24,12 @@
 
 ;;; Code:
 
-(require 'idee-utils)
-(require 'idee-comments)
 (require 'idee-projects)
 (require 'idee-vars)
-
 ;;
 ;; Customization
 ;;
 (defconst idee-emacs-headers-dir (concat (file-name-as-directory idee-resources-dir) "headers") "The directory where header files are stored.")
-
-;;
-;; State
-;;
-(defvar idee--current-header nil)
 
 ;;
 ;; Functions
@@ -61,8 +53,9 @@
 (defun idee-header ()
   "Return the header commented for the current buffer style."
     (idee--set-header)
-    (idee--comment idee--current-header (file-name-extension (buffer-file-name (current-buffer)))))
+    (idee-comment idee--current-header (file-name-extension (buffer-file-name (current-buffer)))))
 
+;;;###autoload
 (defun idee-select-project-header ()
   "Select a header for the project from the existing selection of headers."
   (interactive)
@@ -70,6 +63,7 @@
         (header (projectile-completing-read "Select header:" headers)))
     (setq idee--current-header (idee-read-and-eval-template (concat (file-name-as-directory idee-emacs-headers-dir) header)))))
 
+;;;###autoload
 (defun idee-apply-buffer-header ()
   "Apply the selected header to the current buffer."
   (interactive)
@@ -78,18 +72,24 @@
     (idee-remove-comment-at-point)
     (insert (idee-header))))
 
+;;;###autoload
 (defun idee-apply-header-to-file (f)
   "Apply the selected header to the specified file F."
   (find-file f)
   (idee-apply-buffer-header)
   (write-file f))
 
+;;;###autoload
 (defun idee-apply-header-to-project-files ()
   "Recursively visit all project files nad apply the selected header."
   (interactive)
   (idee-visit-project-files 'idee-apply-header-to-file))
 
-(advice-add 'projectile-switch-project :after 'idee--set-header)
+
+;;;###autoload
+(defun idee--headers-init ()
+  "Initialize idee headers."
+  (advice-add 'projectile-switch-project :after 'idee--set-header))
 
 (provide 'idee-headers)
 ;;; idee-headers.el ends here

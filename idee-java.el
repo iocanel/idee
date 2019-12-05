@@ -24,14 +24,12 @@
 ;;; Code:
 
 (require 'idee-vars)
-(require 'idee-headers)
-(require 'idee-visitors)
-(require 'idee-templates)
-(require 'idee-maven)
 (require 'projectile)
 
 (require 'cc-vars)
 (require 'cc-cmds)
+
+(defconst pom-xml "pom.xml")
 
 (defconst source-main-prefix "src/main/java")
 (defconst source-test-prefix "src/test/java")
@@ -239,15 +237,22 @@
   (if (idee-java-project-p root)
       (idee-java-enable)))
 
-(add-to-list 'idee-project-visitors 'idee-visitor-java)
+(defun idee-java-init ()
+  (interactive)
+  "Initialize java."
+  ;; Dependencies
+  (idee--lsp-java-init)
+  (idee--maven-init)
+  (idee--quarkus-init)
+  (idee--spring-init)
 
-;;; Hook
-(add-hook 'java-mode-hook 'idee-java-enable)
-(add-hook 'java-mode-hook 'idee-java-visit-file)
+  (idee-register-visitor 'idee-visitor-java)
+  ;;; Hook
+  (add-hook 'java-mode-hook 'idee-java-enable)
+  (add-hook 'java-mode-hook 'idee-java-visit-file)
 
-(advice-add 'projectile-switch-to-buffer :after #'idee-java-visit-file)
-
-(add-hook 'treemacs-switch-workspace-hook 'idee-java-switch-workspace)
+  (advice-add 'projectile-switch-to-buffer :after #'idee-java-visit-file)
+  (add-hook 'treemacs-switch-workspace-hook 'idee-java-switch-workspace))
 
 (provide 'idee-java)
 ;;; idee-java.el ends here

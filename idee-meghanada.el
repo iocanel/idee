@@ -24,8 +24,6 @@
 
 ;;; Code:
 
-(require 'idee-vars)
-(require 'idee-headers)
 (require 'projectile)
 (require 'flycheck)
 (require 'use-package)
@@ -126,7 +124,9 @@
   (if (and idee-meghanada-enabled (idee-meghanada-project-p root))
       (idee-meghanada-enable)))
 
-(add-to-list 'idee-project-visitors 'idee-visitor-meghanada)
-(add-hook 'java-mode-hook 'idee-meghanada-hook)
+(defun idee--meghanada-init ()
+  (idee-register-visitor 'idee-visitor-meghanada)
+  (add-hook 'java-mode-hook 'idee-meghanada-hook))
+
 (provide 'idee-meghanada)
 ;;; idee-meghanada.el ends here
