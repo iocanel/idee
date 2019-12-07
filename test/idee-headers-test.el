@@ -40,10 +40,7 @@
    (append-to-file "bingo" nil "header.txt")
    (let ((header (idee--read-project-header)))
          (should header)
-         (should (equal header "bingo"))
-        )
-  )
-)
+         (should (equal header "bingo")))))
 
 (ert-deftest headers/read-and-eval ()
   "Should read the header and evaluate lisp code."
@@ -53,10 +50,7 @@
    (let* ((var "123")
           (header (idee--read-project-header)))
          (should header)
-         (should (equal header "bingo 123"))
-        )
-  )
-)
+         (should (equal header "bingo 123")))))
 
 (provide 'idee-headers-test)
 ;;; idee-headers-test.el ends here

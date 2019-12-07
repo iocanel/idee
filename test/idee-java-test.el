@@ -40,8 +40,7 @@
 
 (ert-deftest java/comment-java ()
   "Should properly comment java."
-    (should (equal (idee-comment "bingo" "java") "/**\n * bingo\n**/\n"))
-)
+    (should (equal (idee-comment "bingo" "java") "/**\n * bingo\n**/\n")))
 
 (ert-deftest java/set-tab-width ()
   "Should set tab width."
@@ -50,8 +49,7 @@
 
 
   (idee-java-set-tab-width 4)
-  (should (equal idee-tab-width 4))
-)
+  (should (equal idee-tab-width 4)))
 
 (provide 'idee-java-test)
 ;;; idee-java-test.el ends here

@@ -33,18 +33,15 @@
 
 (ert-deftest comments/comment-sh ()
   "Should properly comment shell."
-    (should (equal (idee-comment "bingo" "sh") "# bingo\n"))
-)
+    (should (equal (idee-comment "bingo" "sh") "# bingo\n")))
 
 (ert-deftest comments/comment-el ()
   "Should properly comment elisp."
-    (should (equal (idee-comment "bingo" "el") ";; bingo\n"))
-    )
+    (should (equal (idee-comment "bingo" "el") ";; bingo\n")))
 
 (ert-deftest comments/comment-xml ()
   "Should properly comment xml."
-    (should (equal (idee-comment "bingo" "xml") "<!--\nbingo\n-->\n"))
-    )
+    (should (equal (idee-comment "bingo" "xml") "<!--\nbingo\n-->\n")))
 
 (provide 'idee-comments-test)
 ;;; idee-comments-test.el ends here
