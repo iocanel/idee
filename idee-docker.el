@@ -93,7 +93,7 @@
              (end (point-max))
              (content (buffer-substring begin end))
              (match-list (idee-string-match-as-list "EXPOSE \\([0-9 ]+\\)" content))
-             (match-ports (remove-if (lambda (s) (string-match "[^0-9 ]+" s)) match-list))
+             (match-ports (cl-remove-if (lambda (s) (string-match "[^0-9 ]+" s)) match-list))
              (ports-string (if match-ports (car match-ports) nil))
              (port-list (if (stringp ports-string) (split-string ports-string) nil)))
         port-list))))
