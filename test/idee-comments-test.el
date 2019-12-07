@@ -27,9 +27,9 @@
 
 ;;; Code:
 (require 'test-helper)
+(require 'idee-comments (f-expand "idee-comments.el" root-code-path))
 (require 'idee-vars (f-expand "idee-vars.el" root-code-path))
 (require 'idee-utils (f-expand "idee-utils.el" root-code-path))
-(require 'idee-comments (f-expand "idee-comments.el" root-code-path))
 
 (ert-deftest comments/comment-sh ()
   "Should properly comment shell."

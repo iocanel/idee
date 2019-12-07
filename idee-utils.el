@@ -73,7 +73,7 @@
 ;; Original source: https://emacs.stackexchange.com/questions/7148/get-all-regexp-matches-in-buffer-as-a-list
 ;;;###autoload
 (defun idee-string-match-as-list (regexp string)
-  "Get a list of all regexp matches in a string"
+  "Get a list of all REGEXP matches in a STRING."
   (save-match-data
     (let ((matches)
           (index 0)
@@ -83,9 +83,9 @@
         (setq match (match-string index string))
         (if match
             (progn
-              (message (format "match:%s" match))
-            (push 'matches match)
-            (setq index (+ 1 index)))))
+              (message "index:%s match:%s" index match)
+              (push match matches)
+              (setq index (+ 1 index)))))
       matches)))
 
 ;;; List functions
@@ -98,6 +98,16 @@
         (setq new-list (cons (car list) new-list)))
       (setq list (cdr list)))
     (nreverse new-list)))
+
+(defun idee--item-to-kind (item)
+  "Convert an ITEM to its kind."
+  (cond
+   ((listp item) "list")
+   ((numberp item) "number")
+   ((symbolp item) "symbol")
+   ((stringp item) "string")
+   ((arrayp item) "array")
+   (t "other")))
 
 ;;;###autoload
 (defun idee-http-post (url args callback)

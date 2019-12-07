@@ -45,13 +45,13 @@
         (ports (idee-docker-get-exposed-ports dockerfile))
         (cmd-builder nil))
 
-    (push 'cmd-builder "docker run -it")
+    (push "docker run -it" cmd-builder)
     (if ports
         (progn
-          (push 'cmd-builder "-p")
+          (push "-p" cmd-builder)
           (dolist (p ports)
-                  (push 'cmd-builder (format "%s:%s" p p)))))
-    (push 'cmd-builder docker-image t)
+                  (push (format "%s:%s" p p) cmd-builder))))
+    (push docker-image cmd-builder)
     (idee-eshell-project-command-enqueue (string-trim (string-join cmd-builder " ")))))
 
 (defun idee-docker-push-dockerfile ()
@@ -93,7 +93,8 @@
              (end (point-max))
              (content (buffer-substring begin end))
              (match-list (idee-string-match-as-list "EXPOSE \\([0-9 ]+\\)" content))
-             (ports-string (if match-list (car (cdr match-list)) nil))
+             (match-ports (remove-if (lambda (s) (string-match "[^0-9 ]+" s)) match-list))
+             (ports-string (if match-ports (car match-ports) nil))
              (port-list (if (stringp ports-string) (split-string ports-string) nil)))
         port-list))))
 

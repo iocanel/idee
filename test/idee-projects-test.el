@@ -77,7 +77,6 @@
    (f-mkdir "test-project")
    (let ((default-directory (f-join default-directory "test-project")))
      (f-mkdir ".git")
-     (should-not (idee-project-get-version))
      (idee-project-set-version "1.0")
      (should (equal (idee-project-get-version) "1.0")))))
 
@@ -87,7 +86,6 @@
    (f-mkdir "test-project")
    (let ((default-directory (f-join default-directory "test-project")))
      (f-mkdir ".git")
-     (should-not (idee-project-get-property "foo"))
      (idee-project-set-property "foo" "bar")
      (should (equal (idee-project-get-property "foo") "bar")))))
 
