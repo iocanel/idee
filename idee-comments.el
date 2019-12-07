@@ -27,17 +27,6 @@
 
 ;;; Code:
 
-;;;###autoload (autoload 'make-idee-comment-style "idee-comments")
-(cl-defstruct idee-comment-style
-  ;Language (used for comment detection.)
-  block-beginning
-  line-prefix
-  block-ending
-  ;Custom (used for styling)
-  custom-block-beginning
-  custom-line-prefix
-  custom-block-ending)
-
 ;;
 ;; Functions
 ;;
