@@ -16,13 +16,9 @@
 
 ;; Author: Ioannis Canellos
 
-;; Version: 0.0.1
-
-;; Package-Requires: ((emacs "25.1"))
+;;; Code:
 
 ;;; Commentary:
-
-;;; Code:
 
 (provide 'idee-bindings)
 ;;; idee-bindings.el ends here

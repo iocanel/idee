@@ -39,6 +39,7 @@
 ; Eshell
 (depends-on "async-await")
 (depends-on "queue")
+(depends-on "demo-it")
 
  ; Golang
  (depends-on "go-mode")

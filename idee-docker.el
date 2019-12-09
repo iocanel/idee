@@ -11,10 +11,12 @@
 
 ;;; Code:
 (require 'dockerfile-mode)
+(require 'projectile)
 
 (defvar idee-dockerfile-provider-list nil)
 (defvar idee-docker-last-edited-dockerfile nil)
 (defvar idee-docker-registry nil)
+(defvar idee-docker-image nil)
 
 (defconst idee-last-visited-dockerfile "last-visited-dockerfile" "The property key that marks the last visited Dockerfile.")
 
@@ -88,7 +90,7 @@
   (let ((abs-dockerfile
          (if (not (file-name-absolute-p dockerfile)) dockerfile (f-join (projectile-project-root) dockerfile))))
     (with-temp-buffer
-      (insert-file abs-dockerfile)
+      (insert-file-contents abs-dockerfile)
       (let* ((begin (point-min))
              (end (point-max))
              (content (buffer-substring begin end))
@@ -106,7 +108,7 @@ The criteria are the following:
 2. Call all dockerfile providers and return the first existing Dockerfile
 3. Check the last edited Dockerfile, or return nil."
   (let* ((buffer (buffer-file-name))
-         (path (if buffer (buffer-file-name) path nil))
+         (path (if buffer (buffer-file-name) nil))
          (provider-dockerfile (car (idee-docker-get-dockerfiles-from-providers)))
          (last-visited-dockerfile (idee-project-get-property idee-last-visited-dockerfile))
          (dockerfile))
@@ -121,16 +123,18 @@ The criteria are the following:
 
 (defun idee-docker-dockerfile-from-project-root ()
   "Return the path of Dockerfile at the project root."
-  (f-join (projectile-project-root) "Dockerfile"))         
+  (f-join (projectile-project-root) "Dockerfile"))
 
 (defun idee-docker-init ()
-(add-to-list 'idee-dockerfile-provider-list 'idee-docker-dockerfile-from-project-root)
-(add-hook 'dockerfile-mode-hook (lambda () (idee-project-set-property idee-last-visited-dockerfile (buffer-file-name))))
+  "Initialize idee-docker."
+  (interactive)
+  (add-to-list 'idee-dockerfile-provider-list 'idee-docker-dockerfile-from-project-root)
+  (add-hook 'dockerfile-mode-hook (lambda () (idee-project-set-property idee-last-visited-dockerfile (buffer-file-name))))
 
-(define-key dockerfile-mode-map (kbd" C-c C-b") 'idee-docker-build)
-(define-key dockerfile-mode-map (kbd" C-c C-k") 'idee-docker-kill)
-(define-key dockerfile-mode-map (kbd" C-c C-r") 'idee-docker-run-dockerfile)
-(define-key dockerfile-mode-map (kbd" C-c C-p") 'idee-docker-push-dockerfile))
+  (define-key dockerfile-mode-map (kbd" C-c C-b") 'idee-docker-build)
+  (define-key dockerfile-mode-map (kbd" C-c C-k") 'idee-docker-kill)
+  (define-key dockerfile-mode-map (kbd" C-c C-r") 'idee-docker-run-dockerfile)
+  (define-key dockerfile-mode-map (kbd" C-c C-p") 'idee-docker-push-dockerfile))
 
 (provide 'idee-docker)
 ;;; idee-docker.el ends here

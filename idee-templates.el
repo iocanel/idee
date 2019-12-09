@@ -140,11 +140,11 @@
               (yas--parse-template f)))
 
 (defun idee-snippet-name (definition)
-  "Name of the snippet found in."
+  "Name of the snippet found in DEFINITION."
   (car (cdr (cdr definition))))
 
 (defun idee-snippet-key (definition)
-  "Key of the snippet found in."
+  "Key of the snippet found in DEFINITION."
   (car definition))
 
 (provide 'idee-templates)

@@ -16,10 +16,6 @@
 
 ;; Author: Ioannis Canellos
 
-;; Version: 0.0.1
-
-;; Package-Requires: ((emacs "25.1"))
-
 ;;; Commentary:
 
 ;;; Code:
@@ -50,65 +46,65 @@
 
 ;;;###autoload
 (defun idee-recent()
-  "Recent project"
+  "Recent project."
   (interactive)
   (idee-back-push)
   (funcall  (alist-get 'idee-recent-function idee-function-alist)))
 
 ;;;###autoload
 (defun idee-save-all()
-  "Save all project buffers"
+  "Save all project buffers."
   (interactive)
   (funcall  (alist-get 'idee-save-all-function idee-function-alist)))
 
 ;;;###autoload
 (defun idee-close()
-  "Close project"
+  "Close project."
   (interactive)
   (delete-other-windows-internal)
   (funcall  (alist-get 'idee-close-function idee-function-alist)))
 
 ;;;###autoload
 (defun idee-build()
-  "Build"
+  "Build."
   (interactive)
   (funcall  (alist-get 'idee-build-function idee-function-alist)))
 
 ;;;###autoload
 (defun idee-vcs()
-  "Version Control"
+  "Version Control."
   (interactive)
   (funcall  (alist-get 'idee-vcs-function idee-function-alist)))
 
 ;;Source
 ;;;###autoload
 (defun idee-optimize-imports()
-  "Optimize Imports"
+  "Optimize Imports."
   (interactive)
   (funcall  (alist-get 'idee-optimize-imports-function idee-function-alist)))
 
 ;;;###autoload
 (defun idee-indent()
-  "Indent"
+  "Indent."
   (interactive)
   (funcall  (alist-get 'idee-indent-function idee-function-alist)))
 
 ;;;###autoload
 (defun idee-indent-region()
-  "Indent Region"
+  "Indent Region."
   (interactive)
   (funcall  (alist-get 'idee-indent-region-function idee-function-alist)))
 
 ;;;###autoload
 (defun idee-select-project-header()
-  "Select header for project files"
+  "Select header for project files."
   (interactive)
   (funcall  (alist-get 'idee-select-project-header-function idee-function-alist)))
 
 ;;Navigate
 ;;;###autoload
 (defun idee-references()
-  "Find references"
+  "Find references."
   (interactive)
   (idee-back-push)
   (funcall  (alist-get 'idee-references-function idee-function-alist)))
@@ -122,21 +118,21 @@
 
 ;;;###autoload
 (defun idee-declaration()
-  "Jump to declaration"
+  "Jump to declaration."
   (interactive)
   (idee-back-push)
   (funcall  (alist-get 'idee-declaration-function idee-function-alist)))
 
 ;;;###autoload
 (defun idee-back()
-  "Jump back"
+  "Jump back."
   (interactive)
   (funcall  (alist-get 'idee-back-function idee-function-alist)))
 
 ;;Search
 ;;;###autoload
 (defun idee-grep()
-  "Grep"
+  "Grep."
   (interactive)
   (let (b (buffer-name (window-buffer)))
     (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
@@ -148,7 +144,7 @@
 
 ;;;###autoload
 (defun idee-find-file()
-  "Find file"
+  "Find file."
   (interactive)
   (idee-back-push)
   (funcall  (alist-get 'idee-find-file-function idee-function-alist)))
@@ -176,13 +172,13 @@
 ;;Layout
 ;;;###autoload
 (defun idee-repl ()
-  "Run a REPL"
+  "Run a REPL."
   (interactive)
   (funcall  (alist-get 'idee-repl-function idee-function-alist)))
 
 ;;;###autoload
 (defun idee-mode-hydra ()
-  "Open the mode specific hydra"
+  "Open the mode specific hydra."
   (interactive)
   (funcall  (alist-get 'idee-mode-hydra-function idee-function-alist)))
 

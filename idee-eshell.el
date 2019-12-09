@@ -1,37 +1,49 @@
 ;;; idee-eshell.el --- Eshell integration -*- lexical-binding: t -*-
 
+;; Copyright (C) 2018 Ioannis Canellos
 
+;; Licensed under the Apache License, Version 2.0 (the "License");
+;; you may not use this file except in compliance with the License.
+;; You may obtain a copy of the License at
+
+;;       http://www.apache.org/licenses/LICENSE-2.0
+
+;;Unless required by applicable law or agreed to in writing, software
+;;distributed under the License is distributed on an "AS IS" BASIS,
+;;WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;See the License for the specific language governing permissions and
+;;limitations under the License.
 
 ;; Author: Ioannis Canellos
-
-;; Version: 0.0.1
-
-;; Package-Requires: ((emacs "25.1"))
 
 ;;; Commentary:
 
 ;;; Code:
 
 (require 's)
+(require 'f)
 (require 'queue)
 (require 'eshell)
+(require 'demo-it)
+(require 'projectile)
 (require 'async-await)
 
 (defvar idee-eshell-command-queue (queue-create))
 (defvar idee-eshell-command-inserting nil)
 (defvar idee-eshell-command-running nil)
 
-(defcustom idee-eshell-cat-alias-enabled t "/dev/clip aware cat alias toggle " :group 'idee-eshell :type 'boolean)
-(defcustom idee-eshell-edit-alias-enabled t "edit alias toggle " :group 'idee-eshell :type 'boolean)
-(defcustom idee-eshell-save-on-shell-enabled t "Save on shell toggle. Save on shell witll save all buffers each time the shell is used " :group 'idee-eshell :type 'boolean)
-(defcustom idee-eshell-demo-it-enabled nil "Demo-it for eshell feature toggle" :group 'idee-eshell :type 'string)
-(defcustom idee-eshell-demo-it-speed :fast "Demo-it for eshell typing speed" :group 'idee-eshell  :type '(choice (const :tag "fast" :fast)
+(defcustom idee-eshell-cat-alias-enabled t "/dev/clip aware cat alias toggle." :group 'idee-eshell :type 'boolean)
+(defcustom idee-eshell-edit-alias-enabled t "Edit alias toggle." :group 'idee-eshell :type 'boolean)
+(defcustom idee-eshell-save-on-shell-enabled t "Save on shell toggle.  Save on shell will save all buffers each time the shell is used." :group 'idee-eshell :type 'boolean)
+(defcustom idee-eshell-demo-it-enabled nil "Demo-it for eshell feature toggle." :group 'idee-eshell :type 'string)
+(defcustom idee-eshell-demo-it-speed :fast "Demo-it for eshell typing speed." :group 'idee-eshell  :type '(choice (const :tag "fast" :fast)
                  (const :tag "faster"  :faster)
                  (const :tag "medium"  :medium)
                  (const :tag "slow"    :slow)
                  (const :tag "instant" :instant)))
 
 (defun wait-async (n)
+  "Wait async for N."
   (promise-new (lambda (resolve _reject) (run-at-time n nil (lambda () (funcall resolve n))))))
 
 (defun idee-eshell-cleanup  ()
@@ -79,7 +91,7 @@
       (when cmd (idee-eshell-project-command-execute cmd)))
     should-ignore))
 
- ;;;###autoload (autoload 'idee-with-project-shell "idee-eshell")
+;;;###autoload (autoload 'idee-with-project-shell "idee-eshell")
 (defmacro idee-with-project-shell (&rest body)
   "Load a SETTINGS-FILE as local OPTIONS and evaluate BODY."
   (declare (indent 1) (debug t))
@@ -94,7 +106,7 @@
       ,@body
       (eshell-send-input)))))
 
- ;;;###autoload 
+;;;###autoload
 (defun idee-eshell-project-command-execute (command)
   "Run a single COMMAND in the current project shell."
   (idee-switch-cli-on)
@@ -105,7 +117,7 @@
       (idee-eshell-insert command)
       (eshell-send-input))))
 
- ;;;###autoload 
+;;;###autoload
 (defun idee-eshell-project-command-enqueue (commands)
   "Execute COMMANDS on eshell."
   (idee-switch-cli-on)
@@ -117,7 +129,7 @@
       (when (not idee-eshell-command-running) (idee-eshell-execute-next-command)))))
 
 
- ;;;###autoload 
+;;;###autoload
 (defun idee-eshell-insert (str)
   "Insert STR into the current project eshell buffer."
 

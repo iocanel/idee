@@ -1,6 +1,6 @@
 ;;; idee-quarkus.el --- Quarkus Project Factory -*- lexical-binding: t -*-
 
-;; Copyright (C) 2019 Ioannis Canellos 
+;; Copyright (C) 2019 Ioannis Canellos
 ;;     
 ;; 
 ;; Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,6 @@
 
 
 ;; Author: Ioannis Canellos
-
-;; Version: 0.0.1
-
-;; Package-Requires: ((emacs "25.1"))
 
 ;;; Commentary:
 

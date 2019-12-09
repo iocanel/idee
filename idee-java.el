@@ -17,9 +17,7 @@
 ;; Author: Ioannis Canellos
 ;; Version: 0.0.1
 
-;; Package-Requires: ((emacs "25.1"))
-
-;;; Commentary:
+;; Package-Requires: ((emacs "25.1") (lsp-java "2.2"))
 
 ;;; Code:
 
