@@ -28,7 +28,7 @@
 (require 'idee-eshell)
 (require 'demo-it)
 
-(defcustom idee-quarkus-version "1.0.0.CR1" "The quarkus version." :group 'idee-quarkus :type 'string)
+(defcustom idee-quarkus-version "1.0.1.Final" "The quarkus version." :group 'idee-quarkus :type 'string)
 (defcustom idee-quarkus-remote-dev-url nil "The remote dev url." :group 'idee-quarkus :type 'string)
 (defcustom idee-quarkus-init-group-id "org.acme" "The initial value for group-id in the quarkus project factory." :group 'idee-quarkus :type 'string)
 
@@ -75,6 +75,8 @@
                                          "smallrye-reactive-streams-operators"
                                          "rest-client"
                                          "spring-di"
+                                         "spring-web"
+                                         "spring-data-jpa"
                                          "undertow"
                                          "undertow-websockets"
                                          "vertx"))
