@@ -98,6 +98,7 @@
                                 ("html" . "html-mode")
                                 ("yml" . "yaml-mode")
                                 ("yaml" . "yaml-mode")
+                                ("sql" . "sql-mode")
                                 ))
 ;;
 ;; Functions
