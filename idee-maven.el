@@ -26,6 +26,7 @@
 (require 'idee-utils)
 (require 'idee-projects)
 (require 'idee-dap)
+(require 'idee-visitors)
 
 (defconst pom-xml "pom.xml")
 

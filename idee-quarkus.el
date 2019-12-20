@@ -22,10 +22,11 @@
 ;;; Commentary:
 
 ;;; Code:
-
 (require 'idee-maven)
 (require 'idee-projects)
 (require 'idee-eshell)
+(require 'idee-visitors)
+
 (require 'demo-it)
 
 (defcustom idee-quarkus-version "1.0.1.Final" "The quarkus version." :group 'idee-quarkus :type 'string)
@@ -180,7 +181,8 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
 (defun idee-quarkus-dev ()
   "Run the quarkus dev mode."
   (interactive)
-  (idee-eshell-project-command-enqueue "mvn quarkus:dev"))
+  (idee-eshell-project-command-enqueue "mvn clean compile quarkus:dev")
+  (rename-buffer "**quarkus:dev**"))
 
 (defun idee-quarkus-remote-dev ()
   "Run the quarkus remote dev mode."

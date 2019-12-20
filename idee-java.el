@@ -22,6 +22,9 @@
 ;;; Code:
 
 (require 'idee-vars)
+(require 'idee-visitors)
+(require 'idee-quarkus)
+
 (require 'projectile)
 
 (require 'cc-vars)

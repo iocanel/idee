@@ -23,6 +23,7 @@
 
 ;;; Code:
 
+(require 'idee-visitors)
 (require 'lsp-java)
 (require 'markdown-mode)
 
