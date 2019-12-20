@@ -33,6 +33,7 @@
   "Initialize idee resources."
   (idee-git-checkout idee-repo-url idee-resources-dir '("headers" "templates" "snippets")))
 
+;;;###autoload
 (defun idee-init ()
   (interactive)
   "Initialize idee"

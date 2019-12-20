@@ -238,6 +238,7 @@
   (if (idee-java-project-p root)
       (idee-java-enable)))
 
+;;;###autoload
 (defun idee-java-init ()
   (interactive)
   "Initialize java."
