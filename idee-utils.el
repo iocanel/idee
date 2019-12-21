@@ -188,6 +188,14 @@
   "Toggle the specified BOOL variable."
   (list 'setq bool (list 'not bool)))
 
+;;;###autoload (autoload 'idee-leader/set-key "idee-utils")
+(defmacro idee-leader/set-key (key func &optional desc)
+"Leader key function abstraction."
+  (declare (indent 1) (debug t))
+  `(cond
+     ((fboundp 'evil-leader/set-key) (evil-leader/set-key ,key #',func))
+     ((fboundp 'map!) (map! (:leader (:prefix ,key :desc ,desc "" #',func))))))
+
 ;;; Misc Functions
 ;;;###autoload
 (defun idee-screenshot ()

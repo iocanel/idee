@@ -223,11 +223,11 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
 ; TODO: Implement filter correctly
 ;(add-to-list 'eshell-output-filter-functions 'idee-quarkus-highlight-time)
 
-(evil-leader/set-key "q a" 'idee-quarkus-add-extension)
-(evil-leader/set-key "q b" 'idee-quarkus-build)
-(evil-leader/set-key "q d" 'idee-quarkus-dev)
-(evil-leader/set-key "q r" 'idee-quarkus-remote-dev)
-(evil-leader/set-key "q n" 'idee-quarkus-native-build)
+(idee-leader/set-key "q a" 'idee-quarkus-add-extension)
+(idee-leader/set-key "q b" 'idee-quarkus-build)
+(idee-leader/set-key "q d" 'idee-quarkus-dev)
+(idee-leader/set-key "q r" 'idee-quarkus-remote-dev)
+(idee-leader/set-key "q n" 'idee-quarkus-native-build)
 
 
 ;;; Project Visitor

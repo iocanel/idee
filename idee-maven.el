@@ -449,9 +449,8 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
 
 ;;;###autoload
 (defun idee--maven-init ()
-  (evil-leader/set-key "m" 'idee-maven-hydra/body)
+  (idee-leader/set-key "m" #'idee-maven-hydra/body "Maven Hydra")
   (idee-register-project-factory idee-maven-project-factory)
   (idee-register-visitor 'idee-visitor-maven))
-
 (provide 'idee-maven)
 ;;; idee-maven.el ends here

@@ -148,7 +148,7 @@
 
 ;;;###autoload
 (defun idee--treemacs-init ()
-(evil-leader/set-key "t" 'idee-treemacs-hydra/body))
+(idee-leader/set-key "t" 'idee-treemacs-hydra/body "Treemacs Hydra"))
 
 (provide 'idee-treemacs)
 ;;; idee-treemacs.el ends here.
