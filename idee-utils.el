@@ -194,7 +194,7 @@
   (declare (indent 1) (debug t))
   `(cond
      ((fboundp 'evil-leader/set-key) (evil-leader/set-key ,key #',func))
-     ((fboundp 'map!) (map! :leader :prefix ,key :desc ,desc "" #',func))))
+     ((fboundp 'map!) (map! :leader :prefix ,key :desc ,desc "" ',func))))
 
 ;;; Misc Functions
 ;;;###autoload
