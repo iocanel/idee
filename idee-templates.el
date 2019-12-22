@@ -58,11 +58,17 @@
 
   (when (and
          (file-exists-p idee-templates-source-dir)
-         (not (file-exists-p idee-emacs-templates-dir))) (copy-directory idee-templates-source-dir idee-emacs-templates-dir))
+         (not (file-exists-p idee-emacs-templates-dir))) (progn
+                                                           (copy-directory idee-templates-source-dir idee-emacs-templates-dir)
+                                                           (yas-compile-directory idee-emacs-templates-dir)
+                                                           (yas-load-directory idee-emacs-templates-dir)))
 
   (when (and
          (file-exists-p idee-snippets-source-dir)
-         (not (file-exists-p idee-emacs-snippets-dir))) (copy-directory idee-snippets-source-dir idee-emacs-snippets-dir))
+         (not (file-exists-p idee-emacs-snippets-dir))) (progn
+                                                          (copy-directory idee-snippets-source-dir idee-emacs-snippets-dir)
+                                                          (yas-compile-directory idee-emacs-snippets-dir)
+                                                          (yas-load-directory idee-emacs-snippets-dir)))
 
   (when (and
          (file-exists-p idee-headers-source-dir)
@@ -74,16 +80,12 @@
   (when (not (file-exists-p idee-emacs-headers-dir)) (mkdir idee-emacs-headers-dir))
 
   (add-to-list 'yas-snippet-dirs idee-emacs-templates-dir)
-  (add-to-list 'yas-snippet-dirs idee-emacs-snippets-dir)
+  (add-to-list 'yas-snippet-dirs idee-emacs-snippets-dir))
 
-  (yas-compile-directory idee-emacs-templates-dir)
-  (yas-reload-all))
 ;;
 ;; State
 ;;
-(defvar idee-type-modes-alist '() "Association list for extension to mode.")
-(setq idee-type-modes-alist '(
-                                ("el" . "emacs-lisp-mode")
+(defvar idee-type-modes-alist '(("el" . "emacs-lisp-mode")
                                 ("org" . "org-mode")
                                 ("md" . "markdown-mode")
                                 ("java" . "java-mode")
@@ -98,8 +100,7 @@
                                 ("html" . "html-mode")
                                 ("yml" . "yaml-mode")
                                 ("yaml" . "yaml-mode")
-                                ("sql" . "sql-mode")
-                                ))
+                                ("sql" . "sql-mode")) "Association list for extension to mode.")
 ;;
 ;; Functions
 ;;
