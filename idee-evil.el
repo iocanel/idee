@@ -39,10 +39,10 @@
   (when (and (require 'flycheck nil 'noerror) idee-flycheck-bindings-enabled)
     (evil-define-key 'normal flycheck-error-list-mode-map "q" 'idee-toggle-errors))
 
-  (idee-leader/set-key "i" 'idee-hydra/body "IDEE")
-  (idee-leader/set-key "p" 'idee-project-hydra/body "Project")
-  (idee-leader/set-key "f" 'idee-file-hydra/body "File")
-  (idee-leader/set-key "n" 'idee-navigation-hydra/body "Navigation"))
+  (idee-leader/set-key "i" idee-hydra/body "IDEE")
+  (idee-leader/set-key "p" idee-project-hydra/body "Project")
+  (idee-leader/set-key "f" idee-file-hydra/body "File")
+  (idee-leader/set-key "n" idee-navigation-hydra/body "Navigation"))
 
 (provide 'idee-evil)
 ;;; idee-evil.el ends here
