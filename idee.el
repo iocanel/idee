@@ -18,7 +18,7 @@
 
 ;; Version: 0.0.1
 
-;; Package-Requires: ((emacs "25.1") (projectile "2.0.0") (treemacs "2.6") (yasnippet "0.13.0") (hydra "0.15.0") (magit "2.90.0") (company "0.9.10" ) (lsp-mode "6.2") (lsp-ui "6.0") (dap-mode "0.3") (company-lsp "2.1.0"))
+;; Package-Requires: ((emacs "25.1") (projectile "2.0.0") (helm-ag "0.58") (treemacs "2.6") (yasnippet "0.13.0") (hydra "0.15.0") (magit "2.90.1") (company "0.9.10" ) (lsp-mode "6.2") (lsp-ui "6.0") (dap-mode "0.3") (company-lsp "2.1.0"))
 
 ;;; Commentary:
 

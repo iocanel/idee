@@ -20,6 +20,7 @@
 
 ;;; Code:
 
+(require 'helm-ag)
 (require 'idee-vars)
 
 ;;Project
@@ -136,6 +137,7 @@
   (interactive)
   (let (b (buffer-name (window-buffer)))
     (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
+    (helm-do-ag (projectile-project-root))
     (other-window 1)
     (while (and
             (not (equal "*grep*" (buffer-name (window-buffer))))

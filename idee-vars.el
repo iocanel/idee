@@ -118,7 +118,7 @@
                               (idee-implementation-function . nil)
                               (idee-declaration-function . nil)
                               (idee-back-function . nil)
-                              (idee-grep-function . projectile-grep)
+                              (idee-grep-function . helm-ag)
                               (idee-find-file-function . projectile-find-file-dwim)
                               (idee-find-variable-function . find-variable)
                               (idee-test-function . nil)
