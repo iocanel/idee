@@ -97,7 +97,8 @@
          _C_lose       insert _s_nippet       _._: set mark                                              _c_: toggle cli
          _B_uild       select _h_eaders                                                                _d_: toggle diagnostics
          _V_cs         apply _H_eader                                                                  _e_: toggle errors                                                                                                       
-                                                                                                   _m_: toggle messages
+                     code _a_ctions                                                                  _m_: toggle messages
+                                                                                                   _x_: toggle xrefs
 
 "
 
@@ -118,6 +119,7 @@
   ("s" company-yasnippet)
   ("h" idee-select-project-header)
   ("H" idee-apply-buffer-header)
+  ("a" idee-apply-code-actions)
 
   ("?" idee-declaration)
   ("/" idee-references)
@@ -142,6 +144,7 @@
   ("d" idee-toggle-diagnostics)
   ("e" idee-toggle-errors)
   ("m" idee-toggle-messages)
+  ("x" idee-toggle-messages)
   ("," idee-mode-hydra "mode")
   ("q" nil "quit"))
 

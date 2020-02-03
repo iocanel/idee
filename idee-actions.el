@@ -102,6 +102,11 @@
   (interactive)
   (funcall  (alist-get 'idee-select-project-header-function idee-function-alist)))
 
+(defun idee-apply-code-actions()
+  "Select header for project files."
+  (interactive)
+  (funcall  (alist-get 'idee-apply-code-actions-function idee-function-alist)))
+
 ;;Navigate
 ;;;###autoload
 (defun idee-references()
@@ -136,7 +141,6 @@
   "Grep."
   (interactive)
   (let (b (buffer-name (window-buffer)))
-    (funcall  (alist-get (intern (format "%s-function" this-command)) idee-function-alist))
     (helm-do-ag (projectile-project-root))
     (other-window 1)
     (while (and
