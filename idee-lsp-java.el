@@ -25,6 +25,7 @@
 
 (require 'idee-visitors)
 (require 'lsp-java)
+(require 'dap-java)
 (require 'markdown-mode)
 
 (defcustom idee-lsp-java-enabled t "Lsp Java Feature Toggle" :group 'idee :type 'boolean)

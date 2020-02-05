@@ -17,6 +17,7 @@
  (depends-on "hydra")
  (depends-on "magit")
  (depends-on "projectile")
+ (depends-on "helm-projectile")
  (depends-on "helm-ag")
  (depends-on "treemacs")
  (depends-on "treemacs-projectile")
