@@ -114,7 +114,7 @@
                               (idee-indent-function . evil-indent)
                               (idee-indent-region-function . nil)
                               (idee-select-project-header-function . idee-select-project-header-function)
-                              (idee-apply-code-actions-function . lsp-ui-sideline-apply-code-actions)
+                              (idee-apply-code-actions-function . idee-execute-code-actions)
                               (idee-references-function . nil)
                               (idee-implementation-function . nil)
                               (idee-declaration-function . nil)

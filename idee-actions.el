@@ -229,5 +229,10 @@
       (message "Use tabs: enabled.")
     (message "Use tabs: disabled.")))
 
+;;;###autoload
+(defun idee-execute-code-actions ()
+  (let ((action) (list (lsp--select-action (lsp-code-actions-at-point))))
+    (lsp-execute-code-action action)))
+
 (provide 'idee-actions)
 ;;; idee-actions.el ends here
