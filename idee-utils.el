@@ -83,7 +83,6 @@
         (setq match (match-string index string))
         (if match
             (progn
-              (message "index:%s match:%s" index match)
               (push match matches)
               (setq index (+ 1 index)))))
       matches)))
@@ -194,7 +193,7 @@
   (declare (indent 1) (debug t))
   `(cond
      ((fboundp 'evil-leader/set-key) (evil-leader/set-key ,key #',func))
-     ((fboundp 'map!) (map! :leader :prefix ,key :desc ,desc "" ',func))))
+     ((and (require 'core-keybinds nil t) (fboundp 'map!)) (map! :leader :prefix ,key :desc ,desc "" ',func))))
 
 ;;; Misc Functions
 ;;;###autoload
