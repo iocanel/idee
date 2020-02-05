@@ -123,7 +123,7 @@
                 ^^^^^^-----------------------------------------------------------------------------------------
                 _N_: new workspace       _t_: tree view toggle     _s_: select window            _b_: bookmark
                 _S_: switch workspace    _d_: show hidden files    _d_: delete other windows     _f_: find file
-                _R_: remove workspace    _c_: collapse dirs                                      _T_: find tag
+                _R_: remove workspace    _c_: collapse dirs                                    _T_: find tag
                 _E_: edit workspace      _g_: magit             
                 _F_: finish edit         
                "
@@ -148,7 +148,7 @@
 
 ;;;###autoload
 (defun idee--treemacs-init ()
-(idee-leader/set-key "t" idee-treemacs-hydra/body "Treemacs Hydra"))
+  (idee-leader/set-key "t" idee-treemacs-hydra/body "Treemacs Hydra"))
 
 (provide 'idee-treemacs)
 ;;; idee-treemacs.el ends here.
