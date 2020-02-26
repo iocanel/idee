@@ -125,35 +125,41 @@
             (set-buffer buffer)
             (when (derived-mode-p 'dired-mode) (revert-buffer)))))))
 
+;;;###autoload
 (defun idee-close-project-buffers (&optional project-dir)
   (interactive)
-  (when project-dir
-    (progn
-      (setq projectile-project-root project-dir)
-      (projectile-kill-buffers)))
-  ;; Kill all buffers containing the PROJECT-DIR.
-  (when (get-buffer project-dir) (kill-buffer project-dir))
-  (dolist (buffer (buffer-list))
-    (let* ((name (buffer-name buffer)))
-      (cond
-       ((cl-search project-dir name) (kill-buffer name))
-       ((cl-search "*helm-ag*" name) (kill-buffer name))
-       ((cl-search "*grep*" name) (kill-buffer name))
-       (t (message "buffer %s not a project buffer" name)))))
+  (let* ((project-dir (or project-dir (projectile-project-root)))
+         (project (projectile-ensure-project (or project-dir (projectile-project-root))))
+         (project-name (projectile-project-name project))
+         (project-dir-name (file-name-nondirectory (directory-file-name (file-name-directory project-dir)))))
+    (message "project dir name:%s." project-dir-name)
 
-  ;; Kill all buffers containing the project name
-  (let* ((project (projectile-ensure-project (or project-dir (projectile-project-root))))
-         (project-name (projectile-project-name project)))
-    (dolist (buffer (buffer-list))
-      (let* ((name (buffer-name buffer)))
-        (when (cl-search project-name name) (kill-buffer name))))))
+       (when project-dir
+         (progn
+           (setq projectile-project-root project-dir)
+           (projectile-kill-buffers)
+           ;; Kill all buffers containing the PROJECT-DIR.
+           (when (get-buffer project-dir) (kill-buffer project-dir))))
 
-(defun idee-project-info ()
+       (dolist (buffer (buffer-list))
+         (let* ((name (buffer-name buffer))
+                (file-name (buffer-file-name buffer)))
+           (cond
+            ((and project-dir (cl-search project-dir name) (kill-buffer name)))
+            ((and project-dir (cl-search project-dir file-name) (kill-buffer name)))
+            ((and project-name (cl-search project-name name) (kill-buffer name)))
+            ((and project-dir-name (eq project-dir-name name) (kill-buffer name)))
+            ((cl-search "*helm-ag*" name) (kill-buffer name))
+            ((cl-search "*grep*" name) (kill-buffer name)))))))
+
+(defun idee-project-init (&optional path)
+  (interactive)
   "Initialize project."
-  (let* ((path (or (projectile-project-root) default-directory))
+  (let* ((path (or path (or (projectile-project-root) default-directory)))
          (name (or (projectile-project-name)  (file-name-nondirectory (directory-file-name path))))
          (info (alist-get (intern name) idee-project-info-alist)))
 
+    (message "Initializing project name: %s in %s." name path)
     (when (not info)
       (setq info (make-idee-project-info
                    :name name
@@ -207,8 +213,7 @@
 
 ;;;###autoload
 (defun idee--projects-init ()
-  "Initialize idee projects."
-  (add-to-list 'projectile-after-switch-project-hook 'idee-project-info))
+  "Initialize idee projects.")
 
 (provide 'idee-projects)
 ;;; idee-projects.el ends here

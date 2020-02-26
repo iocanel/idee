@@ -65,14 +65,17 @@
           idee-xref-enabled nil))
 
 ;;;###autoload
-(defun idee-project-open-view()
+(defun idee-project-open-view(&optional path)
   "Switch to a traditional IDE view for the buffer.  (project tree, main buffer & terminal)."
  (interactive)
- (dolist (b idee-bottom-area-switch-list)
-   (setq b nil))
-  (idee-ide-view)
-  (idee-jump-to-non-ide-window)
-  (magit-status-internal (projectile-project-root)))
+  (let* ((path (or path (or (projectile-project-root) default-directory)))
+         (name (or (projectile-project-name)  (file-name-nondirectory (directory-file-name path)))))
+    (dolist (b idee-bottom-area-switch-list)
+      (setq b nil))
+    (dired path)
+    (idee-ide-view)
+    (idee-jump-to-non-ide-window)
+    (magit-status-internal path)))
 
 ;;;###autoload
 (defun idee-ide-view()
@@ -531,6 +534,18 @@ PIVOT indicates how many windows should be switched at the end of the operation.
           t)
       nil)))
 
+(defun idee-on-delete-other-windows-internal (orig-fun &rest args)
+    (let ((window (or (car args) (selected-window))))
+      (when (not (window-parameter window 'window-side))
+                 (apply orig-fun args))))
+
+(defun idee-on-projectile-switch-project-by-name (orig-fun &rest args)
+  "Intercept projectile-switch-project-by-name to get a hold of the name."
+  (apply orig-fun args)
+  (let ((project-name (car args)))
+    (idee-project-init project-name)
+    (idee-project-open-view project-name)))
+
 (defadvice quit-window (around idee-on-quit-window (&optional kill window))
   "Handles things when quiting window."
   (cond
@@ -547,8 +562,9 @@ PIVOT indicates how many windows should be switched at the end of the operation.
   (define-key evil-normal-state-map (kbd "q") #'quit-window)
 
   (ad-activate 'quit-window)
-  (advice-add 'projectile-switch-project :after 'idee-project-open-view)
-  (advice-add 'treemacs-switch-workspace :after 'idee-project-open-view)
+  (advice-add 'delete-other-windows-internal :around #'idee-on-delete-other-windows-internal)
+  (advice-add 'projectile-switch-project-by-name :around #'idee-on-projectile-switch-project-by-name)
+
   (advice-add 'next-error :after 'idee-after-next-error)
 
   (advice-add 'helm-ag--edit :after 'idee-refresh-view)
