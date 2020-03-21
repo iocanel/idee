@@ -2,6 +2,7 @@
 (source melpa)
 
 (package-file "idee.el")
+(package-file "idee-lsp.el")
 (package-file "idee-clojure.el")
 (package-file "idee-golang.el")
 (package-file "idee-elisp.el")

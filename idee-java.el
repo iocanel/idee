@@ -51,7 +51,6 @@
 (defcustom idee-comment-java-custom-line-prefix " * " "Custom line prefix to use when commenting java code." :group 'idee-java :type 'string)
 
 
-(defcustom idee-java-treemacs-workspace-sync-enabled t "Use a workspace per treemacs workspace" :group 'idee-java :type 'boolean)
 
 (defconst java-comment-style (make-idee-comment-style :block-beginning "/*" :block-ending "*/"
                                                       :custom-block-beginning idee-comment-java-custom-block-beginning :custom-line-prefix idee-comment-java-custom-line-prefix :custom-block-ending idee-comment-java-custom-block-ending))
@@ -208,21 +207,7 @@
      (lambda (x) (not (equal "" x))) ;;remove all empty strings (its usually the first)
      (split-string (replace-regexp-in-string "\\([A-Z]\\)" " \\1" s) " "))))
 
-(defun idee-java-switch-workspace (&optional w)
-  "Switch to workspace W."
-  (let* ((current (treemacs-current-workspace))
-         (name (if current (treemacs-workspace->name current) nil))
-         (workspace
-          (cond
-           (w w)
-           ((and name idee-java-treemacs-workspace-sync-enabled (f-join (f-join (locate-user-emacs-file "lsp") "workspace") name)))
-           (t (locate-user-emacs-file "workspace")))))
 
-    (message (format "Using LSP Java workspace: %s." workspace))
-    (setq lsp-java-workspace-dir workspace)
-    (setq lsp-java-workspace-cache-dir (f-join lsp-java-workspace-dir ".cache"))
-    (setq lsp-session-file (f-join lsp-java-workspace-dir ".lsp-session-v1"))
-    (when (lsp-workspaces) (lsp-restart-workspace))))
 
 ;;; Visitor
 (defun idee-java-project-p (root)
@@ -253,8 +238,7 @@
   (add-hook 'java-mode-hook 'idee-java-enable)
   (add-hook 'java-mode-hook 'idee-java-visit-file)
 
-  (advice-add 'projectile-switch-to-buffer :after #'idee-java-visit-file)
-  (add-hook 'treemacs-switch-workspace-hook 'idee-java-switch-workspace))
+  (advice-add 'projectile-switch-to-buffer :after #'idee-java-visit-file))
 
 (provide 'idee-java)
 ;;; idee-java.el ends here

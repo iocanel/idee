@@ -23,14 +23,15 @@
 
 ;;; Code:
 
-(require 'idee-visitors)
 (require 'lsp-java)
 (require 'dap-java)
 (require 'markdown-mode)
 
-(defcustom idee-lsp-java-enabled t "Lsp Java Feature Toggle" :group 'idee :type 'boolean)
-(defcustom idee-lsp-java-completion-enabled t "Lsp Java Completion Feature Toggle" :group 'idee :type 'boolean)
-(defcustom idee-lsp-java-workspace-per-project-enabled t "Lsp Workspace per Project Feature Toggle" :group 'idee :type 'boolean)
+(require 'idee-visitors)
+(require 'idee-lsp)
+
+(defcustom idee-lsp-java-enabled t "Lsp Java Feature Toggle" :group 'idee-java :type 'boolean)
+(defcustom idee-lsp-java-completion-enabled t "Lsp Java Completion Feature Toggle" :group 'idee-java :type 'boolean)
 
 (defun idee-lsp-java-enable()
   "Enable lsp-java, add hooks, visitors etc."
@@ -81,6 +82,12 @@
                  (equal ".project" x))) (directory-files root)))
 
 ;;;###autoload
+(defun idee-lsp-java-switch-workspace (w)
+  "Switch to workspace W."
+    (setq lsp-java-workspace-dir workspace)
+    (setq lsp-java-workspace-cache-dir (f-join lsp-java-workspace-dir ".cache")))
+
+;;;###autoload
 (defun idee-visitor-lsp-java (root)
   "Check if a lsp-java project is available under the specified ROOT."
   (if (and idee-lsp-java-enabled (idee-lsp-java-project-p root))
@@ -90,7 +97,8 @@
 (defun idee--lsp-java-init ()
   (idee-register-visitor 'idee-visitor-lsp-java)
   (add-hook 'java-mode-hook 'idee-lsp-java-hook)
-  (advice-add 'save-buffer :after #'idee--lsp-java--on-save-buffer))
+  (advice-add 'save-buffer :after #'idee--lsp-java--on-save-buffer)
+  (add-hook 'idee-lsp-before-workspace-restart-hook 'idee-lsp-java-switch-workspace))
 
 (provide 'idee-lsp-java)
 ;;; idee-lsp-java.el ends here
