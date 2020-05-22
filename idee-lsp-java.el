@@ -68,8 +68,9 @@
 
 (defun idee--lsp-java--on-save-buffer()
   "Save buffer handler."
-  (if (and (buffer-file-name) (equal "pom.xml" (file-name-nondirectory (buffer-file-name))))
-             (lsp-java-update-project-configuration)))
+  (when (and (buffer-file-name) (equal "pom.xml" (file-name-nondirectory (buffer-file-name))))
+    (ignore-errors
+      (lsp-java-update-project-configuration))))
 
 
 ;;; Visitor
