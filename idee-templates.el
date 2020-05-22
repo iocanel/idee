@@ -27,60 +27,35 @@
 (require 'yasnippet)
 (require 'idee-headers)
 
-(defconst idee-source-dir
-   ;; If idee is installed using `straight-use-pacakge` we need to refer to the repo and not the build output.
-   ;; TODO: have these get downloaded from github.
-   (replace-regexp-in-string (regexp-quote "straight/build/idee") "straight/repos/idee"
-                             (file-name-directory
-                              ;; Copied from ‘yasnippet-snippets’ that copied from ‘f-this-file’ from f.el.
-                              (cond
-                               (load-in-progress load-file-name)
-                               ((and (boundp 'byte-compile-current-file) byte-compile-current-file)
-                                byte-compile-current-file)
-                               (:else (buffer-file-name))))))
-
-(defconst idee-templates-source-dir (f-join idee-source-dir "templates") "The idee source template directory.")
-(defconst idee-snippets-source-dir (f-join idee-source-dir "snippets") "The idee source snippet directory.")
-(defconst idee-headers-source-dir (f-join idee-source-dir "headers") "The idee source header directory.")
+(defvar idee-source-dir nil)
 
 (defconst idee-emacs-templates-dir (f-join idee-resources-dir "templates") "The directory where template files are stored.")
 (defconst idee-emacs-snippets-dir (f-join idee-resources-dir "snippets") "The directory where snippet files are stored.")
 (defconst idee-emacs-headers-dir (f-join idee-resources-dir "headers") "The directory where header files are stored.")
 
-;;
-;; Initialization
-;;
+(defun idee--find-source-dir ()
+  "Find the source dir of the project."
+  (if idee-source-dir
+      idee-source-dir
+     (progn
+       (setq idee-source-dir (replace-regexp-in-string (regexp-quote "straight/build/idee") "straight/repos/idee"
+                                                       (file-name-directory
+                                                        ;; Copied from ‘yasnippet-snippets’ that copied from ‘f-this-file’ from f.el.
+                                                        (cond (load-in-progress load-file-name) ((and (boundp 'byte-compile-current-file) byte-compile-current-file) byte-compile-current-file)
+                                                              (:else                            (buffer-file-name))))))
+       idee-source-dir)))
 
-;;;###autoload
-(defun idee--templates-init ()
-  "Initialize idee templates."
-  (when (not (file-exists-p idee-resources-dir)) (mkdir idee-resources-dir t))
+(defun idee--find-template-source-dir ()
+  "Find the template source directory."
+  (f-join (idee-find-source-dir) "templates"))
 
-  (when (and
-         (file-exists-p idee-templates-source-dir)
-         (not (file-exists-p idee-emacs-templates-dir))) (progn
-                                                           (copy-directory idee-templates-source-dir idee-emacs-templates-dir)
-                                                           (yas-compile-directory idee-emacs-templates-dir)
-                                                           (yas-load-directory idee-emacs-templates-dir)))
+(defun idee--find-snippets-source-dir ()
+  "Find the snippets source directory."
+  (f-join (idee-find-source-dir) "snippets"))
 
-  (when (and
-         (file-exists-p idee-snippets-source-dir)
-         (not (file-exists-p idee-emacs-snippets-dir))) (progn
-                                                          (copy-directory idee-snippets-source-dir idee-emacs-snippets-dir)
-                                                          (yas-compile-directory idee-emacs-snippets-dir)
-                                                          (yas-load-directory idee-emacs-snippets-dir)))
-
-  (when (and
-         (file-exists-p idee-headers-source-dir)
-         (not (file-exists-p idee-emacs-headers-dir))) (copy-directory idee-headers-source-dir idee-emacs-headers-dir))
-
-
-  (when (not (file-exists-p idee-emacs-templates-dir)) (mkdir idee-emacs-templates-dir))
-  (when (not (file-exists-p idee-emacs-snippets-dir)) (mkdir idee-emacs-snippets-dir))
-  (when (not (file-exists-p idee-emacs-headers-dir)) (mkdir idee-emacs-headers-dir))
-
-  (add-to-list 'yas-snippet-dirs idee-emacs-templates-dir)
-  (add-to-list 'yas-snippet-dirs idee-emacs-snippets-dir))
+(defun idee--find-headers-source-dir ()
+  "Find the headers source directory."
+  (f-join (idee-find-source-dir) "headers"))
 
 ;;
 ;; State
@@ -148,6 +123,42 @@
 (defun idee-snippet-key (definition)
   "Key of the snippet found in DEFINITION."
   (car definition))
+
+;;
+;; Initialization
+;;
+
+;;;###autoload
+(defun idee--templates-init ()
+  "Initialize idee templates."
+  (when (not (file-exists-p idee-resources-dir)) (mkdir idee-resources-dir t))
+
+  (run-with-idle-timer 1 nil (lambda ()
+                               (when (not (file-exists-p idee-emacs-templates-dir))
+                                 (progn
+                                   (copy-directory (idee--find-template-source-dir) idee-emacs-templates-dir)
+                                   (run-with-idle-timer 1 nil (lambda () (progn
+                                                                           (yas-compile-directory idee-emacs-templates-dir)
+                                                                           (yas-load-directory idee-emacs-templates-dir))))))))
+
+  (run-with-idle-timer 1 nil (lambda ()
+                               (when (not (file-exists-p idee-emacs-snippets-dir))
+                                 (progn
+                                   (copy-directory (idee--find-snippets-source-dir) idee-emacs-snippets-dir)
+                                   (run-with-idle-timer 1 nil (lambda () (progn
+                                                                           (yas-compile-directory idee-emacs-snippets-dir)
+                                                                           (yas-load-directory idee-emacs-snippets-dir))))))))
+
+  (run-with-idle-timer 1 nil (lambda ()
+                               (when (not (file-exists-p idee-emacs-headers-dir)) (copy-directory (idee--find-headers-source-dir) idee-emacs-headers-dir))))
+
+
+  (when (not (file-exists-p idee-emacs-templates-dir)) (mkdir idee-emacs-templates-dir))
+  (when (not (file-exists-p idee-emacs-snippets-dir)) (mkdir idee-emacs-snippets-dir))
+  (when (not (file-exists-p idee-emacs-headers-dir)) (mkdir idee-emacs-headers-dir))
+
+  (add-to-list 'yas-snippet-dirs idee-emacs-templates-dir)
+  (add-to-list 'yas-snippet-dirs idee-emacs-snippets-dir))
 
 (provide 'idee-templates)
 ;;; idee-templates.el ends here
