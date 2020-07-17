@@ -169,13 +169,13 @@
 
 (defun idee-project-get-version ()
   "Return the project version variable."
-  (let ((info (idee-project-info)))
+  (let ((info (idee-project-init)))
     (if info (idee-project-info-version info) nil)))
 
 (defun idee-project-set-version (version)
   "Set the project VERSION."
   (let ((name (idee-project-get-name))
-        (info (idee-project-info)))
+        (info (idee-project-init)))
     (when info
       (setf (idee-project-info-version info) version)
       (setq idee-project-info-alist (delq (assoc (intern name) idee-project-info-alist) idee-project-info-alist))
@@ -183,17 +183,17 @@
 
 (defun idee-project-get-name ()
   "Return the project name variable."
-  (let ((info (idee-project-info)))
+  (let ((info (idee-project-init)))
     (if info (idee-project-info-name info) nil)))
 
 (defun idee-project-set-name (name)
   "Set the project NAME."
-  (let ((info (idee-project-info)))
-    (when info (setf (idee-project-info-name info) name))))
+  (let ((info (idee-project-init)))
+    (when info (setf (idee-project-init-name info) name))))
 
 (defun idee-project-get-property (key)
   "Return the project name property with KEY."
-  (let ((info (idee-project-info)))
+  (let ((info (idee-project-init)))
     (if info
         (alist-get (intern key) (idee-project-info-properties info))
       nil)))
@@ -201,7 +201,7 @@
 (defun idee-project-set-property (key value)
   "Set the project VALUE for KEY."
   (let* ((name (idee-project-get-name))
-        (info (idee-project-info))
+        (info (idee-project-init))
         (props (idee-project-info-properties info)))
     (when info
       (setq props (delq (assoc key props) props))
