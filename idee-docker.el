@@ -113,11 +113,12 @@ The criteria are the following:
          (last-visited-dockerfile (idee-project-get-property idee-last-visited-dockerfile))
          (dockerfile))
 
-    (setq dockerfile (cond
-     ((equal "dockerfile-mode" major-mode) path)
-     (provider-dockerfile provider-dockerfile)
-     ((file-exists-p last-visited-dockerfile) last-visited-dockerfile)
-     (t nil)))
+    (setq dockerfile
+          (cond
+           ((equal 'dockerfile-mode major-mode) path)
+           (provider-dockerfile provider-dockerfile)
+           ((and last-visited-dockerfile (file-exists-p last-visited-dockerfile)) last-visited-dockerfile)
+           (t nil)))
     dockerfile))
     
 
