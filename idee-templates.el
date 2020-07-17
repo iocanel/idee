@@ -47,15 +47,15 @@
 
 (defun idee--find-template-source-dir ()
   "Find the template source directory."
-  (f-join (idee-find-source-dir) "templates"))
+  (f-join (idee--find-source-dir) "templates"))
 
 (defun idee--find-snippets-source-dir ()
   "Find the snippets source directory."
-  (f-join (idee-find-source-dir) "snippets"))
+  (f-join (idee--find-source-dir) "snippets"))
 
 (defun idee--find-headers-source-dir ()
   "Find the headers source directory."
-  (f-join (idee-find-source-dir) "headers"))
+  (f-join (idee--find-source-dir) "headers"))
 
 ;;
 ;; State
@@ -134,12 +134,13 @@
   (when (not (file-exists-p idee-resources-dir)) (mkdir idee-resources-dir t))
 
   (run-with-idle-timer 1 nil (lambda ()
-                               (when (not (file-exists-p idee-emacs-templates-dir))
+                               (if (not (file-exists-p idee-emacs-templates-dir))
                                  (progn
                                    (copy-directory (idee--find-template-source-dir) idee-emacs-templates-dir)
                                    (run-with-idle-timer 1 nil (lambda () (progn
                                                                            (yas-compile-directory idee-emacs-templates-dir)
-                                                                           (yas-load-directory idee-emacs-templates-dir))))))))
+                                                                           (yas-load-directory idee-emacs-templates-dir)))))
+                                 (yas-load-directory idee-emacs-templates-dir))))
 
   (run-with-idle-timer 1 nil (lambda ()
                                (when (not (file-exists-p idee-emacs-snippets-dir))
@@ -147,15 +148,11 @@
                                    (copy-directory (idee--find-snippets-source-dir) idee-emacs-snippets-dir)
                                    (run-with-idle-timer 1 nil (lambda () (progn
                                                                            (yas-compile-directory idee-emacs-snippets-dir)
-                                                                           (yas-load-directory idee-emacs-snippets-dir))))))))
+                                                                           (yas-load-directory idee-emacs-snippets-dir)))))
+                                 (yas-load-directory idee-emacs-templates-dir))))
 
   (run-with-idle-timer 1 nil (lambda ()
                                (when (not (file-exists-p idee-emacs-headers-dir)) (copy-directory (idee--find-headers-source-dir) idee-emacs-headers-dir))))
-
-
-  (when (not (file-exists-p idee-emacs-templates-dir)) (mkdir idee-emacs-templates-dir))
-  (when (not (file-exists-p idee-emacs-snippets-dir)) (mkdir idee-emacs-snippets-dir))
-  (when (not (file-exists-p idee-emacs-headers-dir)) (mkdir idee-emacs-headers-dir))
 
   (add-to-list 'yas-snippet-dirs idee-emacs-templates-dir)
   (add-to-list 'yas-snippet-dirs idee-emacs-snippets-dir))
