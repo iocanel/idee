@@ -54,9 +54,6 @@
  ; Javascript
  (depends-on "tide")
 
- ; Meghanada
- (depends-on "meghanada")
- 
  ; Python
  (depends-on "python-mode")
  (depends-on "anaconda-mode")

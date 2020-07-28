@@ -15,7 +15,6 @@ MAIN_PACKAGE_FILE = idee.el
 ELISP_PACKAGE_FILE = idee-elisp.el
 CLOJURE_PACKAGE_FILE = idee-clojure.el
 GOLANG_PACKAGE_FILE = idee-golang.el
-MAGHANADA_PACKAGE_FILE = idee-meghanada.el
 PYTHON_PACKAGE_FILE = idee-python.el
 
 VERSION := $(shell EMACS=${EMACS} ${CASK} version)
@@ -102,14 +101,12 @@ set-package-version :
 	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(ELISP_PACKAGE_FILE)" && \
 	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(CLOJURE_PACKAGE_FILE)" && \
 	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(GOLANG_PACKAGE_FILE)" && \
-	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(MEGHANADA_PACKAGE_FILE)" && \
 	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(PYTHON_PACKAGE_FILE)" && \
 
 	@rm "$(MAIN_PACKAGE_FILE).bak"
 	@rm "$(ELISP_PACKAGE_FILE).bak"
 	@rm "$(CLOJURE_PACKAGE_FILE).bak"
 	@rm "$(GOLANG_PACKAGE_FILE).bak"
-	@rm "$(MEGHANADA_PACKAGE_FILE).bak"
 	@rm "$(PYTHON_PACKAGE_FILE).bak"
 
 git-release :
@@ -117,7 +114,6 @@ git-release :
 	@git add "$(ELISP_PACKAGE_FILE)"
 	@git add "$(CLOJURE_PACKAGE_FILE)"
 	@git add "$(GOLANG_PACKAGE_FILE)"
-	@git add "$(MEGHANADA_PACKAGE_FILE)"
 	@git add "$(PYTHON_PACKAGE_FILE)"
 	@export TAG="$$(EMACS=${EMACS} ${CASK} version)"; \
 	git commit --quiet -m "Release $${TAG}" && \

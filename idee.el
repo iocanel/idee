@@ -38,7 +38,6 @@
   (interactive)
   "Initialize idee"
   (idee--projects-init)
-  (idee--treemacs-init)
   (idee--templates-init)
   (idee--headers-init)
   (idee--views-init)

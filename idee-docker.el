@@ -130,12 +130,7 @@ The criteria are the following:
   "Initialize idee-docker."
   (interactive)
   (add-to-list 'idee-dockerfile-provider-list 'idee-docker-dockerfile-from-project-root)
-  (add-hook 'dockerfile-mode-hook (lambda () (idee-project-set-property idee-last-visited-dockerfile (buffer-file-name))))
-
-  (define-key dockerfile-mode-map (kbd" C-c C-b") 'idee-docker-build)
-  (define-key dockerfile-mode-map (kbd" C-c C-k") 'idee-docker-kill)
-  (define-key dockerfile-mode-map (kbd" C-c C-r") 'idee-docker-run-dockerfile)
-  (define-key dockerfile-mode-map (kbd" C-c C-p") 'idee-docker-push-dockerfile))
+  (add-hook 'dockerfile-mode-hook (lambda () (idee-project-set-property idee-last-visited-dockerfile (buffer-file-name)))))
 
 (provide 'idee-docker)
 ;;; idee-docker.el ends here

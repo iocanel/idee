@@ -202,8 +202,6 @@
   (interactive)
   (shell-command "scrot -s '/home/iocanel/Photos/screenshots/%Y-%m-%d_%H:%M:%S_$wx$h.png'"))
 
-(global-set-key (kbd "C-c i s") 'idee-screenshot)
-
 ;;;###autoload
 (defun idee-git-checkout (repo target &optional dirs)
   "Checkout a git REPO into the TARGET dir.  Optionally only checkout one or more DIRS."

@@ -21,6 +21,7 @@
 ;;; Code:
 
 (require 'evil)
+(require 'idee-hydra)
 
 (defcustom idee-helm-ag-bindings-enabled t "Toggle to enable idee manage helm-ag bindings for q and RET." :group 'idee-evil :type 'boolean)
 (defcustom idee-flycheck-bindings-enabled t "Toggle to enable idee manage flycheck bindings for q and RET." :group 'idee-evil :type 'boolean)
@@ -37,12 +38,7 @@
     (evil-define-key 'normal flymake-diagnostics-buffer-mode-map "q" 'idee-toggle-diagnostics))
 
   (when (and (require 'flycheck nil 'noerror) idee-flycheck-bindings-enabled)
-    (evil-define-key 'normal flycheck-error-list-mode-map "q" 'idee-toggle-errors))
-
-  (idee-leader/set-key "i" idee-hydra/body "IDEE")
-  (idee-leader/set-key "p" idee-project-hydra/body "Project")
-  (idee-leader/set-key "f" idee-file-hydra/body "File")
-  (idee-leader/set-key "n" idee-navigation-hydra/body "Navigation"))
+    (evil-define-key 'normal flycheck-error-list-mode-map "q" 'idee-toggle-errors)))
 
 (provide 'idee-evil)
 ;;; idee-evil.el ends here

@@ -41,9 +41,8 @@
 (defconst source-directory-list `(,source-main-prefix ,source-test-prefix ,java-prefix ,source-prefix ,test-prefix))
 
 (defconst build-gradle "build.gradle")
-(defconst meghanada-conf ".meghanada.conf")
 
-(defconst idee-java-project-file-list `(,pom-xml ,build-gradle ,meghanada-conf))
+(defconst idee-java-project-file-list `(,pom-xml ,build-gradle))
 
 
 (defcustom idee-comment-java-custom-block-beginning "/**\n" "Custom block comment beginning to use when commenting java code." :group 'idee-java :type 'string)
@@ -93,6 +92,7 @@
   (setq c-basic-offset idee-tab-width))
 
 ;;; Language Functions
+;;;###autoload
 (defun idee-java-package-line()
   "Return the full package line for the current directory."
   (let ((pkg (idee-java-package-of default-directory)))
@@ -214,8 +214,7 @@
   "Check if ROOT is the root path of a java project."
   (seq-filter (lambda (x)
                 (or (equal pom-xml x)
-                    (equal build-gradle x)
-                    (equal meghanada-conf x)))
+                    (equal build-gradle x)))
               (directory-files root)))
 
 (defun idee-visitor-java (root)

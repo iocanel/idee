@@ -60,8 +60,6 @@
 
   ;; Set functions
   ;(add-to-list 'idee-function-alist '(idee-run-or-eval-function . lsp-java-de))
-  ;(add-to-list 'idee-function-alist '(idee-test-function . idee-meghanada-test-dwim))
-  ;(add-to-list 'idee-function-alist '(idee-mode-hydra-function . meghanada-hydra/body))
   (add-to-list 'idee-function-alist '(idee-references-function . lsp-ui-peek-find-references))
   (add-to-list 'idee-function-alist '(idee-declaration-function . lsp-ui-peek-find-definitions))
   (add-to-list 'idee-function-alist '(idee-optimize-imports-function . lsp-java-organize-imports)))
