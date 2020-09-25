@@ -21,6 +21,10 @@
 
 ;;; Code:
 
+(require 'idee-utils)
+(require 'idee-views)
+(require 'idee-projects)
+
 (defvar idee-spring-languages '("java" "groovy" "kotlin"))
 (defvar idee-spring-project-types '("maven-project" "gradle-project"))
 (defvar idee-spring-dependencies '("web" "security" "data-jpa" "actuator" "postgresql" "data-rest"))
@@ -80,6 +84,8 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
   (message (format "default dir: %s" default-directory))
   (call-process-shell-command "git init")
   (write-region "" nil (concat (file-name-as-directory idee-spring-extract-dir) ".projectile"))
+
+  (require 'projectile)
   (projectile-add-known-project idee-spring-extract-dir)
   (setq projectile-project-root idee-spring-extract-dir)
   (projectile-switch-project-by-name idee-spring-extract-dir)

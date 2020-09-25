@@ -22,6 +22,7 @@
 
 (require 'treemacs-projectile)
 (require 'treemacs)
+(require 'hydra)
 
 (defun idee-treemacs-collapse-dir-toggle ()
   "Toggle value of treemacs-collapse-dir between 3 0."

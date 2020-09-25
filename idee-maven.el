@@ -27,6 +27,7 @@
 (require 'idee-projects)
 (require 'idee-dap)
 (require 'idee-visitors)
+(require 'hydra)
 
 (defconst pom-xml "pom.xml")
 

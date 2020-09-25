@@ -26,7 +26,12 @@
 (defvar idee-tab-width 2)
 (defvar idee-use-tabs nil)
 
-(defvar idee-source-file-extensions '(java kt groovy scala clojure xml go py js el))
+(defvar idee-source-file-extensions-list '(java kt groovy scala clojure xml go py js el))
+
+;;;###autoload
+(defun idee-source-file-extensions ()
+  "Returns the IDEE source extension list."
+  idee-source-file-extensions-list)
 
 ;;
 ;; Projects

@@ -27,6 +27,8 @@
 (require 'f)
 (require 'yasnippet)
 (require 'editorconfig)
+(require 'idee-vars)
+(require 'projectile)
 
 ;;; File funtcionts
 ;;;###autoload
@@ -112,15 +114,8 @@
 (defun idee-http-post (url args callback)
   "Send ARGS to URL as a POST request."
   (let ((url-request-method "POST")
-        (url-request-extra-headers
-         '(("Content-Type" . "application/x-www-form-urlencoded")))
-        (url-request-data
-         (mapconcat (lambda (arg)
-                      (concat (url-hexify-string (car arg))
-                              "="
-                              (url-hexify-string (cdr arg))))
-                    args
-                    "&")))
+        (url-request-extra-headers '(("Content-Type" . "application/x-www-form-urlencoded")))
+        (url-request-data (mapconcat (lambda (arg) (concat (url-hexify-string (car arg)) "=" (url-hexify-string (cdr arg)))) args "&")))
     (url-retrieve url callback)))
 
 ;;;###autoload
@@ -155,7 +150,7 @@
 (defun idee-visit-project-files (visitor &optional dir)
   "Call VISITOR with all project files or DIR files."
   (let* ((current (or dir (projectile-project-root))))
-    (dolist (extension idee-source-file-extensions)
+    (dolist (extension (idee-source-file-extensions))
          (mapc (lambda (x) (funcall visitor x))
           (directory-files-recursively current (format "\\.%s$" extension))))))
 
