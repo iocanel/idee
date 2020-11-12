@@ -41,6 +41,7 @@
            ((and name idee-lsp-workspace-per-project-enabled (f-join (f-join (locate-user-emacs-file "lsp") "workspace") name)))
            (t (locate-user-emacs-file "workspace")))))
 
+    (make-directory workspace t)
     (message (format "Using LSP workspace: %s." workspace))
     (dolist (element idee-lsp-before-workspace-restart-hook)
       (funcall element workspace))

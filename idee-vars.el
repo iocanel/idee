@@ -52,7 +52,8 @@
   :description "Create an elisp project based on Cask."
   :func ()))
 
-(defconst idee-project-root-markers '(".idee" ".projectile" ".git"))
+(defconst idee-project-root-markers '(".idee" ".projectile" ".git") "Files that indicate the root of a project")
+(defconst idee-module-root-markers '() "Files that indicate the root of a module")
 (defvar idee-project-factories-list `(,idee-cask-project-factory))
 
 (defvar idee-project-info-alist nil)

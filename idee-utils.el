@@ -56,6 +56,11 @@
   "Check if file F is the filesystem root."
   (equal f "/"))
 
+;;;###autoload
+(defun idee-parent-dir (f)
+  "Reuturn the parent dir of F."
+  (file-name-directory (directory-file-name f)))
+
 ;;; String Functions
 ;;;###autoload
 (defun idee-starts-with (string prefix)

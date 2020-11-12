@@ -559,8 +559,6 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 ;;;###autoload
 (defun idee--views-init ()
   "Initialize idee views."
-  (define-key evil-normal-state-map (kbd "q") #'quit-window)
-
   (ad-activate 'quit-window)
   (advice-add 'delete-other-windows-internal :around #'idee-on-delete-other-windows-internal)
   (advice-add 'projectile-switch-project-by-name :around #'idee-on-projectile-switch-project-by-name)
