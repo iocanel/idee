@@ -30,21 +30,24 @@
 ;;
 (defvar idee-current-view 'idee-ide-view)
 
-;; Toggles
-(defvar idee-tree-enabled t)
-(defvar idee-cli-enabled t)
-(defvar idee-output-enabled t)
-(defvar idee-repl-enabled t)
-(defvar idee-diagnostics-enabled t)
-(defvar idee-errors-enabled t)
-(defvar idee-messages-enabled t)
-(defvar idee-grep-enabled nil)
-(defvar idee-helm-ag-enabled nil)
-(defvar idee-xref-enabled nil)
+(defcustom idee-tree-enabled-default t "Default state of the tree view" :group 'idee-view :type 'boolean)
+(defvar idee-tree-enabled idee-tree-enabled-default)
+
+;; Active Components
+(defvar idee-tree-active t)
+(defvar idee-cli-active t)
+(defvar idee-output-active t)
+(defvar idee-repl-active t)
+(defvar idee-diagnostics-active t)
+(defvar idee-errors-active t)
+(defvar idee-messages-active t)
+(defvar idee-grep-active nil)
+(defvar idee-helm-ag-active nil)
+(defvar idee-xref-active nil)
 (defvar idee-bottom-buffer-command 'idee-projectile-run-eshell)
 
 ;; A list with all component switches that are meant to be placed in the bottom
-(defvar idee-bottom-area-switch-list '(idee-cli-enabled idee-repl-enabled idee-diagnostics-enabled idee-errors-enabled idee-messages-enabled idee-grep-enabled idee-helm-ag-enabled idee-xref-enabled))
+(defvar idee-bottom-area-switch-list '(idee-cli-active idee-repl-active idee-diagnostics-active idee-errors-active idee-messages-active idee-grep-active idee-helm-ag-active idee-xref-active))
 
 (setq idee-current-view 'idee-ide-view)
 ;;
@@ -54,15 +57,15 @@
 ;;;###autoload
 (defun idee-view-reset()
     "Reset view variables."
-    (setq idee-cli-enabled nil
-          idee-repl-enabled nil
-          idee-output-enabled nil
-          idee-diagnostics-enabled nil
-          idee-errors-enabled nil
-          idee-messages-enabled nil
-          idee-grep-enabled nil
-          idee-helm-ag-enabled nil
-          idee-xref-enabled nil))
+    (setq idee-cli-active nil
+          idee-repl-active nil
+          idee-output-active nil
+          idee-diagnostics-active nil
+          idee-errors-active nil
+          idee-messages-active nil
+          idee-grep-active nil
+          idee-helm-ag-active nil
+          idee-xref-active nil))
 
 ;;;###autoload
 (defun idee-project-open-view(&optional path)
@@ -84,20 +87,20 @@
   (setq idee-current-view 'idee-ide-view)
   (idee-jump-to-non-ide-window ())
   (delete-other-windows-internal)
-  (if idee-tree-enabled
+  (if (and idee-tree-enabled idee-tree-active)
       (progn
         (treemacs--init (projectile-project-root))
         ;; we remove the mode-line to hide the treemacs label
         (setq mode-line-format nil)))
   (idee-jump-to-non-ide-window)
   ;; bottom area
-  (cond (idee-grep-enabled (idee-grep-subview))
-        (idee-helm-ag-enabled (idee-helm-ag-subview))
-        (idee-cli-enabled (idee-cli-subview))
-        (idee-diagnostics-enabled (idee-diagnostics-subview))
-        (idee-errors-enabled (idee-errors-subview))
-        (idee-messages-enabled (idee-messages-subview))
-        (idee-xref-enabled (idee-xref-subview))))
+  (cond (idee-grep-active (idee-grep-subview))
+        (idee-helm-ag-active (idee-helm-ag-subview))
+        (idee-cli-active (idee-cli-subview))
+        (idee-diagnostics-active (idee-diagnostics-subview))
+        (idee-errors-active (idee-errors-subview))
+        (idee-messages-active (idee-messages-subview))
+        (idee-xref-active (idee-xref-subview))))
 
 ;;;###autoload
 (defun idee-cli-subview ()
@@ -201,9 +204,9 @@
   (interactive)
   (setq idee-current-view 'idee-repl-view)
   (delete-other-windows-internal)
-  (if idee-tree-enabled
+  (if (and idee-tree-enabled idee-tree-active)
       (treemacs--init (projectile-project-root)))
-  (if idee-repl-enabled
+  (if idee-repl-active
       (if (get-buffer (format "*cider-repl %s*" (projectile-project-name)))
           (progn
             (other-window 1)
@@ -270,8 +273,8 @@ VISITED is an optional list with windows already visited."
 (defun idee-update-tree-state()
   "Update the state of the tree switch (in case the winodw has been externally closed)."
   (if (equal (treemacs-current-visibility) 'visible)
-      (setq idee-tree-enabled t)
-    (setq idee-tree-enabled nil)))
+      (setq idee-tree-active t)
+    (setq idee-tree-active nil)))
 
 
 ;;;###autoload
@@ -282,11 +285,12 @@ VISITED is an optional list with windows already visited."
   (if idee-tree-enabled
       (progn
         (setq idee-tree-enabled nil)
+        (setq idee-tree-active nil)
         (idee-refresh-view))
     (progn
       (setq idee-tree-enabled t)
+      (setq idee-tree-active t)
       (idee-refresh-view))))
-
 
 ;;;###autoload
  (defun idee-refresh-view ()
@@ -334,13 +338,15 @@ Switch to the project specific eshell buffer if it already exists."
 ;;
 ;; Buffer providers
 ;;
+
 (defun idee-hydra-visible-p ()
   "Return non-nil if hydra is visible."
   (get-buffer-window " *LV"))
 
 (defun idee-cli-visible-p ()
   "Return non-nil if cli is visible."
-  (seq-filter (lambda (w) (string-prefix-p "*eshell" (buffer-name (window-buffer w)))) (get-buffer-window-list)))
+  (seq-filter (lambda (n) (string-prefix-p "*eshell" n))
+              (mapcar (lambda (b) (buffer-name b)) (seq-filter (lambda (b) (get-buffer-window b 'visible)) (buffer-list)))))
 
 (defun idee-diagnostics-visible-p ()
   "Return non-nil if diagnostics is visible."
@@ -348,23 +354,23 @@ Switch to the project specific eshell buffer if it already exists."
 
 (defun idee-errors-visible-p ()
   "Return non-nil if errors is visible."
-  (get-buffer-window "*Flycheck errors*"))
+  (get-buffer-window "*Flycheck errors*" 'visible))
 
 (defun idee-messages-visible-p ()
   "Return non-nil if messages is visible."
-  (get-buffer-window "*Messages*"))
+  (get-buffer-window "*Messages*" 'visible))
 
 (defun idee-grep-visible-p ()
   "Return non-nil if grep is visible."
-  (get-buffer-window "*grep*"))
+  (get-buffer-window "*grep*" 'visible))
 
 (defun idee-helm-ag-visible-p ()
   "Return non-nil if helm-ag is visible."
-  (get-buffer-window "*helm-ag*"))
+  (get-buffer-window "*helm-ag*" 'visible))
 
 (defun idee-xref-visible-p ()
   "Return non-nil if xref is visible."
-  (get-buffer-window "*xref*"))
+  (get-buffer-window "*xref*" 'visible))
 
 (defun idee-after-next-error ()
   "Refresh the view each time next error is caled."
@@ -456,20 +462,20 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 ;;
 
 ;;;###autoload (autoload 'idee-toggle-errors "idee-views")
-(idee--create-view-component "errors" idee-errors-visible-p idee-errors-enabled idee-bottom-area-switch-list 0)
+(idee--create-view-component "errors" idee-errors-visible-p idee-errors-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-diagnostics "idee-views")
-(idee--create-view-component "diagnostics" idee-diagnostics-visible-p idee-diagnostics-enabled idee-bottom-area-switch-list 0)
+(idee--create-view-component "diagnostics" idee-diagnostics-visible-p idee-diagnostics-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-cli "idee-views")
 ;;;###autoload (autoload 'idee-switch-cli-on "idee-views")
-(idee--create-view-component "cli"  idee-cli-visible-p idee-cli-enabled idee-bottom-area-switch-list 0)
+(idee--create-view-component "cli"  idee-cli-visible-p idee-cli-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-messages "idee-views")
-(idee--create-view-component "messages"  idee-messages-visible-p idee-messages-enabled idee-bottom-area-switch-list 0)
+(idee--create-view-component "messages"  idee-messages-visible-p idee-messages-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-grep "idee-views")
-(idee--create-view-component "grep"  idee-grep-visible-p idee-grep-enabled idee-bottom-area-switch-list 0)
+(idee--create-view-component "grep"  idee-grep-visible-p idee-grep-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-helm-ag "idee-views")
-(idee--create-view-component "helm-ag"  idee-helm-ag-visible-p idee-helm-ag-enabled idee-bottom-area-switch-list 0)
+(idee--create-view-component "helm-ag"  idee-helm-ag-visible-p idee-helm-ag-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-xref "idee-views")
-(idee--create-view-component "xref"  idee-xref-visible-p idee-xref-enabled idee-bottom-area-switch-list 0)
+(idee--create-view-component "xref"  idee-xref-visible-p idee-xref-active idee-bottom-area-switch-list 0)
 
 ;;;###autoload
 (defun idee-toggle-helm-ag-or-grep  ()
@@ -485,7 +491,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
     (if (string-prefix-p "*eshell" (buffer-name buffer))
         (progn
           (kill-buffer-and-window)
-          (setq idee-cli-enabled nil)
+          (setq idee-cli-active nil)
           (idee-refresh-view)
           t)
       nil)))
@@ -496,7 +502,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
     (if (equal "*Messages*" (buffer-name buffer))
         (progn
           (kill-buffer-and-window)
-          (setq idee-messages-enabled nil)
+          (setq idee-messages-active nil)
           (idee-refresh-view)
           t)
       nil)))
@@ -507,7 +513,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
     (if (equal "*grep*" (buffer-name buffer))
         (progn
           (kill-buffer-and-window)
-          (setq idee-grep-enabled nil)
+          (setq idee-grep-active nil)
           (idee-refresh-view)
           t)
       nil)))
@@ -518,7 +524,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
     (if (or (equal "*helm-ag*" (buffer-name buffer)) (equal "*helm-ag-edit*" (buffer-name buffer)))
         (progn
           (kill-buffer-and-window)
-          (setq idee-helm-ag-enabled nil)
+          (setq idee-helm-ag-active nil)
           (idee-refresh-view)
           t)
       nil)))
@@ -529,7 +535,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
     (if (equal "*xref*" (buffer-name buffer))
         (progn
           (kill-buffer-and-window)
-          (setq idee-xref-enabled nil)
+          (setq idee-xref-active nil)
           (idee-refresh-view)
           t)
       nil)))
