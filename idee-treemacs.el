@@ -23,6 +23,7 @@
 (require 'treemacs-projectile)
 (require 'treemacs)
 (require 'hydra)
+(require 'idee-views)
 
 (defun idee-treemacs-collapse-dir-toggle ()
   "Toggle value of treemacs-collapse-dir between 3 0."
@@ -36,7 +37,7 @@
   "Create and switch to a new treemacs workspace."
   (interactive)
   (idee-workspace-close)
-  (when (not (equal (treemacs-current-visibility) 'visible)) (treemacs))
+  (when (and idee-tree-enabled (not (equal (treemacs-current-visibility) 'visible))) (treemacs))
   (let* ((response (treemacs-do-create-workspace))
          (workspace (car (cdr response))))
     (setf (treemacs-current-workspace) workspace)
@@ -68,7 +69,7 @@
     "Select a different workspace for treemacs."
     (interactive)
     (idee-workspace-close)
-    (when (not (equal (treemacs-current-visibility) 'visible)) (treemacs))
+    (when (and idee-tree-enabled (not (equal (treemacs-current-visibility) 'visible))) (treemacs))
     (pcase (treemacs-do-switch-workspace)
       ('only-one-workspace
        (treemacs-pulse-on-failure "There are no other workspaces to select."))
