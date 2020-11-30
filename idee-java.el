@@ -172,6 +172,17 @@
   (interactive)
   (message (format "%s" (c-defun-name))))
 
+(defun idee-java-method-name-at-point ()
+  "Return the name of the method at point or nil if cursors is outside of a method.
+The method obtains the whole block at point and strips everything found after '{'.
+Finally it returns the last word before '('."
+  (let* ((declaration-bounds (c-declaration-limits nil))
+         (start (car declaration-bounds))
+         (end (cdr declaration-bounds))
+         (str  (buffer-substring start end))
+         (declaration (substring str 0 (string-match "{" str))))
+    (if (string-match "\\([^ ]+\\)[ ]*(" declaration) (match-string 1 declaration) nil)))
+
 (defun idee--java-fqcn-matches-p (c)
   "Predicate that matches c against idee--java-symbols."
   (let* ((matches (seq-filter (lambda (i) (idee--java-fqcn-matches c i)) idee--java-symbols)))
