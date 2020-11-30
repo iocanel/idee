@@ -78,7 +78,7 @@
     (dired path)
     (idee-ide-view)
     (idee-jump-to-non-ide-window)
-    (magit-status-internal path)))
+    (magit-status-setup-buffer path)))
 
 ;;;###autoload
 (defun idee-ide-view()
