@@ -30,12 +30,14 @@
 (require 'hydra)
 
 (defconst pom-xml "pom.xml")
+(defconst idee-dot-pom-regex "(^.)?\\.pom")
 
 (defvar idee-maven-profiles ())
 (defvar idee-maven-offline nil)
 (defvar idee-maven-skip-tests nil)
 (defvar idee-maven-exec-history ())
 (defvar idee-maven-project-settings-commands ())
+(defvar idee-maven-known-group-ids '() "A list of known group-ids")
 
 (defcustom idee-maven-init-group-id "org.acme" "The initial value for group-id in the maven project factory." :group 'idee-maven :type 'string)
 
@@ -70,6 +72,18 @@
          (dir (if file-name (directory-file-name file-name) default-directory))
          (current-dir (f-full (if f f (file-name-directory dir)))))
     (string-match-p (regexp-quote (f-join "src" "it")) current-dir)))
+
+(defun idee-maven-pom-group-id (pom)
+  "Get the groupId of the specified POM."
+  (if (file-exists-p pom)
+      (with-temp-buffer
+        (insert-file-contents pom)
+        (let* ((xml (libxml-parse-xml-region (point-min) (point-max)))
+               (p (assoc 'project xml))
+               (project (if p p (cdr xml))))
+          (car (cdr (cdr (assoc 'groupId project))))))
+    nil))
+
 
 (defun idee-maven-pom-artifact-id (pom)
   "Get the artifactId of the specified POM."
@@ -599,6 +613,30 @@
   (if (idee-toggle idee-maven-skip-tests)
       (message "Maven test skip: Enabled!")
     (message "Maven test skip: Disabled!")))
+
+;;; Coordinates
+
+(defun idee-maven-local-group-ids  ()
+  "Retrieve all group ids found in the local maven repository."
+  (interactive)
+  (if idee-maven-known-group-ids idee-maven-known-group-ids
+    (let* ((repo-path "~/.m2/repository/")
+           (metadata-list
+            (directory-files-recursively repo-path (regexp-quote "maven-metadata-local.xml"))))
+                                   (directory-files-recursively repo-path idee-dot-pom-regex)
+      (delq nil (delete-dups (mapcar 'idee-maven-pom-group-id metadata-list))))))
+
+(defun idee-maven-local-artifact-ids  (group-id)
+  "Retrieve all artifact ids found in the local maven repository, under GROUP-ID."
+  (interactive)
+  (let* ((group-path (format "~/.m2/repository/%s" (replace-in-string "." "/" group-id))))
+    (cdr (cdr (mapcar 'file-name-nondirectory (seq-filter 'file-directory-p (directory-files group-path t)))))))
+
+(defun idee-maven-local-versions  (group-id artifact-id)
+  "Retrieve all versions found in the local maven repository, under GROUP-ID and ARTIFACT-ID."
+  (interactive)
+  (let* ((artifact-path (format "~/.m2/repository/%s/%s" (replace-in-string "." "/" group-id) artifact-id)))
+    (cdr (cdr (mapcar 'file-name-nondirectory (seq-filter 'file-directory-p (directory-files artifact-path t)))))))
 
 ;;; Utilities
 (defun idee--maven-profiles-option ()
