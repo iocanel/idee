@@ -317,7 +317,8 @@
               :port 8000
               :projectName project-name
               :wait-for-port t)
-        (append (list :program-to-start (idee-maven-cmd :goals (format "package -Dexec.mainClass=%s" fqcn) :debug t :build-scope 'module :goto-project-root t)))
+        ;; If we don't escape those arguments it will fail on eshell
+        (append (list :program-to-start (idee-maven-cmd :goals (format "exec:exec -Dexec.executable=\"java\" -Dexec.args=\"-classpath\\ %s\\ -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000\\ %s\"" "%classpath" fqcn) :build-scope 'module :goto-project-root t)))
         dap-debug)))
 
 (defun idee-maven-surefire-test-file ()
