@@ -197,7 +197,7 @@
 (defun idee-project-set-name (name)
   "Set the project NAME."
   (let ((info (idee-project-init)))
-    (when info (setf (idee-project-init-name info) name))))
+    (when info (setf (idee-project-info-name info) name))))
 
 (defun idee-project-get-property (key)
   "Return the project name property with KEY."
