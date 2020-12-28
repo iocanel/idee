@@ -22,56 +22,74 @@
 
 ;;; Code:
 (require 'dap-mode)
+(require 'idee-eshell)
 
 (eval-after-load "dap-mode"
- '(defun dap-start-debugging (launch-args)
-     "Start debug session with LAUNCH-ARGS.
+
+  '(defun dap-start-debugging-noexpand (launch-args)
+  "Start debug session with LAUNCH-ARGS.
 Special arguments:
 
 :wait-for-port - boolean defines whether the debug configuration
 should be started after the :port argument is taken.
 
-:program-to-start - when set it will be started using `compile' before starting the debug process."
-     (-let* (((&plist :name :skip-debug-session :cwd :program-to-start
-                      :wait-for-port :type :request :port
-                      :environment-variables :hostName host) launch-args)
-             (default-directory (or cwd default-directory)))
-       
-       (when program-to-start (idee-with-project-shell
+:program-to-start - when set it will be started using `compilation-start'
+before starting the debug process."
+  (-let* (((&plist :name :skip-debug-session :cwd :program-to-start
+                   :wait-for-port :type :request :port
+                   :startup-function :environment-variables :hostName host) launch-args)
+          (session-name (dap--calculate-unique-name name (dap--get-sessions)))
+          (default-directory (or cwd default-directory))
+          program-process)
+    (mapc (-lambda ((env . value)) (setenv env value)) environment-variables)
+    (plist-put launch-args :name session-name)
+
+    (when program-to-start (idee-with-project-shell
                                   (mapc (-lambda ((env . value)) (setenv env value)) environment-variables)
                                   (when cwd (insert (format "cd %s\n" cwd)))
                                   (insert program-to-start)))
+    (when wait-for-port
+      (dap--wait-for-port host port dap-connect-retry-count dap-connect-retry-interval))
 
-       (when wait-for-port (dap--wait-for-port host port 600 1))
-       
-       (unless skip-debug-session
-         (let ((debug-session (dap--create-session launch-args)))
-           (dap--send-message
-            (dap--initialize-message type)
-            (dap--session-init-resp-handler
-             debug-session
-             (lambda (initialize-result)
-               (-let [debug-sessions (dap--get-sessions)]
-                 
-                 ;; update session name accordingly
-                 (setf (dap--debug-session-name debug-session) (dap--calculate-unique-name
-                                                                (dap--debug-session-name debug-session)
-                                                                debug-sessions)
-                       (dap--debug-session-initialize-result debug-session) initialize-result)
-                 
-                 (dap--set-sessions (cons debug-session debug-sessions)))
-               (dap--send-message (dap--make-request request launch-args)
-                                  (dap--session-init-resp-handler debug-session)
-                                  debug-session)))
-            debug-session)
-           
-           (dap--set-cur-session debug-session)
-           (push (cons name launch-args) dap--debug-configuration)
-           (run-hook-with-args 'dap-session-created-hook debug-session))
-         (unless (and program-to-start dap-auto-show-output)
-           (save-excursion (dap-go-to-output-buffer)))))))
+    (when startup-function (funcall startup-function launch-args))
 
+    (unless skip-debug-session
+      (let ((debug-session (dap--create-session launch-args)))
+        (setf (dap--debug-session-program-proc debug-session) program-process)
+        (dap--send-message
+         (dap--initialize-message type)
+         (dap--session-init-resp-handler
+          debug-session
+          (lambda (initialize-result)
+            (-let [debug-sessions (dap--get-sessions)]
 
+              (setf (dap--debug-session-initialize-result debug-session) initialize-result)
+
+              (dap--set-sessions (cons debug-session debug-sessions)))
+            (dap--send-message
+             (dap--make-request request (-> launch-args
+                                            (cl-copy-list)
+                                            (dap--plist-delete :cleanup-function)
+                                            (dap--plist-delete :startup-function)
+                                            (dap--plist-delete :dap-server-path)
+                                            (dap--plist-delete :environment-variables)
+                                            (dap--plist-delete :wait-for-port)
+                                            (dap--plist-delete :skip-debug-session)
+                                            (dap--plist-delete :program-to-start)))
+             (dap--session-init-resp-handler debug-session)
+             debug-session)))
+         debug-session)
+
+        (dap--set-cur-session debug-session)
+        (push (cons session-name launch-args) dap--debug-configuration)
+        (run-hook-with-args 'dap-session-created-hook debug-session))))))
+
+(defun idee-dap-refresh (&rest _)
+  "A wrapper to idee-refresh-view, for using from withing dap."
+  (idee-refresh-view))
+
+(advice-add 'dap-ui--update-controls :after 'idee-dap-refresh)
+                                          
 (defadvice dap--go-to-stack-frame (after idee-refresh-on-stack-frame
                                       (&optional debug-session stack-frame))
   "Refresh IDE after a breakpoint has been hit."
