@@ -44,6 +44,7 @@
 (defvar idee-grep-active nil)
 (defvar idee-helm-ag-active nil)
 (defvar idee-xref-active nil)
+(defvar idee-eww-active nil)
 (defvar idee-bottom-buffer-command 'idee-projectile-run-eshell)
 
 ;; A list with all component switches that are meant to be placed in the bottom
@@ -65,7 +66,8 @@
           idee-messages-active nil
           idee-grep-active nil
           idee-helm-ag-active nil
-          idee-xref-active nil))
+          idee-xref-active nil
+          idee-eww-active nil))
 
 ;;;###autoload
 (defun idee-project-open-view(&optional path)
@@ -100,7 +102,8 @@
         (idee-diagnostics-active (idee-diagnostics-subview))
         (idee-errors-active (idee-errors-subview))
         (idee-messages-active (idee-messages-subview))
-        (idee-xref-active (idee-xref-subview))))
+        (idee-xref-active (idee-xref-subview))
+        (idee-eww-active (idee-eww-subview))))
 
 ;;;###autoload
 (defun idee-cli-subview ()
@@ -187,6 +190,16 @@
   (switch-to-buffer "*xref*")
   (minimize-window)
  (evil-window-set-height 12))
+
+;;;###autoload
+(defun idee-eww-subview ()
+  (split-window-below)
+  (other-window 1)
+  (cond ((get-buffer "*eww*") (switch-to-buffer "*eww*"))
+        (t (progn
+             (eww "http://localhost:8080") (switch-to-buffer "*eww*"))))
+ (minimize-window)
+ (evil-window-set-height 24))
 
 ;;;###autoload
 (defun idee-side-by-side-view()
@@ -372,6 +385,10 @@ Switch to the project specific eshell buffer if it already exists."
   "Return non-nil if xref is visible."
   (get-buffer-window "*xref*" 'visible))
 
+(defun idee-eww-visible-p ()
+  "Return non-nil if eww is visible."
+  (get-buffer-window "*eww*" 'visible))
+
 (defun idee-after-next-error ()
   "Refresh the view each time next error is caled."
   (if next-error-last-buffer
@@ -476,6 +493,8 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 (idee--create-view-component "helm-ag"  idee-helm-ag-visible-p idee-helm-ag-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-xref "idee-views")
 (idee--create-view-component "xref"  idee-xref-visible-p idee-xref-active idee-bottom-area-switch-list 0)
+;;;###autoload (autoload 'idee-toggle-eww "idee-views")
+(idee--create-view-component "eww"  idee-eww-visible-p idee-eww-active idee-bottom-area-switch-list 0)
 
 ;;;###autoload
 (defun idee-toggle-helm-ag-or-grep  ()
@@ -540,6 +559,17 @@ PIVOT indicates how many windows should be switched at the end of the operation.
           t)
       nil)))
 
+(defun idee-kill-eww-and-window ()
+  "Kill the eww window and buffer.  Return t if grep window was found."
+  (let ((buffer (current-buffer)))
+    (if (equal "*eww*" (buffer-name buffer))
+        (progn
+          (kill-buffer-and-window)
+          (setq idee-eww-active nil)
+          (idee-refresh-view)
+          t)
+      nil)))
+
 (defun idee-on-delete-other-windows-internal (orig-fun &rest args)
     (let ((window (or (car args) (selected-window))))
       (when (not (window-parameter window 'window-side))
@@ -560,6 +590,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
    ((idee-kill-grep-and-window) t)
    ((idee-kill-helm-ag-and-window) t)
    ((idee-kill-xref-and-window) t)
+   ((idee-kill-eww-and-window) t)
    (t ad-do-it)))
 
 ;;;###autoload
