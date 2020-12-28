@@ -26,11 +26,11 @@
 (require 'eshell)
 (require 'demo-it)
 (require 'projectile)
-(require 'async-await)
 
 (defvar idee-eshell-command-queue (queue-create))
 (defvar idee-eshell-command-inserting nil)
 (defvar idee-eshell-command-running nil)
+(defvar idee-eshell-initialized nil)
 
 (defcustom idee-eshell-cat-alias-enabled t "/dev/clip aware cat alias toggle." :group 'idee-eshell :type 'boolean)
 (defcustom idee-eshell-edit-alias-enabled t "Edit alias toggle." :group 'idee-eshell :type 'boolean)
@@ -42,10 +42,6 @@
                  (const :tag "slow"    :slow)
                  (const :tag "instant" :instant)))
 
-(defun wait-async (n)
-  "Wait async for N."
-  (promise-new (lambda (resolve _reject) (run-at-time n nil (lambda () (funcall resolve n))))))
-
 (defun idee-eshell-cleanup  ()
   "Cleanup eshell queues and flags."
   (interactive)
@@ -56,24 +52,18 @@
   "Mark that an eshell command is running."
   (setq idee-eshell-command-running t))
 
-(async-defun idee-eshell-command-finished ()
+(defun idee-eshell-command-finished ()
   "Mark that an eshell command is running."
 
- (await (wait-async 0.1))
-  (when (and (not idee-eshell-command-inserting) idee-eshell-command-running)
-    (idee-eshell-execute-next-command))
-  (setq idee-eshell-command-running (and idee-eshell-command-running (not (queue-empty idee-eshell-command-queue)))))
+  ;; The first time this function is called will be before the shell is even intialized.
+  (if (not idee-eshell-initialized)
+      (setq idee-eshell-initialized t)
 
-;;
-;; TODO: This is still buggy, as it appears that `idee-eshell-command-running` is getting nil value prematurely.
-(async-defun idee-eshell-await-command-finished ()
-  "Wait until eshell finishes executing all queued commands."
-  (interactive)
-  (let ((running idee-eshell-command-running))
-    (while running
-      (await (wait-async 0.1))
-      (setq running idee-eshell-command-running)))
-      (await (wait-async 0.1)))
+  (run-with-timer 1 nil (lambda ()
+                            (progn
+                              (when (and (not idee-eshell-command-inserting) idee-eshell-command-running)
+                                (idee-eshell-execute-next-command))
+                              (setq idee-eshell-command-running (and idee-eshell-command-running (not (queue-empty idee-eshell-command-queue)))))))))
 
 (defun idee-eshell-execute-next-command ()
   "Execute the next command found in the queue."
@@ -114,6 +104,7 @@
     (let ((comint-scroll-to-bottom-on-output t))
       (setf eshell-copy-old-input nil)
       (eshell-return-to-prompt)
+      (eshell-wait-for-process)
       (idee-eshell-insert command)
       (eshell-send-input))))
 
@@ -157,6 +148,7 @@
 (advice-add 'eshell-command-started :before 'idee-eshell-command-started)
 ;(advice-add 'eshell-command-finished :after 'idee-eshell-command-finished)
 (add-hook 'eshell-after-prompt-hook 'idee-eshell-command-finished)
+(add-hook 'eshell-after-prompt-hook 'idee-eshell-command-finished)
 
 (when idee-eshell-cat-alias-enabled
   (add-hook 'eshell-mode-hook (lambda () (eshell/alias "cat" "idee-eshell-cat $1"))))
@@ -180,7 +172,6 @@
   (let* ((is-directory (file-directory-p file))
         (path (expand-file-name file))
         (git (f-join path ".git")))
-    (message (format "open:%s directory:%s" path is-directory)
     (if is-directory
         (progn
           (setq default-directory path)
@@ -189,7 +180,7 @@
           (setq projectile-project-root path)
           (projectile-switch-project-by-name path)
           (idee-refresh-view))
-      (idee-eshell-edit path)))))
+      (idee-eshell-edit path))))
 
 (when idee-eshell-edit-alias-enabled
   (add-hook 'eshell-mode-hook (lambda () (eshell/alias "open" "idee-eshell-open $1"))))
