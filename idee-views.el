@@ -28,9 +28,12 @@
 ;;
 ;; State
 ;;
-(defvar idee-current-view 'idee-ide-view)
 
 (defcustom idee-tree-enabled-default t "Default state of the tree view" :group 'idee-view :type 'boolean)
+(defcustom idee-eww-default-url nil "The url to use when opening the eww subview." :group 'idee-view :type 'boolean)
+(defcustom idee-focus-center-buffer t "Flag to specify that the focus buffer needs to be centered." :group 'idee-view :type 'boolean) 
+(defcustom idee-focus-center-buffer-columns 160 "The number of columns of the centered buffer." :group 'idee-view :type 'int) 
+(defvar idee-current-view 'idee-ide-view)
 (defvar idee-tree-enabled idee-tree-enabled-default)
 
 ;; Active Components
@@ -45,16 +48,43 @@
 (defvar idee-helm-ag-active nil)
 (defvar idee-xref-active nil)
 (defvar idee-eww-active nil)
+(defvar idee-side-by-side-active nil)
 (defvar idee-bottom-buffer-command 'idee-projectile-run-eshell)
 
+(defvar idee-primary-buffer nil "Primary buffer")
+(defvar idee-side-by-side-buffer nil "Secondary buffer")
+(defvar idee-repl-kind nil "The kind of the repl buffer. This is framework/lang specific.")
+(defvar idee-repl-buffer-prefix nil "The prefix of the repl buffer. This is framework/lang specific.")
+(defvar idee-repl-buffer-prompt nil "The prompt of the repl buffer. This is framework/lang specific.")
+;;; The following is based on Protesilaos Stavrou configuration: https://gitlab.com/protesilaos/dotfiles/-/blob/master/emacs/.emacs.d/emacs-init.org
+(defvar idee-focus-window-configuration nil "Current window configuration.")
+(defvar idee-focus-treemacs-visible nil "Additional varaible to hold info about treemacs, as idee-window-configuration does not apply to treemacs.")
+(defvar idee-focus-fringe-mode fringe-mode)
+(define-minor-mode idee-focus-mode
+  "Toggle between multiple windows and single window. This is the equivalent of maximising a window."
+  :lighter " [M]"
+  :global nil
+  (if (not (and (boundp 'idee-focus-mode) idee-focus-mode))       ;; If we have idee-focus-mode
+      (when idee-focus-window-configuration                       ;; And and exisitng configuration
+        (progn                                                    ;; Restore ...
+          (set-window-configuration idee-focus-window-configuration)
+          (when idee-focus-center-buffer (set-fringe-mode idee-focus-fringe-mode))
+          (when (and
+                 (equal 'visible idee-focus-treemacs-visible)
+                 (not (equal 'visible (treemacs-current-visibility)))) (treemacs))))
+    ;; Focus
+    (progn
+      (setq idee-focus-window-configuration (current-window-configuration))
+      (setq idee-focus-treemacs-visible (treemacs-current-visibility))
+      (delete-other-windows)
+      (when idee-focus-center-buffer (set-fringe-mode (/ (- (frame-pixel-width) (* idee-focus-center-buffer-columns (frame-char-width))) 2)))))
+  (setq idee-focus-treemacs-visible (treemacs-current-visibility)))
 ;; A list with all component switches that are meant to be placed in the bottom
 (defvar idee-bottom-area-switch-list '(idee-cli-active idee-repl-active idee-diagnostics-active idee-errors-active idee-messages-active idee-grep-active idee-helm-ag-active idee-xref-active))
 
+(defvar idee-right-area-switch-list '(idee-eww-active idee-side-by-side-active))
 (setq idee-current-view 'idee-ide-view)
-;;
 ;; Functions
-;;
-
 ;;;###autoload
 (defun idee-view-reset()
     "Reset view variables."
@@ -67,8 +97,8 @@
           idee-grep-active nil
           idee-helm-ag-active nil
           idee-xref-active nil
-          idee-eww-active nil))
-
+          idee-eww-active nil
+          idee-side-by-side-active nil))
 ;;;###autoload
 (defun idee-project-open-view(&optional path)
   "Switch to a traditional IDE view for the buffer.  (project tree, main buffer & terminal)."
@@ -76,7 +106,7 @@
   (let* ((path (or path (or (projectile-project-root) default-directory)))
          (name (or (projectile-project-name)  (file-name-nondirectory (directory-file-name path)))))
     (dolist (b idee-bottom-area-switch-list)
-      (setq b nil))
+      (set b nil))
     (dired path)
     (idee-ide-view)
     (idee-jump-to-non-ide-window)
@@ -88,6 +118,11 @@
   (interactive)
   (setq idee-current-view 'idee-ide-view)
   (idee-jump-to-non-ide-window ())
+  ;; In some cases, it's better to swtich (e.g. when current bufer is a side buffer
+  (when (and idee-primary-buffer (idee-ide-buffer-p (buffer-name (current-buffer)))
+             (progn
+               (message "No project buffer visible, switching to stored buffer")
+               (switch-to-buffer idee-primary-buffer))))
   (delete-other-windows-internal)
   (if (and idee-tree-enabled idee-tree-active)
       (progn
@@ -95,16 +130,19 @@
         ;; we remove the mode-line to hide the treemacs label
         (setq mode-line-format nil)))
   (idee-jump-to-non-ide-window)
+  (setq idee-primary-buffer (current-buffer))
   ;; bottom area
   (cond (idee-grep-active (idee-grep-subview))
         (idee-helm-ag-active (idee-helm-ag-subview))
         (idee-cli-active (idee-cli-subview))
+        (idee-repl-active (idee-repl-subview))
         (idee-diagnostics-active (idee-diagnostics-subview))
         (idee-errors-active (idee-errors-subview))
         (idee-messages-active (idee-messages-subview))
-        (idee-xref-active (idee-xref-subview))
-        (idee-eww-active (idee-eww-subview))))
-
+        (idee-xref-active (idee-xref-subview)))
+  ;; right area
+  (cond (idee-eww-active (idee-eww-subview))
+        (idee-side-by-side-active (idee-side-by-side-subview))))
 ;;;###autoload
 (defun idee-cli-subview ()
   (when (not (idee-cli-visible-p))
@@ -112,7 +150,12 @@
     (minimize-window)
     (idee-projectile-run-eshell)
     (evil-window-set-height 12)))
-
+(defun idee-repl-subview ()
+  (when (not (idee-repl-visible-p))
+    (idee-split-and-follow-vertically)
+    (minimize-window)
+    (idee-repl)
+    (evil-window-set-height 12)))
 ;;;###autoload
 (defun idee-diagnostics-subview ()
   (flymake-show-diagnostics-buffer)
@@ -193,53 +236,36 @@
 
 ;;;###autoload
 (defun idee-eww-subview ()
-  (split-window-below)
+  (idee-jump-to-non-ide-window)
+  (split-window-right)
   (other-window 1)
   (cond ((get-buffer "*eww*") (switch-to-buffer "*eww*"))
         (t (progn
-             (eww "http://localhost:8080") (switch-to-buffer "*eww*"))))
- (minimize-window)
- (evil-window-set-height 24))
-
-;;;###autoload
-(defun idee-side-by-side-view()
-  "Open a new buffer from the project to the side for side by side view."
+             (if idee-eww-default-url
+                 (eww idee-eww-default-url)
+               (eww (format "http://localhost:%s" (idee-eshell-find-web-port))))
+             (switch-to-buffer "*eww*"))))
+  (evil-window-set-width 80))
+(defun idee-side-by-side-subview ()
+  (idee-jump-to-non-ide-window)
+  (split-window-right)
+  (other-window 1)
+     (cond ((and idee-side-by-side-buffer (get-buffer idee-side-by-side-buffer)) (switch-to-buffer idee-side-by-side-buffer))
+           (t (progn
+                (let ((tmp-buffer (generate-new-buffer "*side*")))
+                  (switch-to-buffer tmp-buffer) 
+                  (idee-find-file)
+                  (let* ((name (buffer-name (current-buffer)))
+                         (actual-name (if (idee-starts-with "*side " name) (substring name 6 (length name - 7)) name))
+                         (side-name (format "*side %s*" actual-name)))
+                    (rename-buffer side-name)
+                    (setq idee-side-by-side-buffer side-name))
+                  (kill-buffer tmp-buffer))))))
+(defun idee-open-side-by-side ()
   (interactive)
-  (delete-other-windows-internal)
-  (idee-split-and-follow-horizontally)
-  ;; reduce the noise by switching to an untitled buffer
-  (idee-new-empty-buffer)
-  (projectile-find-file-dwim))
-
-;;;###autoload
-(defun idee-repl-view()
-  "Just like IDE view but with a REPL instead of a terminal (project tree, main buffer & repl)."
-  (interactive)
-  (setq idee-current-view 'idee-repl-view)
-  (delete-other-windows-internal)
-  (if (and idee-tree-enabled idee-tree-active)
-      (treemacs--init (projectile-project-root)))
-  (if idee-repl-active
-      (if (get-buffer (format "*cider-repl %s*" (projectile-project-name)))
-          (progn
-            (other-window 1)
-            (idee-split-and-follow-vertically)
-            (switch-to-buffer (get-buffer (format "*cider-repl %s*" (projectile-project-name))))
-            (goto-char (point-max))
-            (evil-window-set-height 12)
-            (other-window -1))
-        (progn
-          (other-window 1)
-          (idee-split-and-follow-vertically)
-          (idee-new-empty-buffer)
-          (evil-window-set-height 12)
-          ;; The following commands need to get executed when idee-cider-on-connected is actually executed
-          (setq idee-on-event-command-alist (delq (assoc 'on-repl-connected idee-on-event-command-alist) idee-on-event-command-alist))
-          (add-to-list 'idee-on-event-command-alist '(on-repl-connected . (
-                                                                           (other-window -1)
-                                                                           (goto-char (point-min)))))
-          (idee-repl)))))
-
+  "Open a new file in the side buffer."
+  (setq idee-side-by-side-buffer nil)
+  (idee-switch-side-by-side-on))
 ;;;###autoload
 (defun idee-terminal-view()
   "Maximize terminal in the project root."
@@ -306,6 +332,13 @@ VISITED is an optional list with windows already visited."
       (idee-refresh-view))))
 
 ;;;###autoload
+(defun idee-toggle-helm-ag-or-grep  ()
+  "Toggle helm-ag if helm-ag is installed or fallback to projectile-grep."
+  (interactive)
+  (if (and (require 'helm-projectile nil 'noerror) (require 'helm-ag nil 'noerror))
+      (idee-toggle-helm-ag)
+    (idee-toggle-grep)))
+;;;###autoload
  (defun idee-refresh-view ()
   "Refresh the current view."
   (interactive)
@@ -352,43 +385,82 @@ Switch to the project specific eshell buffer if it already exists."
 ;; Buffer providers
 ;;
 
+(defun idee-get-visible-windows (pred)
+  "Return a list of all visible windows that satisfy the PRED.
+   PRED can be a function predicate, a buffer name or a buffer."
+  (mapcar (lambda (b) (get-buffer-window b 'visible))
+          (seq-filter (lambda (b) (and (get-buffer-window b 'visible)
+                                       (cond ((functionp pred) (funcall pred b))
+                                             ((stringp pred) (equal pred (buffer-name b)))
+                                             ((bufferp pred) (equal (buffer-name pred) (buffer-name b)))
+                                             (t nil)))) (buffer-list))))
+(defun idee-hydra-visible-window ()
+  "Return the hydra window if visible."
+  (car (idee-get-visible-windows (lambda (b) (string-prefix-p "*LV" (buffer-name b))))))
 (defun idee-hydra-visible-p ()
   "Return non-nil if hydra is visible."
-  (get-buffer-window " *LV"))
-
+  (idee-hydra-visible-window))
+(defun idee-cli-visible-window ()
+  "Return the visible cli window."
+  (car (idee-get-visible-windows (lambda (b) (string-prefix-p "*eshell" (buffer-name b))))))
 (defun idee-cli-visible-p ()
   "Return non-nil if cli is visible."
-  (seq-filter (lambda (n) (string-prefix-p "*eshell" n))
-              (mapcar (lambda (b) (buffer-name b)) (seq-filter (lambda (b) (get-buffer-window b 'visible)) (buffer-list)))))
-
+  (idee-cli-visible-window))
+(defun idee-repl-visible-window ()
+  "Return the visible repl window."
+  (car (idee-get-visible-windows (lambda (b) (and idee-repl-buffer-prefix (string-prefix-p idee-repl-buffer-prefix (buffer-name b)))))))
+(defun idee-repl-visible-p ()
+  "Return non-nil if repl is visible."
+  (idee-repl-visible-window))
+(defun idee-diagnostics-visible-window ()
+  "Return the visible diagnostics-window."
+  (car (idee-get-visible-windows (flymake--diagnostics-buffer-name))))
 (defun idee-diagnostics-visible-p ()
   "Return non-nil if diagnostics is visible."
-  (get-buffer-window (flymake--diagnostics-buffer-name)))
-
+  (idee-diagnostics-visible-window))
+(defun idee-errors-visible-window ()
+  "Return the errors window if visible."
+  (car (idee-get-visible-windows "*Flycheck errors*")))
 (defun idee-errors-visible-p ()
-  "Return non-nil if errors is visible."
-  (get-buffer-window "*Flycheck errors*" 'visible))
-
+  "Return non-nil if error is visible."
+  (idee-errors-visible-window))
+(defun idee-messages-visible-window ()
+  "Return the messages if visible."
+  (car (idee-get-visible-windows "*Messages*")))
 (defun idee-messages-visible-p ()
   "Return non-nil if messages is visible."
-  (get-buffer-window "*Messages*" 'visible))
-
+  (idee-messages-visible-window))
+(defun idee-grep-visible-window ()
+  "Return the grep window if visible."
+  (car (idee-get-visible-windows "*grep*")))
 (defun idee-grep-visible-p ()
   "Return non-nil if grep is visible."
-  (get-buffer-window "*grep*" 'visible))
-
+  (idee-grep-visible-window))
+(defun idee-helm-ag-visible-window ()
+  "Return the helm-ag if visible."
+  (car (idee-get-visible-windows "*helm-ag*")))
 (defun idee-helm-ag-visible-p ()
   "Return non-nil if helm-ag is visible."
-  (get-buffer-window "*helm-ag*" 'visible))
-
+  (idee-helm-ag-visible-window))
+(defun idee-xref-visible-window ()
+  "Return the xref if visible."
+  (car (idee-get-visible-windows "*xref*")))
 (defun idee-xref-visible-p ()
   "Return non-nil if xref is visible."
-  (get-buffer-window "*xref*" 'visible))
-
+  (idee-xref-visible-window))
+(defun idee-eww-visible-window ()
+  "Return the eww window if visible."
+  (car (idee-get-visible-windows "*eww*")))
 (defun idee-eww-visible-p ()
   "Return non-nil if eww is visible."
-  (get-buffer-window "*eww*" 'visible))
 
+  (idee-eww-visible-window))
+(defun idee-side-by-side-visible-window ()
+  "Return the side-by-side window if visible."
+  (get-buffer-window idee-side-by-side-buffer 'visible))
+(defun idee-side-by-side-visible-p ()
+  "Return non-nil if eww is visible."
+  (idee-side-by-side-visible-window))
 (defun idee-after-next-error ()
   "Refresh the view each time next error is caled."
   (if next-error-last-buffer
@@ -429,9 +501,14 @@ Switch to the project specific eshell buffer if it already exists."
           (select-window current-window)))))
 
 ;;
+(defun idee-ediff()
+  (interactive)
+  (when (not idee-side-by-side-buffer) (idee-open-side-by-side))
+  (let* ((left (buffer-file-name idee-primary-buffer))
+         (right (buffer-file-name (get-buffer idee-side-by-side-buffer))))
+    (ediff-files3 left right "/tmp/ediff-down")))
 ;; Macros
-;;
-(defmacro idee--create-view-component (name buffer-predicate flag candidates pivot)
+(defmacro idee--create-view-component (name window-provider flag candidates pivot)
   "Update the state of the FLAG (in case the winodw has been externally closed).
 
 NAME is the name of the view component.
@@ -444,7 +521,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
     (defun ,(intern (format "idee-update-%s-state" name)) ()
   ,(format "Update the state of the %s (in case the winodw has been externally closed)." name)
   (idee-jump-to-non-ide-window)
-  (if (,buffer-predicate)
+  (if (,window-provider)
       (progn (dolist (c ,candidates)
                (set c nil))
                (setq ,flag t))
@@ -464,6 +541,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
       (setq ,flag t)
       (idee-refresh-view)
       (other-window ,pivot)
+      (select-window (,window-provider))
       (goto-char (point-max)))))
 
  (defun ,(intern (format "idee-switch-%s-on" name)) ()
@@ -471,7 +549,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
   (interactive)
   (funcall (intern (format "idee-update-%s-state" ,name)))
   (if (not ,flag)
-      (idee-toggle-cli)
+      (funcall (intern (format "idee-toggle-%s" ,name)))
     (idee-refresh-view)))))
 
 ;;
@@ -479,31 +557,59 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 ;;
 
 ;;;###autoload (autoload 'idee-toggle-errors "idee-views")
-(idee--create-view-component "errors" idee-errors-visible-p idee-errors-active idee-bottom-area-switch-list 0)
+(idee--create-view-component "errors" idee-errors-visible-window idee-errors-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-diagnostics "idee-views")
-(idee--create-view-component "diagnostics" idee-diagnostics-visible-p idee-diagnostics-active idee-bottom-area-switch-list 0)
+(idee--create-view-component "diagnostics" idee-diagnostics-visible-window idee-diagnostics-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-cli "idee-views")
 ;;;###autoload (autoload 'idee-switch-cli-on "idee-views")
-(idee--create-view-component "cli"  idee-cli-visible-p idee-cli-active idee-bottom-area-switch-list 0)
+(idee--create-view-component "cli"  idee-cli-visible-window idee-cli-active idee-bottom-area-switch-list 0)
+;;;###autoload (autoload 'idee-toggle-repl "idee-views")
+;;;###autoload (autoload 'idee-switch-repl-on "idee-views")
+(idee--create-view-component "repl"  idee-repl-visible-window idee-repl-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-messages "idee-views")
-(idee--create-view-component "messages"  idee-messages-visible-p idee-messages-active idee-bottom-area-switch-list 0)
+(idee--create-view-component "messages"  idee-messages-visible-window idee-messages-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-grep "idee-views")
-(idee--create-view-component "grep"  idee-grep-visible-p idee-grep-active idee-bottom-area-switch-list 0)
+(idee--create-view-component "grep"  idee-grep-visible-window idee-grep-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-helm-ag "idee-views")
-(idee--create-view-component "helm-ag"  idee-helm-ag-visible-p idee-helm-ag-active idee-bottom-area-switch-list 0)
+(idee--create-view-component "helm-ag"  idee-helm-ag-visible-window idee-helm-ag-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-xref "idee-views")
-(idee--create-view-component "xref"  idee-xref-visible-p idee-xref-active idee-bottom-area-switch-list 0)
+(idee--create-view-component "xref"  idee-xref-visible-window idee-xref-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-eww "idee-views")
-(idee--create-view-component "eww"  idee-eww-visible-p idee-eww-active idee-bottom-area-switch-list 0)
-
-;;;###autoload
-(defun idee-toggle-helm-ag-or-grep  ()
-  "Toggle helm-ag if helm-ag is installed or fallback to projectile-grep."
-  (interactive)
-  (if (and (require 'helm-projectile nil 'noerror) (require 'helm-ag nil 'noerror))
-      (idee-toggle-helm-ag)
-    (idee-toggle-grep)))
-
+(idee--create-view-component "eww"  idee-eww-visible-window idee-eww-active idee-right-area-switch-list 0)
+;;;###autoload (autoload 'idee-toggle-side-by-side "idee-views")
+(idee--create-view-component "side-by-side"  idee-side-by-side-visible-window idee-side-by-side-active idee-right-area-switch-list 0)
+(defun idee-repl--get-buffer ()
+  "Return first matching repl buffer."
+  (car (idee-repl--get-buffers)))
+(defun idee-repl--get-buffers ()
+  "Return matching repl buffers."
+  (seq-filter (lambda (b) (and idee-repl-buffer-prefix (string-prefix-p idee-repl-buffer-prefix (buffer-name b)))) (buffer-list)))
+(defun idee-repl-eval-string (s)
+  "Evaluate S in the repl."
+  (let* ((buffer (idee-repl--get-buffer))
+         (process (buffer-name buffer)))
+    (when process
+      (comint-send-string process (format "%s\n" s))
+      (sit-for 0.5)
+      (with-current-buffer process
+        (goto-char (point-max))
+        (beginning-of-line)
+        (let* ((end (- (point) 1))
+               (start (+ (length idee-repl-buffer-prompt) (search-backward idee-repl-buffer-prompt nil t)))
+               (result (buffer-substring start end)))
+          result)))))
+          
+(defun idee-repl-eval-region (beginning end)
+  "Evaluate region in the repl."
+  (interactive "r")
+  (idee-repl-eval-string (buffer-substring beginning end)))
+(defun idee-repl-eval-region-tooltip (beginning end)
+  "Evaluate region in the repl and show result in a tooltip."
+  (interactive "r")
+  (let ((result (string-trim (idee-repl-eval-region beginning end))))
+    (if (idee-string-blank result) (tooltip-show "Ok")
+      (tooltip-show result))))
+;; Close and kill
 (defun idee-kill-eshell-and-window ()
   "Kill the eshell window and buffer.  Return t if grep window was found."
   (let ((buffer (current-buffer)))
@@ -542,9 +648,9 @@ PIVOT indicates how many windows should be switched at the end of the operation.
   (let ((buffer (current-buffer)))
     (if (or (equal "*helm-ag*" (buffer-name buffer)) (equal "*helm-ag-edit*" (buffer-name buffer)))
         (progn
-          (kill-buffer-and-window)
+          ;(kill-buffer-and-window)
           (setq idee-helm-ag-active nil)
-          (idee-refresh-view)
+          ;(idee-refresh-view)
           t)
       nil)))
 
@@ -582,6 +688,16 @@ PIVOT indicates how many windows should be switched at the end of the operation.
     (idee-project-init project-name)
     (idee-project-open-view project-name)))
 
+(defadvice kill-current-buffer (around idee-on-kill-current-buffer (&optional kill window))
+  "Handles things when quiting window."
+  (cond
+   ((idee-kill-messages-and-window) t)
+   ((idee-kill-eshell-and-window) t)
+   ((idee-kill-grep-and-window) t)
+   ((idee-kill-helm-ag-and-window) t)
+   ((idee-kill-xref-and-window) t)
+   ((idee-kill-eww-and-window) t))
+   ad-do-it)
 (defadvice quit-window (around idee-on-quit-window (&optional kill window))
   "Handles things when quiting window."
   (cond
@@ -590,13 +706,13 @@ PIVOT indicates how many windows should be switched at the end of the operation.
    ((idee-kill-grep-and-window) t)
    ((idee-kill-helm-ag-and-window) t)
    ((idee-kill-xref-and-window) t)
-   ((idee-kill-eww-and-window) t)
-   (t ad-do-it)))
-
+   ((idee-kill-eww-and-window) t))
+   ad-do-it)
 ;;;###autoload
 (defun idee--views-init ()
   "Initialize idee views."
   (ad-activate 'quit-window)
+  (ad-activate 'kill-current-buffer)
   (advice-add 'delete-other-windows-internal :around #'idee-on-delete-other-windows-internal)
   (advice-add 'projectile-switch-project-by-name :around #'idee-on-projectile-switch-project-by-name)
 
@@ -605,7 +721,6 @@ PIVOT indicates how many windows should be switched at the end of the operation.
   (advice-add 'helm-ag--edit :after 'idee-refresh-view)
   (advice-add 'helm-ag-edit--commit :after 'idee-refresh-view)
   (advice-add 'helm-ag-edit--abort :after 'idee-refresh-view)
-
   (advice-add 'lsp-show-xrefs :after 'idee-refresh-view))
 
 (provide 'idee-views)

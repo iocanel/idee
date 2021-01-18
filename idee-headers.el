@@ -22,10 +22,15 @@
 
 (require 'idee-projects)
 (require 'idee-vars)
+(require 'idee-projects)
+(require 'idee-vars)
+
 ;;
 ;; Customization
 ;;
 (defconst idee-emacs-headers-dir (concat (file-name-as-directory idee-resources-dir) "headers") "The directory where header files are stored.")
+
+(defvar idee-header-selected-kind nil "The kind of header currently selcted.")
 
 ;;
 ;; Functions
@@ -56,8 +61,8 @@
   "Select a header for the project from the existing selection of headers."
   (interactive)
   (let* ((headers (directory-files idee-emacs-headers-dir))
-        (header (projectile-completing-read "Select header:" headers)))
-    (setq idee--current-header (idee-read-and-eval-template (concat (file-name-as-directory idee-emacs-headers-dir) header)))))
+        (kind (projectile-completing-read "Select header:" headers)))
+    (setq idee--current-header (idee-read-and-eval-template (concat (file-name-as-directory idee-emacs-headers-dir) kind)))))
 
 ;;;###autoload
 (defun idee-apply-buffer-header ()

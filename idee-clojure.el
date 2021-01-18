@@ -29,37 +29,50 @@
 
 (require 'idee-vars)
 
-(defun cider-jack-in-and-switch ()
+(defun idee-clojure-enable()
+  "Enable clojure bindings."
+  (interactive)
+  ;; Clear functions
+  (setq idee-function-alist (delq (assoc 'idee-mode-tab-width-function idee-function-alist) idee-function-alist))
+  (setq idee-function-alist (delq (assoc 'idee-repl-view-function idee-function-alist) idee-function-alist))
+  ;; Set functions
+  (add-to-list 'idee-function-alist '(idee-mode-tab-width-function . idee-java-set-tab-width))
+  (add-to-list 'idee-function-alist '(idee-repl-view-function . idee-clojure-repl))
+  (setq idee-function-alist (delq (assoc 'idee-run-or-eval-function idee-function-alist) idee-function-alist))
+  (add-to-list 'idee-function-alist '(idee-run-or-eval-function . idee-clojure-run-project))
+  (setq idee-repl-buffer-prefix "*cider-repl")
+  (add-to-list 'idee-type-modes-alist '("clj" . "clojure-mode"))
+  (add-to-list 'idee-type-comment-styles-alist `("clj" . ,clojure-comment-style)))
+
+(defun idee-clojure-repl ()
+  "Start the clojure repl."
+  (interactive)
+  (let ((repl-buffer (get-buffer (format "*cider-repl %s*" (projectile-project-name)))))
+    (if repl-buffer
+        (switch-to-buffer repl-buffer)
+      (idee-clojure-jack-in-and-switch))))
+
+(defun idee-clojre-jack-in-and-switch ()
   "Jack in cider REPL and switch to the current projects REPL buffer."
   (interactive)
-  (add-hook 'cider-connected-hook 'idee-cider-on-connected)
+  (add-hook 'cider-connected-hook 'idee-clojure--cider-on-connected)
   (cider-jack-in))
 
-(defun idee-cider-on-connected()
+(defun idee-clojure--cider-on-connected()
   (remove-hook 'cider-connected-hook 'idee-cider-on-connected)
   (switch-to-buffer (get-buffer (format "*cider-repl %s*" (projectile-project-name))))
   (mapcar (lambda (a) (eval a))
           (alist-get 'on-repl-connected idee-on-event-command-alist)))
 
-(defun idee-run-clojure-project ()
+(defun idee-clojure-run-project ()
   (async-shell-command "lein run"))
-
-(defun idee-clojure-hook ()
-  "Clojure hook."
-  (interactive)
-  (setq idee-function-alist (delq (assoc 'idee-repl-view-function idee-function-alist) idee-function-alist))
-  (add-to-list 'idee-function-alist '(idee-repl-view-function . cider-jack-in-and-switch))
-
-  (setq idee-function-alist (delq (assoc 'idee-run-or-eval-function idee-function-alist) idee-function-alist))
-  (add-to-list 'idee-function-alist '(idee-run-or-eval-function . idee-run-clojure-project)))
-
 (defun idee-visitor-clojure (root)
   (when (seq-filter (lambda (x) (equal "project.clj" x)) (directory-files root))
     (clojure-ide))) 
 
 (defun idee--clojure-init ()
-(add-hook 'clojure-mode-hook 'idee-clojure-hook)
-(idee-register-visitor 'idee-visitor-clojure))
+  (add-hook 'clojure-mode-hook 'idee-clojure-enable)
+  (idee-register-visitor 'idee-visitor-clojure))
 
 (provide 'idee-clojure)
 ;;; idee-clojure.el ends here

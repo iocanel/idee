@@ -185,5 +185,39 @@
 (when idee-eshell-edit-alias-enabled
   (add-hook 'eshell-mode-hook (lambda () (eshell/alias "open" "idee-eshell-open $1"))))
 
+(defun idee-eshell-find-web-port ()
+  "Find the web port in the current buffer, or return 8080 if none is found."
+  (message "Searching for http port")
+  (let* ((name (format "*eshell %s*" (projectile-project-name)))
+         (buffer (get-buffer name)))
+    (if buffer
+        (with-current-buffer buffer
+          (save-excursion
+            (goto-char (point-max))
+            (if (re-search-backward "port.* \\([0-9]+\\)" nil t)
+                (match-string 1)
+              8080)))
+      8080)))
+
+(defun idee-error-filter (list)
+  "Stip dublicates from the list.
+   Credits: https://stackoverflow.com/questions/3815467/stripping-duplicate-elements-in-a-list-of-strings-in-elisp."
+  (let ((new-list nil))
+    (while list
+      (let  ((current (car list)))
+        (when (and current
+                   (not (member current new-list))
+                   (string-match-p (regexp-quote "ERROR") current))
+          (setq new-list (cons current new-list))))
+        (setq list (cdr list)))
+    (nreverse new-list)))
+
+(defun idee-shell-show-errors ()
+  (interactive)
+  "Show the compilation errors as they appear on the shell."
+  (idee-with-project-shell
+      (counsel-compilation-errors)))
+(advice-add 'counsel-compilation-errors-cands :filter-return #'error-filter)
+
 (provide 'idee-eshell)
 ;;; idee-eshell.el ends here

@@ -63,15 +63,35 @@
   ;; Clear functions
   (setq idee-function-alist (delq (assoc 'idee-mode-tab-width-function idee-function-alist) idee-function-alist))
 
+  (setq idee-function-alist (delq (assoc 'idee-repl-view-function idee-function-alist) idee-function-alist))
   ;; Set functions
   (add-to-list 'idee-function-alist '(idee-mode-tab-width-function . idee-java-set-tab-width))
 
+  (add-to-list 'idee-function-alist '(idee-repl-view-function . idee-java-repl))
+  (setq idee-repl-kind "jshell")
+  (setq idee-repl-buffer-prefix "*jshell")
+  (setq idee-repl-buffer-prompt "jshell>")
   (add-to-list 'idee-type-modes-alist '("java" . "java-mode"))
   (add-to-list 'idee-type-comment-styles-alist `("java" . ,java-comment-style)))
 
+(defun idee-java-repl ()
+  "Start the java repl."
+  (interactive)
+  (let* ((module-dir (idee-maven-module-root-dir))
+         (module-pom (concat module-dir pom-xml))
+         (jshell-buffer-name (format "jshell %s" (if module-dir module-dir (idee-project-root-dir))))
+         (jshell-process-name (format "*jshell %s" (if module-dir module-dir (idee-project-root-dir))))
+         (existing-buffer (car (seq-filter  (lambda (b) (idee-starts-with (buffer-name b) jshell-process-name)) (buffer-list)))))
+    (if existing-buffer
+          (switch-to-buffer existing-buffer)
+      (let* ((new-jshell-process-name (format "*%s*" jshell-buffer-name)))
+        (ansi-term "/bin/sh" jshell-buffer-name)
+        (term-line-mode)
+        (if (file-exists-p module-pom)
+            (comint-send-string new-jshell-process-name (format "cd %s && mvn compile com.github.johnpoth:jshell-maven-plugin:1.3:run\n" module-dir))
+          (comint-send-string new-jshell-process-name "jshell\n"))))))
 (defun idee-java-visit-file(&optional f)
   "Enable java bindings."
-  (interactive)
   (when (idee-java-source-p (or f (buffer-file-name)))
     (let* ((package (idee-java-package-of default-directory))
            (classname (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))))
@@ -151,7 +171,6 @@
 (defun idee-java-test-p (f)
   "Return non-nil if F is a test file."
   (let ((test-dir (idee-java-find-test-dir f)))
-    (message (format "file %s test dir %s." f test-dir))
     (and test-dir (string-prefix-p test-dir f))))
 
 (defun idee--java-in-method-p()
@@ -172,6 +191,16 @@
   (interactive)
   (message (format "%s" (c-defun-name))))
 
+(defun idee-java-class-name-at-point ()
+  "Return the name of the class/interface/enum at point or nil if cursors is outside of a class.
+The function obtains the whole block at point and strips everything found after '{'.
+Finally it returns the first word before 'class', 'interface', 'enum'."
+  (let* ((declaration-bounds (c-declaration-limits nil))
+         (start (car declaration-bounds))
+         (end (cdr declaration-bounds))
+         (str  (if (and start end) (buffer-substring start end) nil))
+         (declaration (if str (substring str 0 (string-match "{" str)) nil)))
+    (if (and declaration (string-match ".*\\(class\\|interface|enum|@interface\\)[ ]*\\([a-zA-Z0-9_]+\\)" declaration)) (match-string 2 declaration) nil)))
 (defun idee-java-method-name-at-point ()
   "Return the name of the method at point or nil if cursors is outside of a method.
 The method obtains the whole block at point and strips everything found after '{'.
@@ -183,6 +212,19 @@ Finally it returns the last word before '('."
          (declaration (substring str 0 (string-match "{" str))))
     (if (string-match "\\([^ ]+\\)[ ]*(" declaration) (match-string 1 declaration) nil)))
 
+(defun idee-java-imports-section-at-point-p ()
+  "Returns non-nil if the cursors is in the imports section (between package and class)."
+  (if (not (idee-java-class-name-at-point))
+      (progn
+        (save-excursion
+          (re-search-backward "^[ ]*package[ ]+[a-zA-Z0-9_\\.]+;" nil t)))
+    nil))
+(defun idee-java-jump-to-imports-section ()
+  "Returns non-nil if the cursors is in the imports section (between package and class)."
+  (interactive)
+  (goto-char (point-max))
+  (re-search-backward "^[ ]*import[ ]+\\(static[ ]+\\)?[a-zA-Z0-9_\\.]+;" nil t)
+  (end-of-line))
 (defun idee--java-fqcn-matches-p (c)
   "Predicate that matches c against idee--java-symbols."
   (let* ((matches (seq-filter (lambda (i) (idee--java-fqcn-matches c i)) idee--java-symbols)))

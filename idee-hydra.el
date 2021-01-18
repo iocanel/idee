@@ -84,25 +84,74 @@
   ("q" nil "quit"))
  
 
+(defun idee-hydra--project-name ()
+  (let ((name (idee-project-get-name)))
+    (if name (intern name) (intern "_"))))
+
+(defun idee-hydra--side-by-side-flag ()
+  "Visual represntation of the side by side visibility."
+  (if (idee-side-by-side-visible-p) (intern "*") (intern "_")))
+
+(defun idee-hydra--diagnostics-flag ()
+  "Visual represntation of the diagnostics visibility."
+  (if (idee-diagnostics-visible-p) (intern "*") (intern "_")))
+
+(defun idee-hydra--errors-flag ()
+  "Visual represntation of the errors visibility."
+  (if (idee-errors-visible-p) (intern "*") (intern "_")))
+
+(defun idee-hydra--messages-flag ()
+  "Visual represntation of the messages visibility."
+  (if (idee-messages-visible-p) (intern "*") (intern "_")))
+
+(defun idee-hydra--xref-flag ()
+  "Visual represntation of the xref visibility."
+  (if (idee-xref-visible-p) (intern "*") (intern "_")))
+
+(defun idee-hydra--eww-flag ()
+  "Visual represntation of the eww visibility."
+  (if (idee-eww-visible-p) (intern "*") (intern "_")))
+
+(defun idee-hydra--side-by-side-buffer ()
+  "Visual represntation of the side by side visibility."
+  (let* ((name idee-side-by-side-buffer)
+         (stripped (if name (substring name 6 (- (length name) 1)) "*")))
+    (intern stripped)))
+
+(defun idee-hydra--repl-kind ()
+  "Visual represntation of the side by side visibility."
+    (if (and idee-repl-kind (idee-side-by-side-visible-p)) (intern idee-repl-kind) (intern " ")))
+
+(defun idee-hydra--selected-header-kind ()
+  "Visual represntation of the side by side visibility."
+  (cond (idee-header-selected-kind (intern idee-header-selected-kind))
+        ((file-exists-p (concat (idee-project-root-dir) "header.txt")) (intern "project"))
+        (t (intern "none"))))
+
 ;;;###autoload (autoload 'idee-hydra/body "idee-hydra")
-(defhydra idee-hydra (:hint nil :exit t)
+(defhydra idee-hydra (:hint none :exit t)
   "
-        ^ Project      ^Source^                 ^Navigate^         ^Search^             ^Task^              ^Layout^
-        ^^^^^^-------------------------------------------------------------------------------------------------------
-         _o_pen        _O_ptimize imports     _?_: declaration    _g_: grep             _r_: run/eval        _0_: terminal
-         New _p_roject _i_ndent               _/_: references     _f_: find file        _u_: run unit test   _1_: ide
-         New _F_ile    indent _r_egion        _=_: implementation _v_: find variable                       _2_: side by side
-         _R_ecent      toggle _t_ab enabled   _<_: back                                                  _3_: repl
-         _S_ave all    toggle tab _w_idth     _>_: forward                                               _t_: toggle tree
-         _C_lose       insert _s_nippet       _._: set mark                                              _c_: toggle cli
-         _B_uild       select _h_eaders                                                                _d_: toggle diagnostics
-         _V_cs         apply _H_eader                                                                  _e_: toggle errors                                                                                                       
-                     code _a_ctions                                                                  _m_: toggle messages
-                                                                                                   _x_: toggle xrefs
-
-"
-
+   ^Project^      ^Source^                 ^Navigate^            ^Search^              ^Task^               ^Layout^
+   ?HEADER?
+   -----------------------------------------------------------------------------------------------------------------   
+   _o_: open       _O_: optimize imports   _?_: declaration      _g_: grep             _r_: run/eval        _t_: ?t? tree
+   _p_: new        _i_: indent             _/_: references       _f_: find file        _u_: run unit test   _c_: ?c? cli
+   _F_: new file   _r_: indent region      _=_: implementation   _v_: find variable                       ^^_d_: ?d? diagnostics
+   _b_: by side    _T_: ?T? tab enabled    _<_: back                                                    ^^^^_e_: ?e? errors
+   _R_: recent     _W_: ?W? tab width      _>_: forward                                                 ^^^^_m_: ?m? messages
+   _S_: save all   _s_: insert snippet     _._: set mark                                               ^^^^ _x_: ?x? xrefs
+   _C_: close      _a_: code actions                                                                  ^^^^^^_w_: ?w? eww
+   _B_: build      _H_: apply header (?H?)                                                              
+   _V_: vcs        _h_: select headers 
+                                                                                                  ^^^^^^^^^^_0_: ?0? terminal
+                                                                                                  ^^^^^^^^^^_1_: ?1? ide
+                                                                                                  ^^^^^^^^^^_2_: ?2?   
+                                                                                                  ^^^^^^^^^^_3_: ?3? repl
+   [_q_]: quit
+   "
+  ("HEADER" nil (idee-project-get-name))
   ("o" idee-open)
+  ("b" idee-open-side-by-side)
   ("p" idee-new-project)
   ("F" idee-new-file)
   ("R" idee-recent)
@@ -114,20 +163,19 @@
   ("O" idee-optimize-imports)
   ("i" idee-indent)
   ("r" idee-indent-region)
-  ("w" idee-toggle-tab-width)
-  ("T" idee-toggle-use-tabs)
+  ("W" idee-toggle-tab-width (format "[%s]" idee-tab-width) :exit nil)
+  ("T" idee-toggle-use-tabs (if idee-use-tabs "[*]" "[ ]") :exit nil)
   ("s" company-yasnippet)
-  ("h" idee-select-project-header)
-  ("H" idee-apply-buffer-header)
+  ("h" idee-select-project-header :exit nil)
+  ("H" idee-apply-buffer-header (idee-hydra--selected-header-kind))
   ("a" idee-apply-code-actions)
 
   ("?" idee-declaration)
   ("/" idee-references)
   ("=" idee-implementation)
-  (">" idee-jump-forward)
-  ("<" idee-jump-back)
-  ("." idee-back-push)
-
+  (">" idee-jump-forward :exit nil)
+  ("<" idee-jump-back :exit nil)
+  ("." idee-back-push :exit nil)
   ("g" idee-toggle-helm-ag-or-grep)
   ("f" idee-find-file)
   ("v" idee-find-variable)
@@ -135,17 +183,17 @@
   ("r" idee-run-or-eval)
   ("u" idee-test)
 
-  ("1" idee-ide-view)
-  ("2" idee-side-by-side-view)
-  ("3" idee-repl-view)
-  ("0" idee-terminal-view)
-  ("t" idee-toggle-tree)
-  ("c" idee-toggle-cli)
-  ("d" idee-toggle-diagnostics)
-  ("e" idee-toggle-errors)
-  ("m" idee-toggle-messages)
-  ("x" idee-toggle-messages)
-  ("," idee-mode-hydra "mode")
+  ("1" idee-ide-view (if (eq idee-current-view 'idee-ide-view) "[*]" "[ ]"))
+  ("2" idee-toggle-side-by-side (if (idee-side-by-side-visible-p) (format "[*] side by side: (%s)" (idee-hydra--side-by-side-buffer)) "[ ] side by side"))
+  ("3" idee-toggle-repl (if (idee-repl-visible-p) "[*]" "[ ]"))
+  ("0" idee-terminal-view (if (eq idee-current-view 'idee-terminal-view) "[*]" "[ ]"))
+  ("t" idee-toggle-tree (if (eq (treemacs-current-visibility) 'visible) "[*]" "[ ]"))
+  ("c" idee-toggle-cli (if (idee-cli-visible-p) "[*]" "[ ]"))
+  ("d" idee-toggle-diagnostics (if (idee-diagnostics-visible-p) "[*]" "[ ]"))
+  ("e" idee-toggle-errors (if (idee-errors-visible-p) "[*]" "[ ]"))
+  ("m" idee-toggle-messages (if (idee-messages-visible-p) "[*]" "[ ]"))
+  ("x" idee-toggle-xref (if (idee-xref-visible-p) "[*]" "[ ]"))
+  ("w" idee-toggle-eww (if (idee-eww-visible-p) "[*]" "[ ]"))
   ("q" nil "quit"))
 
 

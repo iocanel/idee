@@ -318,7 +318,7 @@
               :projectName project-name
               :wait-for-port t)
         ;; If we don't escape those arguments it will fail on eshell
-        (append (list :program-to-start (idee-maven-cmd :goals (format "exec:exec -Dexec.executable=\"java\" -Dexec.args=\"-classpath\\ %s\\ -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000\\ %s\"" "%classpath" fqcn) :build-scope 'module :goto-project-root t)))
+        (append (list :program-to-start (idee-maven-cmd :goals (format "package exec:exec -DskipTests -Dexec.executable=\"java\" -Dexec.args=\"-classpath\\ %s\\ -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000\\ %s\"" "%classpath" fqcn) :build-scope 'module :goto-project-root t)))
         dap-debug)))
 
 (defun idee-maven-surefire-test-file ()
@@ -647,25 +647,47 @@ or empty string other wise."
   (if idee-maven-profiles
       (concat "-P" (string-join idee-maven-profiles ",")) ""))
 
+(defun idee-maven-select-profiles ()
+  (interactive)
+  "Select profiles"
+  (idee-project-settings-set "maven.el" "idee-maven-profiles" (idee-as-code (completing-read-multiple "Maven profiles:" (idee-maven--all-profiles)))))
+(defun idee-maven--all-profiles ()
+  "List all available profiles"
+  (split-string (shell-command-to-string (format "cd %s && mvn help:all-profiles | grep \"Profile Id:\" | cut -d\" \" -f5 | sort | uniq" (idee-project-root-dir))) "\n" ))
+;; Hydra helpers
+(defun idee-maven--selected-profiles ()
+  "List all selected profiles"
+  (idee-with-project-settings "maven.el" idee-maven-profiles
+      (mapcar 'intern idee-maven-profiles)))
+(defun idee-maven--project-name ()
+    (intern (or (idee-project-get-name) "unknown")))
+(defun idee-maven--module-name ()
+  (let* ((module-dir (idee-maven-module-root-dir))
+         (module-pom (concat module-dir pom-xml))
+         (artifact-id (idee-maven-pom-artifact-id module-pom)))
+    (intern (or artifact-id "unknwon"))))
 ;;; Maven Hydra
 ;;;###autoload (autoload 'idee-maven-hydra/body "idee-maven")
-(defhydra idee-maven-hydra (:hint nil :exit t)
+(defhydra idee-maven-hydra (:hint none :exit t)
   "
- Maven:   Project                     Module                File                                  Toggle         Execute 
-        ---------------------------------------------------------------------------------------------------------------------------------
-        _pc_: clean                  _mc_: clean                  _fr_: run                             _to_: offline    _h_: from history
-        _pp_: package                _mp_: package              _fstc_: surefire test                   _tt_: tests      _s_: from project settings 
-        _pi_: install                _mi_: install              _fftc_: failsafe test                 
-        _po_: edit pom               _mo_: edit pom             _fstm_: surefire test method 
-                                  _mrf_: resume from          _fftm_: failsafe test method 
-                                  _mai_: also install    
-        _pd_: debug                  _md_: debug                  _fd_: debug file
-       _psd_: surfire debug         _msd_: surefire debug       _fsdc_: debug surefire test class
-       _pfd_: failsafe debug        _mfd_: failsafe debug       _ffdc_: debug failsafe test class
-                                                            _fsdm_: debug surefire test method
-                                                            _ffdm_: debug failsafe test method
-
+        Project^              ^Module^                 ^File^                             ^Execute^                    ^Toggle^ 
+        ?P? 
+    --------------------------------------------------------------------------------------------------------------------------------------   
+    _pc_: clean            _mc_: clean              _fr_: run                          _h_: from history            _to_: ?to? offline 
+    _pp_: package          _mp_: package          _fstc_: surefire test                _s_: from project settings   _tt_: ?tt? tests
+    _pi_: install          _mi_: install          _fftc_: failsafe test                                           ^^_tp_: profiles %(idee-maven--selected-profiles)   
+    _po_: edit pom         _mo_: edit pom         _fstm_: surefire test method
+                        ^^_mrf_: resume from      _fftm_: failsafe test method
+                        ^^_mai_: also install
+   _pd_: debug             _md_: debug              _fd_: debug file
+  _psd_: surfire debug    _msd_: surefire debug   _fsdc_: debug surefire test class
+  _pfd_: failsafe debug   _mfd_: failsafe debug   _ffdc_: debug failsafe test class
+                                              ^^^^_fsdm_: debug surefire test method
+                                              ^^^^_ffdm_: debug failsafe test method
+  [_q_]: quit
        "
+  ("P" nil (format "%-20S %-22S %s" (idee-maven--project-name) (idee-maven--module-name) (or (file-name-nondirectory (buffer-file-name (get-buffer (current-buffer)))) "")))
+  ("po" idee-maven-edit-project-pom-xml)
   ("po" idee-maven-edit-project-pom-xml)
   ("pc" idee-maven-clean-project)
   ("pp" idee-maven-package-project)
@@ -696,10 +718,9 @@ or empty string other wise."
   ("ffdc" idee-maven-failsafe-debug-file)
   ("fsdm" idee-maven-surefire-debug-file-method)
   ("ffdm" idee-maven-failsafe-debug-file-method)
-
-  ("to" idee-maven-toggle-offline)
-  ("tt" idee-maven-toggle-skip-tests)
-
+  ("to" idee-maven-toggle-offline (if idee-maven-offline "[*]" "[ ]") :exit nil)
+  ("tt" idee-maven-toggle-skip-tests (if idee-maven-skip-tests "[*]" "[ ]") :exit nil)
+  ("tp" idee-maven-select-profiles :exit nil)
   ("h" idee-maven-exec-from-history)
   ("s" idee-maven-exec-from-project-settings)
   ("q" nil "quit"))

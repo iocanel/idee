@@ -63,6 +63,16 @@
 
 ;;; String Functions
 ;;;###autoload
+(defun idee-string-blank (string)
+  "Return non-nil if STRING start is blank."
+  (let* ((transformed
+          (replace-in-string "\n" "" (replace-in-string "\r" "" (replace-in-string "\t" "" (string-trim string))))))
+    (if (= 0 (length transformed)) t nil)))
+(defun idee-string-up-to (string prefix)
+  "Return t if STRING start with PREFIX."
+  (and (string-match (rx-to-string `(: bos ,prefix) t)
+                     string)
+       t))
 (defun idee-starts-with (string prefix)
   "Return t if STRING start with PREFIX."
   (and (string-match (rx-to-string `(: bos ,prefix) t)
@@ -168,11 +178,33 @@
           (rest-str   (substring string 1)))
       (concat (capitalize first) rest-str))))
 
+(defun idee-as-code (item)
+  "Display the item as elisp code."
+  (cond ((stringp item) (format "\"%s\"" item))
+        ((numberp item) (format "%s" item)) 
+        ((sequencep item) (format "'%s" (mapcar 'idee-as-code item)))
+        (t item)))
 ;;;###autoload
 (defun idee-project-settings (settings-file)
   "Return the path of a local SETTINGS-FILE."
   (concat (file-name-as-directory (concat (projectile-project-root) ".idee")) settings-file))
 
+(defun idee-project-settings-set (settings-file key value)
+  "Add or replace a set statement inside the SETTINGS-FILE using the specified KEY and VALUE."
+  (let ((file (idee-project-settings settings-file)))
+    (with-temp-buffer
+      (insert-file file)
+      (goto-char (point-min))
+      (if (re-search-forward (regexp-quote key) nil nil)
+          (let* ((start (point))
+                 (end start))
+            (gud-forward-sexp)
+            (setq end (point))
+            (replace-region-contents (+ 1 start) end (lambda () (format "%s" value)))
+            (write-file file nil))
+        (progn
+          (goto-char (point-max))
+          (insert "(setq %s %s)" key value))))))
 ;;; Macros
 ;;;###autoload (autoload 'idee-with-project-settings "idee-utils")
 (defmacro idee-with-project-settings (settings-file options &rest body)
