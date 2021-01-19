@@ -86,8 +86,8 @@ before starting the debug process."
 
 (defun idee-dap-refresh (&rest _)
   "A wrapper to idee-refresh-view, for using from withing dap."
-  (idee-refresh-view))
-
+  (when (dap--cur-session) ;; If we always refresh unpredictable things happen !!!
+    (idee-refresh-view)))
 (advice-add 'dap-ui--update-controls :after 'idee-dap-refresh)
                                           
 (defadvice dap--go-to-stack-frame (after idee-refresh-on-stack-frame

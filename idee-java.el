@@ -90,6 +90,7 @@
         (if (file-exists-p module-pom)
             (comint-send-string new-jshell-process-name (format "cd %s && mvn compile com.github.johnpoth:jshell-maven-plugin:1.3:run\n" module-dir))
           (comint-send-string new-jshell-process-name "jshell\n"))))))
+
 (defun idee-java-visit-file(&optional f)
   "Enable java bindings."
   (when (idee-java-source-p (or f (buffer-file-name)))

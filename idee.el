@@ -25,6 +25,7 @@
 ;;; Code:
 (require 'idee-vars)
 (require 'idee-projects)
+(require 'idee-templates)
 
 (defcustom idee-repo-url "git@github.com:iocanel/idee.git" "The repository url of the idee project." :group 'idee :type 'string)
 

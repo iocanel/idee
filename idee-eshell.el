@@ -90,7 +90,6 @@
   (idee-switch-cli-on)
   (with-current-buffer (format "*eshell %s*" (projectile-project-name))
     (let ((comint-scroll-to-bottom-on-output t))
-     (eshell/clear-scrollback)
       (eshell-send-input)
       (eshell-return-to-prompt)
       ,@body
@@ -187,7 +186,6 @@
 
 (defun idee-eshell-find-web-port ()
   "Find the web port in the current buffer, or return 8080 if none is found."
-  (message "Searching for http port")
   (let* ((name (format "*eshell %s*" (projectile-project-name)))
          (buffer (get-buffer name)))
     (if buffer

@@ -121,7 +121,7 @@
   ;; In some cases, it's better to swtich (e.g. when current bufer is a side buffer
   (when (and idee-primary-buffer (idee-ide-buffer-p (buffer-name (current-buffer)))
              (progn
-               (message "No project buffer visible, switching to stored buffer")
+               (message "No project buffer visible, switching to %s." (buffer-name idee-primary-buffer))
                (switch-to-buffer idee-primary-buffer))))
   (delete-other-windows-internal)
   (if (and idee-tree-enabled idee-tree-active)
@@ -648,9 +648,9 @@ PIVOT indicates how many windows should be switched at the end of the operation.
   (let ((buffer (current-buffer)))
     (if (or (equal "*helm-ag*" (buffer-name buffer)) (equal "*helm-ag-edit*" (buffer-name buffer)))
         (progn
-          ;(kill-buffer-and-window)
+          (kill-buffer-and-window)
           (setq idee-helm-ag-active nil)
-          ;(idee-refresh-view)
+          (idee-refresh-view)
           t)
       nil)))
 
@@ -696,8 +696,8 @@ PIVOT indicates how many windows should be switched at the end of the operation.
    ((idee-kill-grep-and-window) t)
    ((idee-kill-helm-ag-and-window) t)
    ((idee-kill-xref-and-window) t)
-   ((idee-kill-eww-and-window) t))
-   ad-do-it)
+   ((idee-kill-eww-and-window) t)
+   (t ad-do-it)))
 (defadvice quit-window (around idee-on-quit-window (&optional kill window))
   "Handles things when quiting window."
   (cond
@@ -706,8 +706,8 @@ PIVOT indicates how many windows should be switched at the end of the operation.
    ((idee-kill-grep-and-window) t)
    ((idee-kill-helm-ag-and-window) t)
    ((idee-kill-xref-and-window) t)
-   ((idee-kill-eww-and-window) t))
-   ad-do-it)
+   ((idee-kill-eww-and-window) t)
+   (t ad-do-it)))
 ;;;###autoload
 (defun idee--views-init ()
   "Initialize idee views."
