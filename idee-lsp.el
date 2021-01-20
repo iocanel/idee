@@ -1,4 +1,4 @@
-;;; idee-java.el --- Java IDE
+;;; idee-lsp.el --- LSP IDE -*- lexical binding: t; -*-
 
 ;; Copyright (C) 2018 Ioannis Canellos
 
