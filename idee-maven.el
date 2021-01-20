@@ -35,6 +35,7 @@
 (defvar idee-maven-profiles ())
 (defvar idee-maven-offline nil)
 (defvar idee-maven-skip-tests nil)
+(defvar idee-maven-show-errors nil)
 (defvar idee-maven-exec-history ())
 (defvar idee-maven-project-settings-commands ())
 (defvar idee-maven-known-group-ids '() "A list of known group-ids")
@@ -544,6 +545,8 @@
                                     (push "-DskipTests" mvn-cmd-builder))
                                 (if idee-maven-offline
                                     (push "-o" mvn-cmd-builder))
+                                (if idee-maven-show-errors
+                                    (push "-e" mvn-cmd-builder))
                                 (setq maven-command (string-trim (string-join (reverse mvn-cmd-builder) " ")))
                                 (idee-eshell-project-command-execute maven-command))))
 
@@ -582,6 +585,8 @@
                                     (push "-DskipTests" mvn-cmd-builder))
                                 (if idee-maven-offline
                                     (push "-o" mvn-cmd-builder))
+                                (if idee-maven-show-errors
+                                    (push "-e" mvn-cmd-builder))
                                 (if also-make
                                     (push "-am" mvn-cmd-builder))
                                 (if surefire-debug
@@ -615,7 +620,16 @@
       (message "Maven test skip: Enabled!")
     (message "Maven test skip: Disabled!")))
 
-;;; Coordinates
+(defun idee-maven-toggle-show-errors ()
+  "Toggle offline flag for maven builds."
+  (interactive)
+  (if (idee-toggle idee-maven-show-errors)
+      (message "Maven show errors Enabled!")
+    (message "Maven show errors Disabled!")))
+
+;;
+;; Coordinates
+;;
 
 (defun idee-maven-local-group-ids  ()
   "Retrieve all group ids found in the local maven repository."
@@ -651,22 +665,30 @@ or empty string other wise."
   (interactive)
   "Select profiles"
   (idee-project-settings-set "maven.el" "idee-maven-profiles" (idee-as-code (completing-read-multiple "Maven profiles:" (idee-maven--all-profiles)))))
+
 (defun idee-maven--all-profiles ()
   "List all available profiles"
   (split-string (shell-command-to-string (format "cd %s && mvn help:all-profiles | grep \"Profile Id:\" | cut -d\" \" -f5 | sort | uniq" (idee-project-root-dir))) "\n" ))
+
 ;; Hydra helpers
 (defun idee-maven--selected-profiles ()
   "List all selected profiles"
   (idee-with-project-settings "maven.el" idee-maven-profiles
       (mapcar 'intern idee-maven-profiles)))
+
 (defun idee-maven--project-name ()
     (intern (or (idee-project-get-name) "unknown")))
+
 (defun idee-maven--module-name ()
   (let* ((module-dir (idee-maven-module-root-dir))
          (module-pom (concat module-dir pom-xml))
          (artifact-id (idee-maven-pom-artifact-id module-pom)))
     (intern (or artifact-id "unknwon"))))
-;;; Maven Hydra
+
+;;
+;; Maven Hydra
+;;
+
 ;;;###autoload (autoload 'idee-maven-hydra/body "idee-maven")
 (defhydra idee-maven-hydra (:hint none :exit t)
   "
@@ -674,9 +696,9 @@ or empty string other wise."
         ?P? 
     --------------------------------------------------------------------------------------------------------------------------------------   
     _pc_: clean            _mc_: clean              _fr_: run                          _h_: from history            _to_: ?to? offline 
-    _pp_: package          _mp_: package          _fstc_: surefire test                _s_: from project settings   _tt_: ?tt? tests
-    _pi_: install          _mi_: install          _fftc_: failsafe test                                           ^^_tp_: profiles %(idee-maven--selected-profiles)   
-    _po_: edit pom         _mo_: edit pom         _fstm_: surefire test method
+    _pp_: package          _mp_: package          _fstc_: surefire test                _s_: from project settings   _tt_: ?tt? skip tests
+    _pi_: install          _mi_: install          _fftc_: failsafe test                                           ^^_te_: ?te? errors 
+    _po_: edit pom         _mo_: edit pom         _fstm_: surefire test method                                    ^^_tp_: profiles %(idee-maven--selected-profiles)   
                         ^^_mrf_: resume from      _fftm_: failsafe test method
                         ^^_mai_: also install
    _pd_: debug             _md_: debug              _fd_: debug file
@@ -718,9 +740,12 @@ or empty string other wise."
   ("ffdc" idee-maven-failsafe-debug-file)
   ("fsdm" idee-maven-surefire-debug-file-method)
   ("ffdm" idee-maven-failsafe-debug-file-method)
+
   ("to" idee-maven-toggle-offline (if idee-maven-offline "[*]" "[ ]") :exit nil)
   ("tt" idee-maven-toggle-skip-tests (if idee-maven-skip-tests "[*]" "[ ]") :exit nil)
+  ("te" idee-maven-toggle-show-errors (if idee-maven-show-errors "[*]" "[ ]") :exit nil)
   ("tp" idee-maven-select-profiles :exit nil)
+
   ("h" idee-maven-exec-from-history)
   ("s" idee-maven-exec-from-project-settings)
   ("q" nil "quit"))
