@@ -96,16 +96,20 @@
       (eshell-send-input)))))
 
 ;;;###autoload
-(defun idee-eshell-project-command-execute (command)
-  "Run a single COMMAND in the current project shell."
-  (idee-switch-cli-on)
-  (with-current-buffer (format "*eshell %s*" (projectile-project-name))
-    (let ((comint-scroll-to-bottom-on-output t))
-      (setf eshell-copy-old-input nil)
-      (eshell-return-to-prompt)
-      (eshell-wait-for-process)
-      (idee-eshell-insert command)
-      (eshell-send-input))))
+(defun idee-eshell-project-command-execute (command &optional new-shell)
+  "Run a single COMMAND in the current project shell.
+   When NEW-SHELL is specified the old eshell project buffer is killed."
+  (let ((buffer-name (format "*eshell %s*" (projectile-project-name)))
+        (eshell-scroll-to-bottom-on-input t)
+        (comint-scroll-to-bottom-on-output t))
+    (when new-shell (kill-buffer buffer-name))
+    (idee-switch-cli-on)
+    (with-current-buffer buffer-name
+        (setf eshell-copy-old-input nil)
+        (eshell-return-to-prompt)
+        (eshell-wait-for-process)
+        (idee-eshell-insert command)
+        (eshell-send-input))))
 
 ;;;###autoload
 (defun idee-eshell-project-command-enqueue (commands)

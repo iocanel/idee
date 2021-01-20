@@ -529,7 +529,7 @@
   "Prompt the user to execute previous maven build from history."
   (interactive)
   (let ((maven-command (completing-read "Maven command:" idee-maven-exec-history)))
-    (idee-eshell-project-command-execute maven-command)))
+    (idee-eshell-project-command-execute maven-command t)))
 
 
 (defun idee-maven-exec-from-project-settings ()
@@ -548,7 +548,7 @@
                                 (if idee-maven-show-errors
                                     (push "-e" mvn-cmd-builder))
                                 (setq maven-command (string-trim (string-join (reverse mvn-cmd-builder) " ")))
-                                (idee-eshell-project-command-execute maven-command))))
+                                (idee-eshell-project-command-execute maven-command t))))
 
 (cl-defun idee-maven-cmd (&key goals debug surefire-debug failsafe-debug build-scope also-make goto-project-root)
   (idee-with-project-settings "maven.el" idee-maven-profiles
@@ -603,7 +603,7 @@
   (interactive)
   (let ((cmd (idee-maven-cmd :goals goals :debug debug :surefire-debug surefire-debug :failsafe-debug failsafe-debug :build-scope build-scope :also-make also-make)))
     (push cmd idee-maven-exec-history)
-    (idee-eshell-project-command-execute cmd)))
+    (idee-eshell-project-command-execute cmd t)))
 
 ;;; Toggles
 (defun idee-maven-toggle-offline ()
@@ -790,5 +790,6 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
 (defun idee--maven-init ()
   (idee-register-project-factory idee-maven-project-factory)
   (idee-register-visitor 'idee-visitor-maven))
+
 (provide 'idee-maven)
 ;;; idee-maven.el ends here
