@@ -4,7 +4,7 @@ jobs:
   TEST:
     docker:
       # specify the version you desire here
-      - image: flycheck/emacs-cask:26.2
+      - image: flycheck/emacs-cask:27.1
     working_directory: ~/repo
     environment:
     steps:
@@ -23,6 +23,8 @@ jobs:
             - .cask
           key: v1-dependencies-{{ checksum "Cask" }}
 
+      # build
+      - run: make 
       # run tests!
       - run: make test
 
