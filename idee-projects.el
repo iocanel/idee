@@ -155,8 +155,6 @@
          (project (projectile-ensure-project (or project-dir (projectile-project-root))))
          (project-name (projectile-project-name project))
          (project-dir-name (file-name-nondirectory (directory-file-name (file-name-directory project-dir)))))
-    (message "project dir name:%s." project-dir-name)
-
        (when project-dir
          (progn
            (setq projectile-project-root project-dir)
@@ -182,7 +180,6 @@
          (name (or (projectile-project-name)  (file-name-nondirectory (directory-file-name path))))
          (info (alist-get (intern name) idee-project-info-alist)))
 
-    (message "Initializing project name: %s in %s." name path)
     (when (not info)
       (setq info (make-idee-project-info
                    :name name
