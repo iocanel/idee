@@ -27,6 +27,7 @@
 (require 'treemacs-projectile)
 (require 'treemacs)
 
+(require 'fringe)
 (require 'helm-projectile nil t)
 
 ;;
