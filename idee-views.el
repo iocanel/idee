@@ -456,11 +456,12 @@ VISITED is an optional list with windows already visited."
   (car (idee-get-visible-windows "*eww*")))
 (defun idee-eww-visible-p ()
   "Return non-nil if eww is visible."
-
   (idee-eww-visible-window))
+
 (defun idee-side-by-side-visible-window ()
   "Return the side-by-side window if visible."
-  (get-buffer-window idee-side-by-side-buffer 'visible))
+  (and idee-side-by-side-buffer (get-buffer-window idee-side-by-side-buffer 'visible)))
+
 (defun idee-side-by-side-visible-p ()
   "Return non-nil if eww is visible."
   (idee-side-by-side-visible-window))
