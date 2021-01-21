@@ -1,4 +1,4 @@
-;;; idee-lsp.el --- LSP IDE -*- lexical binding: t; -*-
+;;; idee-lsp.el --- Java support for IDEE -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018 Ioannis Canellos
 
@@ -20,12 +20,29 @@
 ;; Package-Requires: ((lsp-mode "6.2"))
 
 ;;; Code:
+(require 'lsp-mode)
 
 (defcustom idee-lsp-workspace-per-project-enabled t "Lsp Workspace per Project Feature Toggle" :group 'idee-lsp :type 'boolean)
 
 (defcustom idee-lsp-before-workspace-restart-hook nil "The hooks to run before restarting the workspace"
   :type 'hook
   :group 'idee-lsp)
+
+(defun idee-lsp-enable()
+  "Enable lsp bindings."
+  (interactive)
+
+  ;; Clear functions
+  (setq idee-function-alist (delq (assoc 'idee-execute-code-actions-function idee-function-alist) idee-function-alist))
+
+  ;; Set functions
+  (add-to-list 'idee-function-alist '(idee-execute-code-actions-function . idee-lsp-execute-code-actions)))
+(defun idee-lsp-execute-code-actions ()
+
+  "Execute code actions."
+  (interactive)
+  (let ((action (list (lsp--select-action (lsp-code-actions-at-point)))))
+    (lsp-execute-code-action action)))
 
 (defun idee-lsp-close-workspace ()
   "Close the current workspace."
@@ -49,13 +66,13 @@
     (setq lsp-session-file (f-join workspace ".lsp-session-v1"))
     (when (lsp-workspaces) (lsp-restart-workspace))))
 
-
 (defun idee-lsp-init ()
   (interactive)
   "Intialize LSP."
   (advice-add 'idee-workspace-close :before #'idee-lsp-close-workspace)
   (advice-add 'treemacs-switch-workspace :before #'idee-lsp-close-workspace)
-  (add-hook 'treemacs-switch-workspace-hook 'idee-lsp-switch-workspace))
+  (add-hook 'treemacs-switch-workspace-hook 'idee-lsp-switch-workspace)
+  (add-hook 'lsp-mode-hook 'idee-lsp-enable))
 
 (provide 'idee-lsp)
 ;;; idee-lsp.el ends here

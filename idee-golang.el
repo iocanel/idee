@@ -23,6 +23,8 @@
 ;;; Commentary:
 
 ;;; Code:
+(require 'idee-vars)
+(require 'idee-visitors)
 (require 'projectile)
 (require 'go-mode)
 
@@ -57,8 +59,8 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
   (interactive)
   (let* ((module-name (read-string "Module:" "example.com/m"))
          (target-dir (idee--select-new-project-dir))
-         (generate-command (format "go mod init %s" module-name))))
-    (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command))
+         (generate-command (format "go mod init %s" module-name)))
+    (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command)))
 
 (defconst idee-golang-module-factory
   (make-idee-project-factory

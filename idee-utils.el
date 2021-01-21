@@ -14,17 +14,10 @@
 ;;See the License for the specific language governing permissions and
 ;;limitations under the License.
 
-;; Author: Ioannis Canellos
-
-;; Version: 0.0.1
-
-;; Package-Requires: ((emacs "25.1"))
-
 ;;; Commentary:
 
 ;;; Code:
 (require 'seq)
-(require 'f)
 (require 'yasnippet)
 (require 'editorconfig)
 (require 'idee-vars)
@@ -68,6 +61,7 @@
   (let* ((transformed
           (replace-in-string "\n" "" (replace-in-string "\r" "" (replace-in-string "\t" "" (string-trim string))))))
     (if (= 0 (length transformed)) t nil)))
+
 (defun idee-string-up-to (string prefix)
   "Return t if STRING start with PREFIX."
   (and (string-match (rx-to-string `(: bos ,prefix) t)
@@ -193,12 +187,12 @@
   "Add or replace a set statement inside the SETTINGS-FILE using the specified KEY and VALUE."
   (let ((file (idee-project-settings settings-file)))
     (with-temp-buffer
-      (insert-file file)
+      (insert-file-contents file)
       (goto-char (point-min))
       (if (re-search-forward (regexp-quote key) nil nil)
           (let* ((start (point))
                  (end start))
-            (gud-forward-sexp)
+            (condition-case nil (forward-sexp) (error t))
             (setq end (point))
             (replace-region-contents (+ 1 start) end (lambda () (format "%s" value)))
             (write-file file nil))
@@ -206,6 +200,7 @@
           (goto-char (point-max))
           (insert "(setq %s %s)" key value))))))
 ;;; Macros
+
 ;;;###autoload (autoload 'idee-with-project-settings "idee-utils")
 (defmacro idee-with-project-settings (settings-file options &rest body)
   "Load a SETTINGS-FILE as local OPTIONS and evaluate BODY."

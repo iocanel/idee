@@ -23,10 +23,12 @@
 
 ;;; Code:
 
+(require 'idee-java-utils)
+(require 'idee-dap)
 (require 'idee-utils)
 (require 'idee-projects)
-(require 'idee-dap)
 (require 'idee-visitors)
+
 (require 'hydra)
 
 (defconst pom-xml "pom.xml")
@@ -325,16 +327,8 @@
 (defun idee-maven-surefire-test-file ()
   "Debug the current maven file."
   (interactive)
-  (let* ((module-dir (idee-maven-module-root-dir))
-                                     (module-pom (concat module-dir pom-xml))
-                                     (invoker-test (idee-maven-invoker-test-dir-p module-dir))
-                                     (enclosuing-module-dir (idee-maven-enclosing-module-root-dir))
-                                     (enclosuing-module-pom (concat enclosuing-module-dir pom-xml))
-                                     (artifact-id (idee-maven-pom-artifact-id module-pom))
-                                     (enclosing-artifact-id (idee-maven-pom-artifact-id enclosuing-module-pom))
-                                     (project-name (if invoker-test enclosing-artifact-id artifact-id))
-                                     (classname (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))))
-  (idee-maven-exec :goals (format "test -Dtest=%s" classname) :build-scope 'module)))
+  (let* ((classname (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))))
+    (idee-maven-exec :goals (format "test -Dtest=%s" classname) :build-scope 'module)))
 
 
 (defun idee-maven-surefire-debug-file ()
@@ -348,7 +342,6 @@
                                      (artifact-id (idee-maven-pom-artifact-id module-pom))
                                      (enclosing-artifact-id (idee-maven-pom-artifact-id enclosuing-module-pom))
                                      (project-name (if invoker-test enclosing-artifact-id artifact-id))
-                                     (file-name (buffer-file-name (current-buffer)))
                                      (classname (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))))
     (-> (list :type "java"
               :request "attach"
@@ -358,43 +351,12 @@
               :wait-for-port t)
         (append (list :program-to-start (idee-maven-cmd :goals (format "test -Dtest=%s" classname) :surefire-debug t :build-scope 'module :goto-project-root t)))
         dap-debug)))
-
-(defun idee-maven-surefire-debug-file ()
-  "Debug the current maven file."
-  (interactive)
-  (let* ((module-dir (idee-maven-module-root-dir))
-                                     (module-pom (concat module-dir pom-xml))
-                                     (invoker-test (idee-maven-invoker-test-dir-p module-dir))
-                                     (enclosuing-module-dir (idee-maven-enclosing-module-root-dir))
-                                     (enclosuing-module-pom (concat enclosuing-module-dir pom-xml))
-                                     (artifact-id (idee-maven-pom-artifact-id module-pom))
-                                     (enclosing-artifact-id (idee-maven-pom-artifact-id enclosuing-module-pom))
-                                     (project-name (if invoker-test enclosing-artifact-id artifact-id))
-                                     (file-name (buffer-file-name (current-buffer)))
-                                     (classname (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))))
-    (-> (list :type "java"
-              :request "attach"
-              :hostName "localhost"
-              :port 5005
-              :projectName project-name
-              :wait-for-port t)
-        (append (list :program-to-start (idee-maven-cmd :goals (format "test -Dtest=%s" classname) :surefire-debug t :build-scope 'module :goto-project-root t)))
-        dap-debug)))
-
 
 (defun idee-maven-surefire-test-file-method ()
   "Test the current maven file method."
   (interactive)
-  (let* ((module-dir (idee-maven-module-root-dir))
-                                     (module-pom (concat module-dir pom-xml))
-                                     (invoker-test (idee-maven-invoker-test-dir-p module-dir))
-                                     (enclosuing-module-dir (idee-maven-enclosing-module-root-dir))
-                                     (enclosuing-module-pom (concat enclosuing-module-dir pom-xml))
-                                     (artifact-id (idee-maven-pom-artifact-id module-pom))
-                                     (enclosing-artifact-id (idee-maven-pom-artifact-id enclosuing-module-pom))
-                                     (project-name (if invoker-test enclosing-artifact-id artifact-id))
-                                     (classname (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))
-                                     (method-name (idee-java-method-name-at-point)))
+  (let* ((classname (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))
+         (method-name (idee-java-method-name-at-point)))
     (if method-name
         (idee-maven-exec :goals (format "test -Dtest=%s#%s" classname method-name) :build-scope 'module)
       (idee-maven-exec :goals (format "test -Dtest=%s" classname) :build-scope 'module))))
@@ -402,65 +364,21 @@
 (defun idee-maven-surefire-debug-file-method ()
   "Debug the current maven file method."
   (interactive)
-  (let* ((module-dir (idee-maven-module-root-dir))
-                                     (module-pom (concat module-dir pom-xml))
-                                     (invoker-test (idee-maven-invoker-test-dir-p module-dir))
-                                     (enclosuing-module-dir (idee-maven-enclosing-module-root-dir))
-                                     (enclosuing-module-pom (concat enclosuing-module-dir pom-xml))
-                                     (artifact-id (idee-maven-pom-artifact-id module-pom))
-                                     (enclosing-artifact-id (idee-maven-pom-artifact-id enclosuing-module-pom))
-                                     (project-name (if invoker-test enclosing-artifact-id artifact-id))
-                                     (classname (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))
-                                     (method-name (idee-java-method-name-at-point)))
+  (let* ((classname (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))
+         (method-name (idee-java-method-name-at-point)))
     (if method-name
         (idee-maven-exec :goals (format "test -Dtest=%s#%s" classname method-name) :surefire-debug t :build-scope 'module)
       (idee-maven-exec :goals (format "test -Dtest=%s" classname) :build-scope 'module))))
 
-(defun idee-maven-surefire-debug-file ()
-  "Debug the current maven file."
-  (interactive)
-  (let* ((module-dir (idee-maven-module-root-dir))
-                                     (module-pom (concat module-dir pom-xml))
-                                     (invoker-test (idee-maven-invoker-test-dir-p module-dir))
-                                     (enclosuing-module-dir (idee-maven-enclosing-module-root-dir))
-                                     (enclosuing-module-pom (concat enclosuing-module-dir pom-xml))
-                                     (artifact-id (idee-maven-pom-artifact-id module-pom))
-                                     (enclosing-artifact-id (idee-maven-pom-artifact-id enclosuing-module-pom))
-                                     (project-name (if invoker-test enclosing-artifact-id artifact-id))
-                                     (file-name (buffer-file-name (current-buffer)))
-                                     (classname (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))
-                                     (method-name (idee-java-method-name-at-point)))
-    (-> (list :type "java"
-              :request "attach"
-              :hostName "localhost"
-              :port 5005
-              :projectName project-name
-              :wait-for-port t)
-        (append (list :program-to-start (idee-maven-cmd :goals
-                                                        (if method-name
-                                                            (format "test -Dtest=%s#%s" classname method-name)
-                                                          (format "test -Dtest=%s" classname))
-                                                        :surefire-debug t :build-scope 'module :goto-project-root t)))
-        dap-debug)))
-
-
 (defun idee-maven-failsafe-test-file ()
   "Test with failsafe the current file."
   (interactive)
-  (let* ((module-dir (idee-maven-module-root-dir))
-                                     (module-pom (concat module-dir pom-xml))
-                                     (invoker-test (idee-maven-invoker-test-dir-p module-dir))
-                                     (enclosuing-module-dir (idee-maven-enclosing-module-root-dir))
-                                     (enclosuing-module-pom (concat enclosuing-module-dir pom-xml))
-                                     (artifact-id (idee-maven-pom-artifact-id module-pom))
-                                     (enclosing-artifact-id (idee-maven-pom-artifact-id enclosuing-module-pom))
-                                     (project-name (if invoker-test enclosing-artifact-id artifact-id))
-                                     (classname (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))
-                                     (method-name (idee-java-method-name-at-point)))
+  (let* ((classname (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))
+         (method-name (idee-java-method-name-at-point)))
     (idee-maven-exec :goals (if method-name
                                 (format "verify -Dit.test=%s#%s" classname method-name)
-                                (format "verify -Dit.test=%s" classname))
-                              :build-scope 'module)))
+                              (format "verify -Dit.test=%s" classname))
+                     :build-scope 'module)))
 
 (defun idee-maven-failsafe-debug-file ()
   "Debug with failsafe the current file."
@@ -492,16 +410,8 @@
 (defun idee-maven-failsafe-test-file-method ()
   "Test with failsafe the current file."
   (interactive)
-  (let* ((module-dir (idee-maven-module-root-dir))
-                                     (module-pom (concat module-dir pom-xml))
-                                     (invoker-test (idee-maven-invoker-test-dir-p module-dir))
-                                     (enclosuing-module-dir (idee-maven-enclosing-module-root-dir))
-                                     (enclosuing-module-pom (concat enclosuing-module-dir pom-xml))
-                                     (artifact-id (idee-maven-pom-artifact-id module-pom))
-                                     (enclosing-artifact-id (idee-maven-pom-artifact-id enclosuing-module-pom))
-                                     (project-name (if invoker-test enclosing-artifact-id artifact-id))
-                                     (classname (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))))
-  (idee-maven-exec :goals (format "verify -Dit.test=%s" classname) :build-scope 'module)))
+  (let* ((classname (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))))
+    (idee-maven-exec :goals (format "verify -Dit.test=%s" classname) :build-scope 'module)))
 
 (defun idee-maven-failsafe-debug-file-method ()
   "Debug with failsafe the current file."
@@ -755,7 +665,7 @@ or empty string other wise."
   "Create a new maven from archetype project.
 The command supports accepting an external CREATE-FUNCTION or defaults to idee-create-project-with-shell."
   (interactive)
-  (let* ((group-id (read-string "Group Id:") idee-maven-init-group-id)
+  (let* ((group-id (read-string "Group Id:" idee-maven-init-group-id))
          (artifact-id (read-string "Artifact Id:"))
          (version (read-string "Version:" "0.1-SNAPSHOT"))
          (target-dir (idee--select-new-project-dir))

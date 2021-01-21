@@ -1,4 +1,4 @@
-;;; idee-clojure.el --- Clojure IDE settings
+;;; idee-clojure.el --- Clojure IDE settings  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018 Ioannis Canellos
 
@@ -18,7 +18,7 @@
 
 ;; Version: 0.0.1
 
-;; Package-Requires: ((emacs "25.1"))
+;; Package-Requires: ((emacs "25.1") (cider "0.26.1"))
 
 ;;; Commentary:
 
@@ -27,7 +27,12 @@
 (require 'projectile)
 (require 'cider)
 
+(require 'idee-templates)
 (require 'idee-vars)
+(require 'idee-views)
+(require 'idee-visitors)
+
+(defconst clojure-comment-style (make-idee-comment-style :line-prefix ";;"))
 
 (defun idee-clojure-enable()
   "Enable clojure bindings."
@@ -52,11 +57,11 @@
         (switch-to-buffer repl-buffer)
       (idee-clojure-jack-in-and-switch))))
 
-(defun idee-clojre-jack-in-and-switch ()
+(defun idee-clojure-jack-in-and-switch ()
   "Jack in cider REPL and switch to the current projects REPL buffer."
   (interactive)
   (add-hook 'cider-connected-hook 'idee-clojure--cider-on-connected)
-  (cider-jack-in))
+  (cider-jack-in nil))
 
 (defun idee-clojure--cider-on-connected()
   (remove-hook 'cider-connected-hook 'idee-cider-on-connected)
@@ -66,9 +71,10 @@
 
 (defun idee-clojure-run-project ()
   (async-shell-command "lein run"))
+
 (defun idee-visitor-clojure (root)
   (when (seq-filter (lambda (x) (equal "project.clj" x)) (directory-files root))
-    (clojure-ide))) 
+    (idee-clojure-enable))) 
 
 (defun idee--clojure-init ()
   (add-hook 'clojure-mode-hook 'idee-clojure-enable)

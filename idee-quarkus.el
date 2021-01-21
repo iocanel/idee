@@ -197,38 +197,10 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
 ;;
 ;; Utils
 ;;
+
 (defun idee-quarkus-extension-qualified-name (extension)
   "Return the qualified name of the EXTENSION."
   (format "io.quarkus:quarkus-%s" extension))
-
-;;
-;; Output filters
-;;
-(defun idee-quarkus-highlight-time ()
-  "Highlight time."
-  (idee-quarkus-highlight-time-on-region eshell-last-output-start
-                                         eshell-last-output-end))
-
-(defconst idee-time-regexp "[0-9]+([\.][0-9]+)?m?s")
-
-(defun idee-quarkus-highlight-time-on-region (start end)
-  "Highlight time in region between START and END."
-  (let ((start-marker (copy-marker start))
-        (end-marker (copy-marker end)))
-    (save-excursion
-      (goto-char start-marker)
-      (while (re-search-forward idee-time-regexp end-marker t))
-        (message (buffer-substring (match-beginning 0) (match-end 0))))))
-
-; TODO: Implement filter correctly
-;(add-to-list 'eshell-output-filter-functions 'idee-quarkus-highlight-time)
-
-(idee-leader/set-key "q a" idee-quarkus-add-extension)
-(idee-leader/set-key "q b" idee-quarkus-build)
-(idee-leader/set-key "q d" idee-quarkus-dev)
-(idee-leader/set-key "q r" idee-quarkus-remote-dev)
-(idee-leader/set-key "q n" idee-quarkus-native-build)
-
 
 ;;; Project Visitor
 (defun idee-quarkus-project-p (root)

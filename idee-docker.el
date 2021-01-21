@@ -10,6 +10,7 @@
 ;;; Commentary:
 
 ;;; Code:
+(require 'idee-visitors)
 (require 'dockerfile-mode)
 (require 'projectile)
 

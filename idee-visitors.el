@@ -1,4 +1,4 @@
-;;; idee-visitors.el --- Visitors
+;;; idee-visitors.el --- Visitors -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018 Ioannis Canellos
 
@@ -32,9 +32,8 @@
 (defun idee-project-visit()
   "Call all registered visitors."
   (interactive)
-  (let (v)
-    (dolist (v idee-project-visitors)
-      (funcall v default-directory))))
+  (dolist (v idee-project-visitors)
+    (funcall v default-directory)))
 
 ;;;###autoload
 (defun idee--visitor-init ()

@@ -1,4 +1,4 @@
-;;; idee-actions.el --- IDE actions
+;;; idee-actions.el --- IDE actions  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018 Ioannis Canellos
 
@@ -20,9 +20,17 @@
 
 ;;; Code:
 
-(require 'helm-ag)
 (require 'idee-vars)
+(require 'idee-navigation)
 
+;;
+;; Optional
+;;
+(require 'helm-ag nil t)
+(require 'cc-vars nil t)
+(require 'evil-vars nil t)
+
+;; 
 ;;Project
 ;;;###autoload
 (defun idee-open()
@@ -140,13 +148,7 @@
 (defun idee-grep()
   "Grep."
   (interactive)
-  (let (b (buffer-name (window-buffer)))
-    (helm-do-ag (projectile-project-root))
-    (other-window 1)
-    (while (and
-            (not (equal "*grep*" (buffer-name (window-buffer))))
-            (not (equal b (buffer-name (window-buffer)))))
-      (other-window 1))))
+  (funcall  (alist-get 'idee-grep-function idee-function-alist)))
 
 ;;;###autoload
 (defun idee-find-file()
@@ -209,21 +211,22 @@
 ;;;###autoload
 (defun idee-global-set-tab-width-function (width)
   "Set the tab WIDTH."
-  (setq standard-indent width
-        tab-width width
-        evil-shift-width width
-        c-basic-offset width))
+  (when (and (require 'cc-vars nil t) (require 'evil-vars nil t))
+    (setq standard-indent width
+          tab-width width
+          evil-shift-width width
+          c-basic-offset width)))
 
 ;;;###autoload
 (defun idee-toggle-use-tabs ()
-    "Toggle between tabs and spaces."
+  "Toggle between tabs and spaces."
   (interactive)
-  (if idee-use-tabs
-      (setq idee-use-tabs nil
-            evil-indent-convert-tabs t)
-    (setq idee-use-tabs t
-          evil-indent-convert-tabs nil))
+  (when (require 'evil-vars nil t)
+    (if idee-use-tabs
+        (setq evil-indent-convert-tabs t)
+      (setq evil-indent-convert-tabs nil)))
 
+  (if idee-use-tabs (setq idee-use-tabs nil) (setq idee-use-tabs t))
   (setq indent-tabs-mode idee-use-tabs)
   (if idee-use-tabs
       (message "Use tabs: enabled.")
@@ -231,8 +234,9 @@
 
 ;;;###autoload
 (defun idee-execute-code-actions ()
-  (let ((action) (list (lsp--select-action (lsp-code-actions-at-point))))
-    (lsp-execute-code-action action)))
+  "Execute code actions."
+  (interactive)
+  (funcall  (alist-get 'idee-execute-code-actions-function idee-function-alist)))
 
 (provide 'idee-actions)
 ;;; idee-actions.el ends here

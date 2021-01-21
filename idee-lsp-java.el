@@ -1,4 +1,4 @@
-;;; idee-lsp-java.el --- LSP Java
+;;; idee-lsp-java.el --- LSP and Java support for IDEE -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018 Ioannis Canellos
 ;;     
@@ -83,7 +83,7 @@
 ;;;###autoload
 (defun idee-lsp-java-switch-workspace (w)
   "Switch to workspace W."
-    (setq lsp-java-workspace-dir workspace)
+    (setq lsp-java-workspace-dir w)
     (setq lsp-java-workspace-cache-dir (f-join lsp-java-workspace-dir ".cache")))
 
 ;;;###autoload

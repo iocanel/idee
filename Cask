@@ -40,9 +40,9 @@
 (depends-on "dockerfile-mode")
 
 ; Eshell
-(depends-on "async-await")
 (depends-on "queue")
 (depends-on "demo-it")
+(depends-on "counsel")
 
  ; Golang
  (depends-on "go-mode")
@@ -50,6 +50,9 @@
  
  ; Java
  (depends-on "lsp-java")
+
+ ; Jshell
+ (depends-on "polymode")
 
  ; Javascript
  (depends-on "tide")
@@ -59,8 +62,6 @@
  (depends-on "anaconda-mode")
 
 
- 
- (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")
  (depends-on "el-mock"))

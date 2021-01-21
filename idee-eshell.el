@@ -20,12 +20,14 @@
 
 ;;; Code:
 
-(require 's)
-(require 'f)
 (require 'queue)
 (require 'eshell)
+(require 'esh-mode)
+(require 'em-alias)
+(require 'em-hist)
 (require 'demo-it)
 (require 'projectile)
+
 
 (defvar idee-eshell-command-queue (queue-create))
 (defvar idee-eshell-command-inserting nil)
@@ -99,13 +101,13 @@
 (defun idee-eshell-project-command-execute (command &optional new-shell)
   "Run a single COMMAND in the current project shell.
    When NEW-SHELL is specified the old eshell project buffer is killed."
-  (let ((buffer-name (format "*eshell %s*" (projectile-project-name)))
-        (eshell-scroll-to-bottom-on-input t)
-        (comint-scroll-to-bottom-on-output t))
-    (when new-shell (kill-buffer buffer-name))
+  (let* ((name (format "*eshell %s*" (projectile-project-name)))
+         (buf (get-buffer name))
+         (eshell-scroll-to-bottom-on-input t)
+         (comint-scroll-to-bottom-on-output t))
+    (when (and buf new-shell) (kill-buffer buf))
     (idee-switch-cli-on)
-    (with-current-buffer buffer-name
-        (setf eshell-copy-old-input nil)
+    (with-current-buffer name
         (eshell-return-to-prompt)
         (eshell-wait-for-process)
         (idee-eshell-insert command)
@@ -119,7 +121,7 @@
     (let ((comint-scroll-to-bottom-on-output t)
           (eshell-scroll-to-bottom-on-input t))
       (dolist (cmd (if (listp commands) commands (list commands)))
-        (when (not (s-blank? cmd)) (queue-enqueue idee-eshell-command-queue cmd)))
+        (when (not (idee-string-blank cmd)) (queue-enqueue idee-eshell-command-queue cmd)))
       (when (not idee-eshell-command-running) (idee-eshell-execute-next-command)))))
 
 
@@ -173,8 +175,8 @@
 (defun idee-eshell-open (file)
   "Edit the the specified FILE."
   (let* ((is-directory (file-directory-p file))
-        (path (expand-file-name file))
-        (git (f-join path ".git")))
+         (path (expand-file-name file))
+         (git (concat (file-name-as-directory path) ".git")))
     (if is-directory
         (progn
           (setq default-directory path)
@@ -201,25 +203,6 @@
               8080)))
       8080)))
 
-(defun idee-error-filter (list)
-  "Stip dublicates from the list.
-   Credits: https://stackoverflow.com/questions/3815467/stripping-duplicate-elements-in-a-list-of-strings-in-elisp."
-  (let ((new-list nil))
-    (while list
-      (let  ((current (car list)))
-        (when (and current
-                   (not (member current new-list))
-                   (string-match-p (regexp-quote "ERROR") current))
-          (setq new-list (cons current new-list))))
-        (setq list (cdr list)))
-    (nreverse new-list)))
-
-(defun idee-shell-show-errors ()
-  (interactive)
-  "Show the compilation errors as they appear on the shell."
-  (idee-with-project-shell
-      (counsel-compilation-errors)))
-(advice-add 'counsel-compilation-errors-cands :filter-return #'error-filter)
 
 (provide 'idee-eshell)
 ;;; idee-eshell.el ends here

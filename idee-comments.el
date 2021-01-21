@@ -24,6 +24,8 @@
 ;;; Code:
 
 (require 'idee-vars)
+(require 'idee-utils)
+
 ;;
 ;; Functions
 ;;
@@ -76,8 +78,7 @@
                     (message "no comment detected at point.")))))
         (progn
           (if (not (equal 1 (line-number-at-pos)))
-              (while (idee--line-above-commented-or-empty-p) (forward-line -1))
-            )
+              (while (idee--line-above-commented-or-empty-p) (forward-line -1)))
           (while (idee--line-commented-p) (kill-whole-line)))))))
 
 (defun idee--line-commented-p ()
@@ -88,9 +89,8 @@
            ;;(line (thing-at-point 'line t))
            (begin (idee--point-beginning-of-line))
            (end (idee--point-end-of-line))
-           (line (buffer-substring begin end))
-           )
-      (cl-search prefix line)))
+           (line (buffer-substring begin end)))
+      (string-match (format "^[[:space:]]*%s" prefix) line)))
 
 (defun idee--line-empty-p ()
   "Check if current line is empty."

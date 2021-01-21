@@ -1,4 +1,4 @@
-;;; idee-views.el --- Views
+;;; idee-views.el --- Views -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018 Ioannis Canellos
 
@@ -21,10 +21,14 @@
 ;;; Code:
 
 (require 'idee-vars)
+(require 'idee-actions)
 
 (require 'magit)
 (require 'treemacs-projectile)
 (require 'treemacs)
+
+(require 'helm-projectile nil t)
+
 ;;
 ;; State
 ;;
@@ -99,12 +103,12 @@
           idee-xref-active nil
           idee-eww-active nil
           idee-side-by-side-active nil))
+
 ;;;###autoload
 (defun idee-project-open-view(&optional path)
   "Switch to a traditional IDE view for the buffer.  (project tree, main buffer & terminal)."
  (interactive)
-  (let* ((path (or path (or (projectile-project-root) default-directory)))
-         (name (or (projectile-project-name)  (file-name-nondirectory (directory-file-name path)))))
+  (let* ((path (or path (or (projectile-project-root) default-directory))))
     (dolist (b idee-bottom-area-switch-list)
       (set b nil))
     (dired path)
@@ -205,26 +209,25 @@
 
 ;;;###autoload
 (defun idee-helm-ag-subview ()
-  (require 'helm-projectile)
-  (require 'helm-ag)
-  (cond
-   ((get-buffer "*helm-ag-edit*") (progn
+  (when (and (require 'helm-projectile nil t) (require 'helm-ag nil t))
+    (cond
+     ((get-buffer "*helm-ag-edit*") (progn
                                     (split-window-below)
                                     (other-window 1)
                                     (switch-to-buffer "*helm-ag-edit*")))
-   ((get-buffer "*helm-ag*") (progn
+     ((get-buffer "*helm-ag*") (progn
                                     (split-window-below)
                                     (other-window 1)
                                     (switch-to-buffer "*helm-ag*")))
-   (t (progn
+     (t (progn
         (helm-projectile-ag)
         (idee-jump-to-non-ide-window)
         (delete-other-windows)
         (split-window-below)
         (other-window 1)
         (switch-to-buffer "*helm-ag*"))))
-  (minimize-window)
-  (evil-window-set-height 12))
+    (minimize-window)
+    (evil-window-set-height 12)))
 
 ;;;###autoload
 (defun idee-xref-subview ()
@@ -256,7 +259,7 @@
                   (switch-to-buffer tmp-buffer) 
                   (idee-find-file)
                   (let* ((name (buffer-name (current-buffer)))
-                         (actual-name (if (idee-starts-with "*side " name) (substring name 6 (length name - 7)) name))
+                         (actual-name (if (idee-starts-with "*side " name) (substring name 6 (- (length name)  7)) name))
                          (side-name (format "*side %s*" actual-name)))
                     (rename-buffer side-name)
                     (setq idee-side-by-side-buffer side-name))
@@ -307,7 +310,7 @@ VISITED is an optional list with windows already visited."
      ((not (and ide-buffer current-buffer-selected)) t)
      ((member name visited) nil)
      (t (progn (other-window 1)
-               (idee-jump-to-non-ide-window (add-to-list 'visited name)))))))
+               (idee-jump-to-non-ide-window (push name visited)))))))
 
 (defun idee-update-tree-state()
   "Update the state of the tree switch (in case the winodw has been externally closed)."
@@ -370,11 +373,10 @@ VISITED is an optional list with windows already visited."
 ;;;###autoload
 (defun idee-projectile-run-eshell ()
   "Invoke `eshell' in the project's root.
-
-Switch to the project specific eshell buffer if it already exists."
+   Switch to the project specific eshell buffer if it already exists."
   (interactive)
   (projectile-with-default-dir (projectile-ensure-project (projectile-project-root))
-    (let ((eshell-buffer-name (concat "*eshell " (projectile-project-name) "*")))
+    (let ((eshell-buffer-name (format "*eshell %s*" (projectile-project-name))))
       (when (not (idee-cli-visible-p))
         (if (not (string-prefix-p "*eshell" (buffer-name)))
             ;; If running inside doom use +eshell/here.

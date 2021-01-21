@@ -25,6 +25,37 @@
 (require 'ido)
 (require 'projectile)
 (require 'idee-vars)
+(require 'idee-views)
+(require 'idee-eshell)
+
+(defun idee-new-project-function()
+  "Create a new project."
+  (interactive)
+  (let ((factory (idee--select-project-factory)))
+    (funcall (idee-project-factory-func factory))
+    ;; Make sure we are pointing to a non ide buffer.
+    (idee-jump-to-non-ide-window)))
+
+(defun idee-new-module-function()
+  "Create a new module."
+  (interactive)
+  (let ((factory (idee--select-project-factory)))
+    (funcall (idee-project-factory-func factory) 'idee-create-module-with-shell)
+    ;; Make sure we are pointing to a non ide buffer.
+    (idee-jump-to-non-ide-window)))
+
+(defun idee-project-grep()
+  "Grep."
+  (interactive)
+  (when (require 'helm-ag nil t)
+    (let ((buf (buffer-name (window-buffer))))
+      (helm-do-ag (projectile-project-root))
+      (other-window 1)
+      (while (and
+              (not (equal "*grep*" (buffer-name (window-buffer))))
+              (not (equal buf (buffer-name (window-buffer)))))
+        (other-window 1)))))
+
 
 ;;;###autoload (autoload 'idee-register-project-factory "idee-projects")
 (defmacro idee-register-project-factory (project-factory)
@@ -51,22 +82,6 @@
       t
     nil))
 
-
-(defun idee-new-project-function()
-  "Create a new project."
-  (interactive)
-  (let ((factory (idee--select-project-factory)))
-    (funcall (idee-project-factory-func factory))
-    ;; Make sure we are pointing to a non ide buffer.
-    (idee-jump-to-non-ide-window)))
-
-(defun idee-new-module-function()
-  "Create a new module."
-  (interactive)
-  (let ((factory (idee--select-project-factory)))
-    (funcall (idee-project-factory-func factory) 'idee-create-module-with-shell)
-    ;; Make sure we are pointing to a non ide buffer.
-    (idee-jump-to-non-ide-window)))
 
 (defun idee--select-new-project-dir()
  "Select a new project directory."

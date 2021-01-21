@@ -22,7 +22,7 @@
 
 (require 'idee-projects)
 (require 'idee-vars)
-(require 'idee-projects)
+(require 'idee-comments)
 (require 'idee-vars)
 
 ;;

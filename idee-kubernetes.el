@@ -27,7 +27,6 @@
 
 ;;; Code:
 
-(require 'eshell)
 (require 'idee-eshell)
 
 (defcustom idee-kubernetes-kubectl-binary "kubectl" "The kubectl binary to use (e.g kubectl. oc microk8s.kubectl)." :group 'idee-kubernetes :type 'string)

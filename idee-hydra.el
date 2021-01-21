@@ -21,6 +21,9 @@
 ;; Code:
 
 (require 'idee-vars)
+(require 'idee-headers)
+(require 'idee-actions)
+(require 'idee-navigation)
 
 (require 'hydra)
 (require 'company-yasnippet)

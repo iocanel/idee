@@ -14,18 +14,13 @@
 ;;See the License for the specific language governing permissions and
 ;;limitations under the License.
 
-;; Author: Ioannis Canellos
-
-;; Version: 0.0.1
-
-;; Package-Requires: ((emacs "25.1"))
-
 ;;; Commentary:
 
 ;;; Code:
 
 (require 'yasnippet)
 (require 'idee-headers)
+(require 'warnings)
 
 (defvar idee-source-dir nil)
 
@@ -86,11 +81,11 @@
          (extension (file-name-extension (buffer-file-name path)))
          (mode (cdr (assoc extension idee-type-modes-alist)))
          (mode-path (file-name-as-directory (concat (file-name-as-directory idee-emacs-templates-dir) mode)))
-         (filetypes (remove-if (lambda (f) (string-prefix-p "." f)) (directory-files mode-path)))
+         (filetypes (seq-filter (lambda (f) (not (string-prefix-p "." f))) (directory-files mode-path)))
          (definitions (mapcar (lambda (f) (idee-templates-parse-file (concat mode-path f))) filetypes))
          (names (mapcar (lambda (d) (idee-snippet-name d)) definitions))
          (name (projectile-completing-read "Select type:" names))
-         (matches (remove-if-not (lambda (d) (equal name (idee-snippet-name d))) definitions))
+         (matches (seq-filter (lambda (d) (equal name (idee-snippet-name d))) definitions))
          (key (car (mapcar 'idee-snippet-key matches))))
 
     (with-silent-modifications (write-file (buffer-file-name path)))
@@ -131,6 +126,8 @@
 ;;;###autoload
 (defun idee--templates-init ()
   "Initialize idee templates."
+
+  (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
   (when (not (file-exists-p idee-resources-dir)) (mkdir idee-resources-dir t))
 
   (run-with-idle-timer 1 nil (lambda ()
