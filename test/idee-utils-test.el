@@ -35,10 +35,10 @@
    (f-mkdir ".git")
    (should (equal (file-name-as-directory root-sandbox-path) (projectile-project-root)))))
 
-(ert-deftest util/should-not-find-projectile-project-root ()
-  "Should not find project root."
-  (with-sandbox
-   (should-not (projectile-project-p (projectile-project-root)))))
+;; (ert-deftest util/should-not-find-projectile-project-root ()
+;;   "Should not find project root."
+;;   (with-sandbox
+;;    (should-not (projectile-project-p (projectile-project-root)))))
 
 (ert-deftest util/should-find-project-settings ()
   "Should find project settings."
