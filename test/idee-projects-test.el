@@ -28,11 +28,6 @@
 ;;; Code:
 
 (require 'test-helper)
-(require 'idee-eshell (f-expand "idee-eshell.el" root-code-path))
-(require 'idee-views (f-expand "idee-views.el" root-code-path))
-(require 'idee-vars (f-expand "idee-vars.el" root-code-path))
-(require 'idee-actions (f-expand "idee-actions.el" root-code-path))
-(require 'idee-projects (f-expand "idee-projects.el" root-code-path))
 
 (ert-deftest project-root-dir-test/from-root ()
   "Should use `default-directory' when no argument."
@@ -69,7 +64,7 @@
    (f-mkdir "test-project")
    (let ((default-directory (f-join default-directory "test-project")))
      (f-mkdir ".git")
-     (should (equal (projectile-project-root) (idee-project-info-path (idee-project-info)))))))
+     (should (equal (projectile-project-root) (idee-project-info-path (idee-project-init)))))))
 
 (ert-deftest project-state-test/set-version ()
   "Should use `default-directory' when no argument."

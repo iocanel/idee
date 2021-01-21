@@ -27,14 +27,6 @@
 
 ;;; Code:
 (require 'test-helper)
-(require 'idee-vars (f-expand "idee-vars.el" root-code-path))
-(require 'idee-utils (f-expand "idee-utils.el" root-code-path))
-(require 'idee-comments (f-expand "idee-comments.el" root-code-path))
-(require 'idee-headers (f-expand "idee-headers.el" root-code-path))
-(require 'idee-visitors (f-expand "idee-visitors.el" root-code-path))
-(require 'idee-templates (f-expand "idee-templates.el" root-code-path))
-(require 'idee-java (f-expand "idee-java.el" root-code-path))
-
 
 (idee-java-enable)
 

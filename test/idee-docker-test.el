@@ -28,11 +28,6 @@
 ;;; Code:
 
 (require 'test-helper)
-(require 'idee-views (f-expand "idee-views.el" root-code-path))
-(require 'idee-vars (f-expand "idee-vars.el" root-code-path))
-(require 'idee-actions (f-expand "idee-actions.el" root-code-path))
-(require 'idee-projects (f-expand "idee-projects.el" root-code-path))
-(require 'idee-docker (f-expand "idee-docker.el" root-code-path))
 
 
 (ert-deftest dockerfile/test-exposed-ports()

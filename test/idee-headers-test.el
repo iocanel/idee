@@ -27,11 +27,6 @@
 
 ;;; Code:
 (require 'test-helper)
-(require 'idee-utils (f-expand "idee-utils.el" root-code-path))
-(require 'idee-vars (f-expand "idee-vars.el" root-code-path))
-(require 'idee-projects (f-expand "idee-projects.el" root-code-path))
-(require 'idee-comments (f-expand "idee-comments.el" root-code-path))
-(require 'idee-headers (f-expand "idee-headers.el" root-code-path))
 
 (ert-deftest headers/read-from-root ()
   "Should read the header when in root."

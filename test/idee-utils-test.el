@@ -28,8 +28,6 @@
 ;;; Code:
 
 (require 'test-helper)
-(require 'idee-vars (f-expand "idee-vars.el" root-code-path))
-(require 'idee-utils (f-expand "idee-utils.el" root-code-path))
 
 (ert-deftest util/should-find-projectile-project-root ()
   "Should find project root."

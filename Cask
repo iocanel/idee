@@ -64,4 +64,5 @@
 
  (depends-on "ecukes")
  (depends-on "ert-runner")
+ (depends-on "f")
  (depends-on "el-mock"))

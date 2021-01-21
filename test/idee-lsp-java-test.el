@@ -18,8 +18,6 @@
 ;;; Code:
 
 (require 'test-helper)
-(require 'idee-vars (f-expand "idee-vars.el" root-code-path))
-(require 'idee-lsp-java (f-expand "idee-lsp-java.el" root-code-path))
 
 (ert-deftest idee-java-lsp-project-root/maven-test ()
   "Should recognize maven project."
