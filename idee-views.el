@@ -378,12 +378,11 @@ VISITED is an optional list with windows already visited."
   (interactive)
   (projectile-with-default-dir (projectile-ensure-project (projectile-project-root))
     (let ((eshell-buffer-name (format "*eshell %s*" (projectile-project-name))))
-      (when (not (idee-cli-visible-p))
-        (if (not (string-prefix-p "*eshell" (buffer-name)))
-            ;; If running inside doom use +eshell/here.
-            (if (fboundp '+eshell/here)
-                (+eshell/here nil)
-              (eshell)))))))
+      (when (and (not (idee-cli-visible-p)) (not (string-prefix-p "*eshell " (buffer-name))))
+        ;; If running inside doom use +eshell/here.
+        (if (fboundp '+eshell/here)
+            (+eshell/here nil)
+          (eshell))))))
 ;;
 ;; Buffer providers
 ;;
