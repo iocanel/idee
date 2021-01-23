@@ -23,11 +23,14 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'idee-vars)
+
+(require 'idee-evil)
+(require 'idee-headers)
 (require 'idee-projects)
 (require 'idee-templates)
-(require 'idee-evil)
 (require 'idee-utils)
+(require 'idee-vars)
+(require 'idee-views)
 
 (defcustom idee-repo-url "git@github.com:iocanel/idee.git" "The repository url of the idee project." :group 'idee :type 'string)
 

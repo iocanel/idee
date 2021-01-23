@@ -9,6 +9,7 @@
 (package-file "idee-java.el")
 (package-file "idee-python.el")
 (package-file "idee-javascript.el")
+(package-file "idee-counsel.el")
 (files "*.el" "headers" "snippets" "templates")
 
 (development

@@ -24,9 +24,10 @@
 
 (require 'ido)
 (require 'projectile)
+
+(require 'idee-eshell)
 (require 'idee-vars)
 (require 'idee-views)
-(require 'idee-eshell)
 
 (defun idee-new-project-function()
   "Create a new project."
