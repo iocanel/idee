@@ -382,7 +382,9 @@ VISITED is an optional list with windows already visited."
         ;; If running inside doom use +eshell/here.
         (if (fboundp '+eshell/here)
             (+eshell/here nil)
-          (eshell))))))
+          (eshell))
+        ;; In some cases just setting eshell-buffer-name doesn't cut it
+        (rename-buffer eshell-buffer-name)))))
 ;;
 ;; Buffer providers
 ;;
