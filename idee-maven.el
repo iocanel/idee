@@ -593,7 +593,12 @@ or empty string other wise."
   (let* ((module-dir (idee-maven-module-root-dir))
          (module-pom (concat module-dir pom-xml))
          (artifact-id (idee-maven-pom-artifact-id module-pom)))
-    (intern (or artifact-id "unknwon"))))
+    (intern (or artifact-id "unknown"))))
+
+(defun idee-maven--file-name ()
+  (let* ((root-dir (idee-project-root-dir))
+         (file-name (buffer-file-name)))
+    (if file-name file-name "<none>")))
 
 ;;
 ;; Maven Hydra
@@ -618,7 +623,7 @@ or empty string other wise."
                                               ^^^^_ffdm_: debug failsafe test method
   [_q_]: quit
        "
-  ("P" nil (format "%-20S %-22S %s" (idee-maven--project-name) (idee-maven--module-name) (or (file-name-nondirectory (buffer-file-name (get-buffer (current-buffer)))) "")))
+  ("P" nil (format "%-20S %-22S %s" (idee-maven--project-name) (idee-maven--module-name) (idee-maven--file-name)))
   ("po" idee-maven-edit-project-pom-xml)
   ("po" idee-maven-edit-project-pom-xml)
   ("pc" idee-maven-clean-project)
