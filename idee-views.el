@@ -380,12 +380,11 @@ VISITED is an optional list with windows already visited."
     (let ((eshell-buffer-name (format "*eshell %s*" (projectile-project-name)))
           (buf (get-buffer eshell-buffer-name)))
       (when (and (not (idee-cli-visible-p)) (not (string-prefix-p "*eshell " (buffer-name))))
-        ;; If running inside doom use +eshell/here.
         (cond (buf (switch-to-buffer buf))
-              ((fboundp '+eshell/here) (+eshell/here))
+              ((fboundp '+eshell/here) (+eshell/here)) ;; If running inside doom use +eshell/here.
               (:else (eshell)))
         ;; In some cases just setting eshell-buffer-name doesn't cut it
-        (when (not (eq (buffer-file-name) eshell-buffer-name)) (rename-buffer eshell-buffer-name))))))
+        (when (not (equal (buffer-file-name) eshell-buffer-name)) (rename-buffer eshell-buffer-name))))))
 ;;
 ;; Buffer providers
 ;;
