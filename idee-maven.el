@@ -106,8 +106,11 @@
         (insert-file-contents pom)
         (let* ((xml (libxml-parse-xml-region (point-min) (point-max)))
                (p (assoc 'project xml))
-               (project (if p p (cdr xml))))
-          (car (cdr (cdr (assoc 'version project))))))
+               (project (if p p (cdr xml)))
+               (parent (assoc 'parent project))
+               (parent-version (car (cdr (cdr (assoc 'version parent)))))
+               (version (car (cdr (cdr (assoc 'version project))))))
+          (or version parent-version)))
     nil))
 
 (defun idee-maven-edit-project-pom-xml ()
@@ -580,6 +583,28 @@ or empty string other wise."
   "List all available profiles"
   (split-string (shell-command-to-string (format "cd %s && mvn help:all-profiles | grep \"Profile Id:\" | cut -d\" \" -f5 | sort | uniq" (idee-project-root-dir))) "\n" ))
 
+(defun idee-maven-version-set ()
+  (interactive)
+  "Set the version to project."
+  (let* ((module-dir (idee-maven-module-root-dir))
+                                     (module-pom (concat module-dir pom-xml))
+                                     (artifact-id (idee-maven-pom-artifact-id module-pom))
+                                     (version (idee-maven-pom-version module-pom))
+                                     (version-parts (if version (split-string version "\\.") '("1" "0" "0")))
+                                     (major (string-to-number (replace-regexp-in-string "[^0-9]*" "" (or (nth 0 version-parts) "1"))))
+                                     (minor (string-to-number (replace-regexp-in-string "[^0-9]*" "" (or (nth 1 version-parts) "0"))))
+                                     (micro (string-to-number (replace-regexp-in-string "[^0-9]*" "" (or (nth 2 version-parts) "0"))))
+                                     (candidates `(,(format "%s.%s-SNAPSHOT" major minor)
+                                                   ,(format "%s.%s-SNAPSHOT" major (+ 1 minor))
+                                                   ,(format "%s.%s-SNAPSHOT" (+ major 1) 0)
+                                                   ,(format "%s.%s.%s" major minor (+ micro 1))
+                                                   ,(format "%s.%s.%s" major (+ minor 1) 0)
+                                                   ,(format "%s.%s.%s" (+ major 1) 0 0)))
+                                     (new-version (completing-read "Version:" candidates nil nil)))
+    (message "detected version:%s" version)
+    (goals (format "versions:set -DnewVersion=%s" new-version))
+    (idee-maven-exec :goals goals)))
+
 ;; Hydra helpers
 (defun idee-maven--selected-profiles ()
   "List all selected profiles"
@@ -597,7 +622,7 @@ or empty string other wise."
 
 (defun idee-maven--file-name ()
   (let* ((root-dir (idee-project-root-dir))
-         (file-name (buffer-file-name)))
+         (file-name (file-name-nondirectory (buffer-file-name))))
     (if file-name file-name "<none>")))
 
 ;;
@@ -612,7 +637,7 @@ or empty string other wise."
     --------------------------------------------------------------------------------------------------------------------------------------   
     _pc_: clean            _mc_: clean              _fr_: run                          _h_: from history            _to_: ?to? offline 
     _pp_: package          _mp_: package          _fstc_: surefire test                _s_: from project settings   _tt_: ?tt? skip tests
-    _pi_: install          _mi_: install          _fftc_: failsafe test                                           ^^_te_: ?te? errors 
+    _pi_: install          _mi_: install          _fftc_: failsafe test                _v_: version set             _te_: ?te? errors 
     _po_: edit pom         _mo_: edit pom         _fstm_: surefire test method                                    ^^_tp_: profiles %(idee-maven--selected-profiles)   
                         ^^_mrf_: resume from      _fftm_: failsafe test method
                         ^^_mai_: also install
@@ -663,6 +688,7 @@ or empty string other wise."
 
   ("h" idee-maven-exec-from-history)
   ("s" idee-maven-exec-from-project-settings)
+  ("v" idee-maven-version-set)
   ("q" nil "quit"))
 
 ;;; Project Factory
