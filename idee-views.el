@@ -377,8 +377,8 @@ VISITED is an optional list with windows already visited."
    Switch to the project specific eshell buffer if it already exists."
   (interactive)
   (projectile-with-default-dir (projectile-ensure-project (projectile-project-root))
-    (let ((eshell-buffer-name (format "*eshell %s*" (projectile-project-name)))
-          (buf (get-buffer eshell-buffer-name)))
+    (let* ((eshell-buffer-name (format "*eshell %s*" (projectile-project-name)))
+           (buf (get-buffer eshell-buffer-name)))
       (when (and (not (idee-cli-visible-p)) (not (string-prefix-p "*eshell " (buffer-name))))
         (cond (buf (switch-to-buffer buf))
               ((fboundp '+eshell/here) (+eshell/here)) ;; If running inside doom use +eshell/here.
