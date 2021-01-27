@@ -16,6 +16,7 @@ ELISP_PACKAGE_FILE = idee-elisp.el
 CLOJURE_PACKAGE_FILE = idee-clojure.el
 GOLANG_PACKAGE_FILE = idee-golang.el
 PYTHON_PACKAGE_FILE = idee-python.el
+COUNSEL_PACKAGE_FILE = idee-counsel.el
 
 VERSION := $(shell EMACS=${EMACS} ${CASK} version)
 TAR     := dist/idee-$(VERSION).tar
@@ -102,12 +103,14 @@ set-package-version :
 	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(CLOJURE_PACKAGE_FILE)" && \
 	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(GOLANG_PACKAGE_FILE)" && \
 	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(PYTHON_PACKAGE_FILE)" && \
+	sed -i.bak "s/^;; Version:[^\n]*/;; Version: $${NEXT}/" "$(COUNSEL_PACKAGE_FILE)" && \
 
 	@rm "$(MAIN_PACKAGE_FILE).bak"
 	@rm "$(ELISP_PACKAGE_FILE).bak"
 	@rm "$(CLOJURE_PACKAGE_FILE).bak"
 	@rm "$(GOLANG_PACKAGE_FILE).bak"
 	@rm "$(PYTHON_PACKAGE_FILE).bak"
+	@rm "$(COUNSEL_PACKAGE_FILE).bak"
 
 git-release :
 	@git add "$(MAIN_PACKAGE_FILE)"
@@ -115,6 +118,7 @@ git-release :
 	@git add "$(CLOJURE_PACKAGE_FILE)"
 	@git add "$(GOLANG_PACKAGE_FILE)"
 	@git add "$(PYTHON_PACKAGE_FILE)"
+	@git add "$(COUNSEL_PACKAGE_FILE)"
 	@export TAG="$$(EMACS=${EMACS} ${CASK} version)"; \
 	git commit --quiet -m "Release $${TAG}" && \
 	git tag "$${TAG}" && \
