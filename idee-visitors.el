@@ -36,7 +36,7 @@
     (funcall v default-directory)))
 
 ;;;###autoload
-(defun idee--visitor-init ()
+(defun idee--visitors-init ()
   (add-to-list 'projectile-after-switch-project-hook 'idee-project-visit))
 
 (provide 'idee-visitors)

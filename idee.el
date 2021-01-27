@@ -30,6 +30,7 @@
 (require 'idee-templates)
 (require 'idee-utils)
 (require 'idee-vars)
+(require 'idee-visitors)
 (require 'idee-views)
 
 (defcustom idee-repo-url "git@github.com:iocanel/idee.git" "The repository url of the idee project." :group 'idee :type 'string)
@@ -47,6 +48,7 @@
   (idee--templates-init)
   (idee--headers-init)
   (idee--views-init)
+  (idee--visitors-init)
   (idee--evil-init))
 
 (provide 'idee)
