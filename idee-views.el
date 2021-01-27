@@ -713,11 +713,27 @@ PIVOT indicates how many windows should be switched at the end of the operation.
    ((idee-kill-xref-and-window) t)
    ((idee-kill-eww-and-window) t)
    (t ad-do-it)))
+
+
+(defadvice pop-to-buffer-same-window (around idee-pop-to-buffer-same-window (buffer &optional norecordd))
+  "Handles things when quiting window."
+  (let* ((name (buffer-name (current-buffer)))
+         (is-side (idee-starts-with name "*side ")))
+    (if is-side
+      (let* ((new-name (cond ((stringp buffer) buffer) ((bufferp buffer) (buffer-name buffer)) (:else nil)))
+             (new-side-name (if new-name  (format "*side %s*" new-name) nil)))
+             ad-do-it
+             (rename-buffer new-side-name)
+             (setq idee-side-by-side-buffer new-side-name)
+             (kill-buffer name))
+      ad-do-it)))
+
 ;;;###autoload
 (defun idee--views-init ()
   "Initialize idee views."
   (ad-activate 'quit-window)
   (ad-activate 'kill-current-buffer)
+  (ad-activate 'pop-to-buffer-same-window)
   (advice-add 'delete-other-windows-internal :around #'idee-on-delete-other-windows-internal)
   (advice-add 'projectile-switch-project-by-name :around #'idee-on-projectile-switch-project-by-name)
 
