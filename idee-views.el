@@ -310,7 +310,8 @@
         (name (string-trim buffer-name)))
   (cond ((provided-mode-derived-p 'prog-mode mode) t)
         ((and (string-prefix-p "*" name)  (string-suffix-p "*" name)) t)
-        (t nil))))
+        ((string-prefix-p "magit:" name) t)
+        (:else nil))))
 
 (defun idee-window-has-current-buffer-p ()
   "Returns non-nil when the current window display the current buffer."
