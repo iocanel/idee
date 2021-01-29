@@ -60,8 +60,11 @@
 (defvar idee-side-by-side-active nil)
 (defvar idee-bottom-buffer-command 'idee-projectile-run-eshell)
 
+
+(defvar idee-selected-window nil "The selected window. This is used to optionally define which window should be selected after refresh.")
 (defvar idee-primary-buffer nil "Primary buffer")
 (defvar idee-side-by-side-buffer nil "Secondary buffer")
+
 (defvar idee-repl-kind nil "The kind of the repl buffer. This is framework/lang specific.")
 (defvar idee-repl-buffer-prefix nil "The prefix of the repl buffer. This is framework/lang specific.")
 (defvar idee-repl-buffer-prompt nil "The prompt of the repl buffer. This is framework/lang specific.")
@@ -361,11 +364,16 @@ VISITED is an optional list with windows already visited."
   (if (and (require 'helm-projectile nil 'noerror) (require 'helm-ag nil 'noerror))
       (idee-toggle-helm-ag)
     (idee-toggle-grep)))
+
 ;;;###autoload
  (defun idee-refresh-view ()
   "Refresh the current view."
   (interactive)
-  (funcall idee-current-view))
+  (let ((current-window (selected-window)))
+    (funcall idee-current-view)
+    (cond ((and idee-selected-window (windowp idee-selected-window)) (select-window idee-selected-window))
+          (:else (select-window current-window)))))
+          
 
 ;;;###autoload
 (defun idee-new-empty-buffer()
