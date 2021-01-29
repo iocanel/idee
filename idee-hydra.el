@@ -144,7 +144,7 @@
    _R_: recent     _W_: ?W? tab width      _>_: forward                                                 ^^^^_m_: ?m? messages
    _S_: save all   _s_: insert snippet     _._: set mark                                               ^^^^ _x_: ?x? xrefs
    _C_: close      _a_: code actions                                                                  ^^^^^^_w_: ?w? eww
-   _B_: build      _H_: apply header (?H?)                                                              
+   _B_: build      _H_: apply header (?H?)                                                        ^^^^^^^^^^_X_: ?X? xwidget webkit   
    _V_: vcs        _h_: select headers 
                                                                                                   ^^^^^^^^^^_0_: ?0? terminal
                                                                                                   ^^^^^^^^^^_1_: ?1? ide
@@ -197,6 +197,7 @@
   ("m" idee-toggle-messages (if (idee-messages-visible-p) "[*]" "[ ]"))
   ("x" idee-toggle-xref (if (idee-xref-visible-p) "[*]" "[ ]"))
   ("w" idee-toggle-eww (if (idee-eww-visible-p) "[*]" "[ ]"))
+  ("X" idee-toggle-xwidget-webkit (if (idee-xwidget-webkit-visible-p) "[*]" "[ ]"))
   ("q" nil "quit"))
 
 

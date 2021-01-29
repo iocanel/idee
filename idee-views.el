@@ -35,7 +35,10 @@
 ;;
 
 (defcustom idee-tree-enabled-default t "Default state of the tree view" :group 'idee-view :type 'boolean)
-(defcustom idee-eww-default-url nil "The url to use when opening the eww subview." :group 'idee-view :type 'boolean)
+(defcustom idee-www-default-url nil "The url to use when opening the eww subview." :group 'idee-view :type 'boolean)
+(defcustom idee-eww-default-width 80 "The default width of the eww window" :group 'idee-view :type 'int)
+(defcustom idee-xwidget-webit-default-width 80 "The default width of the xwidget-webkit window" :group 'idee-view :type 'int)
+
 (defcustom idee-focus-center-buffer t "Flag to specify that the focus buffer needs to be centered." :group 'idee-view :type 'boolean) 
 (defcustom idee-focus-center-buffer-columns 160 "The number of columns of the centered buffer." :group 'idee-view :type 'int) 
 (defvar idee-current-view 'idee-ide-view)
@@ -53,6 +56,7 @@
 (defvar idee-helm-ag-active nil)
 (defvar idee-xref-active nil)
 (defvar idee-eww-active nil)
+(defvar idee-xwidget-webkit-active nil)
 (defvar idee-side-by-side-active nil)
 (defvar idee-bottom-buffer-command 'idee-projectile-run-eshell)
 
@@ -87,7 +91,7 @@
 ;; A list with all component switches that are meant to be placed in the bottom
 (defvar idee-bottom-area-switch-list '(idee-cli-active idee-repl-active idee-diagnostics-active idee-errors-active idee-messages-active idee-grep-active idee-helm-ag-active idee-xref-active))
 
-(defvar idee-right-area-switch-list '(idee-eww-active idee-side-by-side-active))
+(defvar idee-right-area-switch-list '(idee-eww-active idee-xwidget-webkit-active idee-side-by-side-active))
 (setq idee-current-view 'idee-ide-view)
 ;; Functions
 ;;;###autoload
@@ -103,6 +107,7 @@
           idee-helm-ag-active nil
           idee-xref-active nil
           idee-eww-active nil
+          idee-xwidget-webkit-active nil
           idee-side-by-side-active nil))
 
 ;;;###autoload
@@ -147,6 +152,7 @@
         (idee-xref-active (idee-xref-subview)))
   ;; right area
   (cond (idee-eww-active (idee-eww-subview))
+        (idee-xwidget-webkit-active (idee-xwidget-webkit-subview))
         (idee-side-by-side-active (idee-side-by-side-subview))))
 ;;;###autoload
 (defun idee-cli-subview ()
@@ -245,11 +251,24 @@
   (other-window 1)
   (cond ((get-buffer "*eww*") (switch-to-buffer "*eww*"))
         (t (progn
-             (if idee-eww-default-url
-                 (eww idee-eww-default-url)
+             (if idee-www-default-url
+                 (eww idee-www-default-url)
                (eww (format "http://localhost:%s" (idee-eshell-find-web-port))))
              (switch-to-buffer "*eww*"))))
-  (evil-window-set-width 80))
+  (evil-window-set-width idee-eww-default-width))
+
+(defun idee-xwidget-webkit-subview ()
+  (idee-jump-to-non-ide-window)
+  (split-window-right)
+  (other-window 1)
+  (cond ((get-buffer "*xwidget-webkit*") (switch-to-buffer "*xwidget-webkit*"))
+        (t (progn
+             (if idee-www-default-url
+                 (xwidget-webkit-browse-url idee-www-default-url)
+               (xwidget-webkit-browse-url (format "http://localhost:%s" (idee-eshell-find-web-port))))
+             (switch-to-buffer "*xwidget-webkit*"))))
+  (evil-window-set-width idee-xwidget-webit-default-width))
+
 (defun idee-side-by-side-subview ()
   (idee-jump-to-non-ide-window)
   (split-window-right)
@@ -458,6 +477,12 @@ VISITED is an optional list with windows already visited."
 (defun idee-eww-visible-p ()
   "Return non-nil if eww is visible."
   (idee-eww-visible-window))
+(defun idee-xwidget-webkit-visible-window ()
+  "Return the xwidget-webkit window if visible."
+  (car (idee-get-visible-windows "*xwidget-webkit*")))
+(defun idee-xwidget-webkit-visible-p ()
+  "Return non-nil if xwidget-webkit is visible."
+  (idee-xwidget-webkit-visible-window))
 
 (defun idee-side-by-side-visible-window ()
   "Return the side-by-side window if visible."
@@ -581,6 +606,8 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 (idee--create-view-component "xref"  idee-xref-visible-window idee-xref-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-eww "idee-views")
 (idee--create-view-component "eww"  idee-eww-visible-window idee-eww-active idee-right-area-switch-list 0)
+;;;###autoload (autoload 'idee-toggle-xwidget-webkit "idee-views")
+(idee--create-view-component "xwidget-webkit"  idee-xwidget-webkit-visible-window idee-xwidget-webkit-active idee-right-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-side-by-side "idee-views")
 (idee--create-view-component "side-by-side"  idee-side-by-side-visible-window idee-side-by-side-active idee-right-area-switch-list 0)
 (defun idee-repl--get-buffer ()
