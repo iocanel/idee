@@ -77,12 +77,19 @@
    ((and (idee-module-root-dir-p f) (not (idee-module-root-dir-p (idee-parent-dir f)))) t)
    (t nil)))
 
+
+(defun idee-module-root-dir (&optional f)
+  "Find the directory of the module that owns the source file F."
+  (let ((current-dir (f-full (if f f default-directory))))
+    (while (not (idee-module-root-dir-p current-dir))
+      (setq current-dir (idee-parent-dir current-dir)))
+    current-dir))
+
 (defun idee-module-root-dir-p (f)
   "Return non-nil if F is a module directory."
   (if (seq-filter 'file-exists-p (seq-map (lambda (p) (concat f p)) idee-module-root-markers))
       t
     nil))
-
 
 (defun idee--select-new-project-dir()
  "Select a new project directory."
