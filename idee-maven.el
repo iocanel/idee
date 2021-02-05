@@ -622,7 +622,7 @@ or empty string other wise."
 
 (defun idee-maven--file-name ()
   (let* ((root-dir (idee-project-root-dir))
-         (file-name (file-name-nondirectory (buffer-file-name))))
+         (file-name (if (buffer-file-name) (file-name-nondirectory (buffer-file-name)) nil)))
     (if file-name file-name "<none>")))
 
 ;;
