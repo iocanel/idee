@@ -600,9 +600,8 @@ or empty string other wise."
                                                    ,(format "%s.%s.%s" major minor (+ micro 1))
                                                    ,(format "%s.%s.%s" major (+ minor 1) 0)
                                                    ,(format "%s.%s.%s" (+ major 1) 0 0)))
-                                     (new-version (completing-read "Version:" candidates nil nil)))
-    (message "detected version:%s" version)
-    (goals (format "versions:set -DnewVersion=%s" new-version))
+                                     (new-version (completing-read "Version:" candidates nil nil))
+                                     (goals (format "versions:set -DnewVersion=%s" new-version)))
     (idee-maven-exec :goals goals)))
 
 ;; Hydra helpers
