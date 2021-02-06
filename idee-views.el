@@ -68,6 +68,14 @@
 (defvar idee-repl-kind nil "The kind of the repl buffer. This is framework/lang specific.")
 (defvar idee-repl-buffer-prefix nil "The prefix of the repl buffer. This is framework/lang specific.")
 (defvar idee-repl-buffer-prompt nil "The prompt of the repl buffer. This is framework/lang specific.")
+
+;; A list with all component switches that are meant to be placed in the bottom
+(defvar idee-bottom-area-switch-list '(idee-cli-active idee-repl-active idee-diagnostics-active idee-errors-active idee-messages-active idee-grep-active idee-helm-ag-active idee-xref-active))
+
+(defvar idee-right-area-switch-list '(idee-eww-active idee-xwidget-webkit-active idee-side-by-side-active))
+
+(defvar idee-kill-buffer-and-window-function-list '(idee-kill-messages-and-window idee-kill-eshell-and-window idee-kill-grep-and-window idee-kill-helm-ag-and-window idee-kill-eww-and-window idee-kill-xref-and-window) "A list of kill buffer and windows functions")
+
 ;;; The following is based on Protesilaos Stavrou configuration: https://gitlab.com/protesilaos/dotfiles/-/blob/master/emacs/.emacs.d/emacs-init.org
 (defvar idee-focus-window-configuration nil "Current window configuration.")
 (defvar idee-focus-treemacs-visible nil "Additional varaible to hold info about treemacs, as idee-window-configuration does not apply to treemacs.")
@@ -91,10 +99,7 @@
       (delete-other-windows)
       (when idee-focus-center-buffer (set-fringe-mode (/ (- (frame-pixel-width) (* idee-focus-center-buffer-columns (frame-char-width))) 2)))))
   (setq idee-focus-treemacs-visible (treemacs-current-visibility)))
-;; A list with all component switches that are meant to be placed in the bottom
-(defvar idee-bottom-area-switch-list '(idee-cli-active idee-repl-active idee-diagnostics-active idee-errors-active idee-messages-active idee-grep-active idee-helm-ag-active idee-xref-active))
 
-(defvar idee-right-area-switch-list '(idee-eww-active idee-xwidget-webkit-active idee-side-by-side-active))
 (setq idee-current-view 'idee-ide-view)
 ;; Functions
 ;;;###autoload
@@ -731,25 +736,24 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 
 (defadvice kill-current-buffer (around idee-on-kill-current-buffer (&optional kill window))
   "Handles things when quiting window."
-  (cond
-   ((idee-kill-messages-and-window) t)
-   ((idee-kill-eshell-and-window) t)
-   ((idee-kill-grep-and-window) t)
-   ((idee-kill-helm-ag-and-window) t)
-   ((idee-kill-xref-and-window) t)
-   ((idee-kill-eww-and-window) t)
-   (t ad-do-it)))
+  (let ((match nil))
+    (dolist (func idee-kill-buffer-and-window-function-list match)
+      (when (not match) (setq match (funcall func))))
+    (when (not match) ad-do-it)))
+
+(defadvice bury-buffer (around idee-on-bury-buffer (&optional buffer-or-name))
+  "Handles things when quiting window."
+  (let ((match nil))
+    (dolist (func idee-kill-buffer-and-window-function-list match)
+      (when (not match) (setq match (funcall func))))
+    (when (not match) ad-do-it)))
+                 
 (defadvice quit-window (around idee-on-quit-window (&optional kill window))
   "Handles things when quiting window."
-  (cond
-   ((idee-kill-messages-and-window) t)
-   ((idee-kill-eshell-and-window) t)
-   ((idee-kill-grep-and-window) t)
-   ((idee-kill-helm-ag-and-window) t)
-   ((idee-kill-xref-and-window) t)
-   ((idee-kill-eww-and-window) t)
-   (t ad-do-it)))
-
+  (let ((match nil))
+    (dolist (func idee-kill-buffer-and-window-function-list match)
+      (when (not match) (setq match (funcall func))))
+    (when (not match) ad-do-it)))
 
 (defadvice pop-to-buffer-same-window (around idee-pop-to-buffer-same-window (buffer &optional norecordd))
   "Handles things when quiting window."
@@ -767,6 +771,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 ;;;###autoload
 (defun idee--views-init ()
   "Initialize idee views."
+  (ad-activate 'bury-buffer)
   (ad-activate 'quit-window)
   (ad-activate 'kill-current-buffer)
   (ad-activate 'pop-to-buffer-same-window)
