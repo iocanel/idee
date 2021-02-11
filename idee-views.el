@@ -74,7 +74,20 @@
 
 (defvar idee-right-area-switch-list '(idee-eww-active idee-xwidget-webkit-active idee-side-by-side-active))
 
-(defvar idee-kill-buffer-and-window-function-list '(idee-kill-messages-and-window idee-kill-eshell-and-window idee-kill-grep-and-window idee-kill-helm-ag-and-window idee-kill-eww-and-window idee-kill-xref-and-window) "A list of kill buffer and windows functions")
+;;
+;; Quit / Kill / Burry Listener functions
+;;
+
+;; These list hold functions that are called when we need to send a buffer away via (quit-window, kill-current-buffer, burry-buffer).
+;; The idea is that these functions will be applied to specific buffers and produce a `hide and kill buffer` effect, but may be used for other situations too, since they will override the behavior of the function they intercept.
+;; In other words, when  there is a match, the intercepted function will not be called.
+;; Each function needs to check if the current buffer is a matching buffer and if so perform the desired action, returning non-nil if a matching buffer was found.
+;; Examples:
+;;;; 1. When killing *Messages* also close remaining window
+;;;; 2. When closing *eshell xxx* kill both window and buffer
+(defvar idee-quit-window-listener-list '(idee-kill-messages-and-window idee-kill-eshell-and-window idee-kill-grep-and-window idee-kill-helm-ag-and-window idee-kill-eww-and-window idee-kill-xref-and-window) "A list of quit-window functions")
+(defvar idee-kill-current-buffer-listener-list '(idee-kill-messages-and-window idee-kill-eshell-and-window idee-kill-grep-and-window idee-kill-helm-ag-and-window idee-kill-eww-and-window idee-kill-xref-and-window) "A list of kill-current-buffer listener functions")
+(defvar idee-burry-buffer-listener-list '() "A list of burry-buffer listener functions")
 
 ;;; The following is based on Protesilaos Stavrou configuration: https://gitlab.com/protesilaos/dotfiles/-/blob/master/emacs/.emacs.d/emacs-init.org
 (defvar idee-focus-window-configuration nil "Current window configuration.")
@@ -729,21 +742,21 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 (defadvice kill-current-buffer (around idee-on-kill-current-buffer (&optional kill window))
   "Handles things when quiting window."
   (let ((match nil))
-    (dolist (func idee-kill-buffer-and-window-function-list match)
+    (dolist (func idee-kill-current-buffer-listener-list match)
       (when (not match) (setq match (funcall func))))
     (when (not match) ad-do-it)))
 
 (defadvice bury-buffer (around idee-on-bury-buffer (&optional buffer-or-name))
   "Handles things when quiting window."
   (let ((match nil))
-    (dolist (func idee-kill-buffer-and-window-function-list match)
+    (dolist (func idee-burry-buffer-listener-list match)
       (when (not match) (setq match (funcall func))))
     (when (not match) ad-do-it)))
                  
 (defadvice quit-window (around idee-on-quit-window (&optional kill window))
   "Handles things when quiting window."
   (let ((match nil))
-    (dolist (func idee-kill-buffer-and-window-function-list match)
+    (dolist (func idee-quit-window-listener-list match)
       (when (not match) (setq match (funcall func))))
     (when (not match) ad-do-it)))
 
