@@ -69,16 +69,13 @@
        t))
 (defun idee-starts-with (string prefix)
   "Return t if STRING start with PREFIX."
-  (and (string-match (rx-to-string `(: bos ,prefix) t)
-                     string)
-       t))
+  (and string (string-match (rx-to-string `(: bos ,prefix) t) string)))
 
 ;;;###autoload
 (defun idee-ends-with (string suffix)
   "Return t if STRING ends with SUFFIX."
-  (and (string-match (rx-to-string `(: ,suffix eos) t)
-                     string)
-       t))
+  (and string (string-match (rx-to-string `(: ,suffix eos) t) string)))
+
 
 ;;
 ;; Original source: https://emacs.stackexchange.com/questions/7148/get-all-regexp-matches-in-buffer-as-a-list
