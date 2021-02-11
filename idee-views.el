@@ -20,8 +20,9 @@
 
 ;;; Code:
 
-(require 'idee-vars)
 (require 'idee-actions)
+(require 'idee-vars)
+(require 'idee-utils)
 
 (require 'magit)
 (require 'treemacs-projectile)
@@ -377,13 +378,14 @@ VISITED is an optional list with windows already visited."
     (idee-toggle-grep)))
 
 ;;;###autoload
- (defun idee-refresh-view ()
+ (defun idee-refresh-view (&optional window)
   "Refresh the current view."
   (interactive)
   (let ((current-window (selected-window)))
     (funcall idee-current-view)
-    (cond ((and idee-selected-window (windowp idee-selected-window)) (select-window idee-selected-window))
-          (:else (select-window current-window)))))
+    (cond ((and window (windowp window)) (select-window window))
+          ((and idee-selected-window (windowp idee-selected-window)) (select-window idee-selected-window))
+          ((window-live-p current-window) (select-window current-window)))))
           
 
 ;;;###autoload
