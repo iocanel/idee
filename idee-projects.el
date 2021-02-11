@@ -238,7 +238,6 @@
       (setq idee-project-info-alist (delq (assoc (intern name) idee-project-info-alist) idee-project-info-alist))
       (add-to-list 'idee-project-info-alist `(,(intern name) . ,info)))))
 
-
 ;;
 ;; Initialization
 ;;
@@ -249,8 +248,7 @@
   (let* ((root-dir (idee-project-root-dir (buffer-file-name)))
          (conf-dir (concat (file-name-as-directory root-dir) idee-project-conf-dir))
          (init-el (concat (file-name-as-directory conf-dir) "init.el")))
-    (when (file-exists-p inti-el) (load-file init-el))))
-
+    (when (file-exists-p init-el) (load-file init-el))))
 
 ;;;###autoload
 (defun idee--projects-init ()
