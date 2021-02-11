@@ -76,6 +76,12 @@
   "Return t if STRING ends with SUFFIX."
   (and string (string-match (rx-to-string `(: ,suffix eos) t) string)))
 
+;;;###autoload
+(defun idee-buffer-contains-string (string)
+  "Return t if STRING exists in the current buffer."
+  (save-excursion
+    (goto-char (point-min))
+    (search-forward string nil t)))
 
 ;;
 ;; Original source: https://emacs.stackexchange.com/questions/7148/get-all-regexp-matches-in-buffer-as-a-list
