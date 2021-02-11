@@ -31,7 +31,8 @@
 ;;
 (defun idee--buffer-comment-style()
   "Return the buffer comment style."
-  (let ((extension (file-name-extension (buffer-file-name (current-buffer)))))
+  (let* ((name (buffer-file-name))
+         (extension (if name (file-name-extension name) nil)))
     (cdr (assoc extension idee-type-comment-styles-alist))))
 
 
