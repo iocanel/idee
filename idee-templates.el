@@ -123,9 +123,23 @@
 ;; Initialization
 ;;
 
+
+;;;###autoload
+(defun idee-templates-project-init ()
+  "Initialize idee project templates."
+  (interactive)
+  (let* ((root-dir (idee-project-root-dir (buffer-file-name)))
+         (conf-dir (concat (file-name-as-directory root-dir) idee-project-conf-dir))
+         (template-dir (concat (file-name-as-directory conf-dir) "templates")))
+    (when (file-exists-p template-dir)
+      (yas-load-directory template-dir)
+      (yas-compile-directory template-dir))))
+
 ;;;###autoload
 (defun idee--templates-init ()
   "Initialize idee templates."
+
+  (advice-add 'projectile-switch-project :after 'idee-templates-project-init)
 
   (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
   (when (not (file-exists-p idee-resources-dir)) (mkdir idee-resources-dir t))
