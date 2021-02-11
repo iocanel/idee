@@ -217,6 +217,15 @@
   "Toggle the specified BOOL variable."
   (list 'setq bool (list 'not bool)))
 
+(defmacro idee-switch-on (bool)
+  "Switch on the specified BOOL variable."
+  (list 'setq bool nil))
+
+(defmacro idee-switch-off (bool)
+  "Switch off the specified BOOL variable."
+  (list 'setq bool nil))
+
+
 ;;;###autoload (autoload 'idee-leader/set-key "idee-utils")
 (defmacro idee-leader/set-key (key func &optional desc)
 "Leader key function abstraction."
