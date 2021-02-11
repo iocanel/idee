@@ -101,22 +101,14 @@
   (setq idee-focus-treemacs-visible (treemacs-current-visibility)))
 
 (setq idee-current-view 'idee-ide-view)
+
 ;; Functions
+
 ;;;###autoload
 (defun idee-view-reset()
-    "Reset view variables."
-    (setq idee-cli-active nil
-          idee-repl-active nil
-          idee-output-active nil
-          idee-diagnostics-active nil
-          idee-errors-active nil
-          idee-messages-active nil
-          idee-grep-active nil
-          idee-helm-ag-active nil
-          idee-xref-active nil
-          idee-eww-active nil
-          idee-xwidget-webkit-active nil
-          idee-side-by-side-active nil))
+  "Reset view variables."
+  (mapc (lambda (b) (idee-switch-off b)) idee-bottom-area-switch-list)
+  (mapc (lambda (r) (idee-switch-off r)) idee-right-area-switch-list))
 
 ;;;###autoload
 (defun idee-project-open-view(&optional path)
