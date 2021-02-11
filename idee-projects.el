@@ -239,9 +239,24 @@
       (add-to-list 'idee-project-info-alist `(,(intern name) . ,info)))))
 
 
+;;
+;; Initialization
+;;
+(defun idee-projects-project-init ()
+  "Initialize idee project.
+   When called this function will look at the project root for an elisp script called .idee/init.el and will load it if present."
+  (interactive)
+  (let* ((root-dir (idee-project-root-dir (buffer-file-name)))
+         (conf-dir (concat (file-name-as-directory root-dir) idee-project-conf-dir))
+         (init-el (concat (file-name-as-directory conf-dir) "init.el")))
+    (when (file-exists-p inti-el) (load-file init-el))))
+
+
 ;;;###autoload
 (defun idee--projects-init ()
-  "Initialize idee projects.")
+  "Initialize idee projects."
+  (advice-add 'projectile-switch-project :after 'idee-projects-project-init))
+
 
 (provide 'idee-projects)
 ;;; idee-projects.el ends here
