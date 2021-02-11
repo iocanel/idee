@@ -50,6 +50,7 @@
 
 
 (require 'idee-actions (f-expand "idee-actions.el" root-code-path))
+(require 'idee-arch (f-expand "idee-arch.el" root-code-path))
 (require 'idee-comments (f-expand "idee-comments.el" root-code-path))
 (require 'idee-eshell (f-expand "idee-eshell.el" root-code-path))
 (require 'idee-headers (f-expand "idee-headers.el" root-code-path))
@@ -68,6 +69,7 @@
 ;;
 (require 'idee-docker (f-expand "idee-docker.el" root-code-path))
 ;; Java
+(require 'idee-java-utils (f-expand "idee-java-utils.el" root-code-path))
 (require 'idee-java (f-expand "idee-java.el" root-code-path))
 (require 'idee-lsp-java (f-expand "idee-lsp-java.el" root-code-path))
 (require 'idee-dap (f-expand "idee-dap.el" root-code-path))

@@ -38,8 +38,8 @@
 (defconst java-prefix "java")
 (defconst test-prefix "test")
 
-(defconst source-directory-list `(,source-main-prefix ,source-test-prefix ,java-prefix ,source-prefix ,test-prefix))
 
+(defconst idee-java-source-directory-list `(,source-main-prefix ,source-test-prefix ,java-prefix ,source-prefix ,test-prefix))
 (defconst build-gradle "build.gradle")
 
 (defconst idee-java-project-file-list `(,pom-xml ,build-gradle))
@@ -71,14 +71,40 @@
     (if pkg
         (concat "package " pkg ";"))))
 
+(defun idee-java-fqcn-of (f)
+  "Return the fully qualified name of class F."
+  (if (idee-ends-with f ".java")
+      (let ((name (file-name-nondirectory (file-name-sans-extension  f)))
+            (pkg (idee-java-package-of f)))
+        (if pkg (concat pkg "." name) name))
+    nil))
+
 (defun idee-java-package-of (f)
   "Return the package of the specified file F."
-  (let* ((module-dir (idee-java-find-module-dir f))
-         (source-dir (car (seq-filter (lambda (s) (file-exists-p (concat module-dir s))) source-directory-list)))
-         (relative-path (substring f (+ (length module-dir) (length source-dir)))))
-    (replace-regexp-in-string "^." ""
-                              (replace-regexp-in-string ".$" ""
-                                                        (replace-regexp-in-string "\/" "." relative-path)))))
+  (if f
+      (let* ((module-dir (idee-java-find-module-dir f))
+             (source-dir (car (seq-filter (lambda (s) (file-exists-p (concat module-dir s))) idee-java-source-directory-list)))
+             (relative-path (substring (file-name-directory (file-name-sans-extension f)) (+ (length module-dir) (length source-dir)))))
+        (replace-regexp-in-string "^." ""
+                                  (replace-regexp-in-string ".$" ""
+                                                            (replace-regexp-in-string "\/" "." relative-path))))
+    nil))
+
+(defun idee-java-class-name-of (f)
+  "Return the class name of the specified file F."
+  (if f
+      (let* ((fqcn (idee-java-fqcn-of f))
+             (pkg (idee-java-package-of f)))
+        (if pkg (substring fqcn (+ 1 (length pkg))) fqcn))
+
+    nil))
+
+(defun idee-java-package-of-fqcn (fqcn)
+  "Return the package of the specified FQCN."
+  (let* ((parts (split-string fqcn "\\."))
+         (class-name (nth (- (length parts) 1) parts))
+         (package (substring fqcn 0 (- (length fqcn) (length class-name) 1))))
+    package))
 
 (defun idee-java-find-module-dir (&optional f)
   "Find the directory of the java module that owns the source file F."
@@ -98,9 +124,10 @@
 (defun idee-java-find-src-dir (f)
   "Return the source root of F."
   (let* ((module-dir (idee-java-find-module-dir f))
-         (source-dir  (concat (file-name-as-directory module-dir) source-main-prefix)))
-
-    (if (file-exists-p source-dir)
+         (source-dir  (if module-dir
+                          (concat (file-name-as-directory module-dir) source-main-prefix)
+                        nil)))
+    (if (and source-dir (file-exists-p source-dir))
         source-dir
       nil)))
 
@@ -149,6 +176,7 @@ Finally it returns the first word before 'class', 'interface', 'enum'."
          (str  (if (and start end) (buffer-substring start end) nil))
          (declaration (if str (substring str 0 (string-match "{" str)) nil)))
     (if (and declaration (string-match ".*\\(class\\|interface|enum|@interface\\)[ ]*\\([a-zA-Z0-9_]+\\)" declaration)) (match-string 2 declaration) nil)))
+
 (defun idee-java-method-name-at-point ()
   "Return the name of the method at point or nil if cursors is outside of a method.
 The method obtains the whole block at point and strips everything found after '{'.

@@ -21,6 +21,7 @@
 
 ;;; Code:
 
+(require 'idee-arch)
 (require 'idee-vars)
 (require 'idee-templates)
 (require 'idee-java-utils)
@@ -91,6 +92,41 @@
       (setq idee-java-last-visited-class (format "%s.%s" package classname)))))
 
 
+;;; Archetypes
+
+(defun idee-java-archetype-create-class (fqcn archetype)
+  "Create a new java class with FQCN in the current module from the specified ARCHETYPE."
+    (with-temp-buffer
+      (let* ((package (idee-java-package-of-fqcn fqcn))
+             (class-name (substring fqcn (+ 1 (length package))))
+             (package-path (replace-in-string "." "/" package))
+             (factory-class (concat (idee-module-root-dir) (format "src/main/java/%s/%s.java" package-path class-name))))
+        (set-visited-file-name factory-class)
+        (insert archetype)
+        (java-mode)
+        (yas-expand)
+        (write-file factory-class))))
+
+(defun idee-java-register-spi (interface impl)
+  "Create a new java class with FQCN in the current module from the specified ARCHETYPE."
+  (with-temp-buffer
+    (let* ((spi-file-name (concat (idee-module-root-dir) (format "src/main/resources/META-INF/services/%s" interface))))
+      (when (file-exists-p spi-file-name)
+        (set-visited-file-name spi-file-name)
+        (insert-file spi-file-name))
+
+      (if (not (idee-buffer-contains-string impl))
+          (progn
+            (goto-char (point-max))
+            (insert impl)
+            (write-file spi-file-name))))))
+
+(defun idee-java-archetype-abstract-factory ()
+  "A simple java factory archetype."
+  (interactive)
+  (let ((fqcn (read-string "Fully qualified class name:")))
+    (idee-java-archetype-create fqcn "abstract-factory")))
+
 ;;; Visitor
 (defun idee-java-project-p (root)
   "Check if ROOT is the root path of a java project."
@@ -114,7 +150,9 @@
   (idee--quarkus-init)
   (idee--spring-init)
 
+  (idee-register-archetype 'idee-java-archetype-abstract-factory)
   (idee-register-visitor 'idee-visitor-java)
+
   ;;; Hook
   (add-hook 'java-mode-hook 'idee-java-enable)
   (add-hook 'java-mode-hook 'idee-java-visit-file)
