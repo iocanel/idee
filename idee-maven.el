@@ -588,7 +588,6 @@ or empty string other wise."
   "Set the version to project."
   (let* ((module-dir (idee-maven-module-root-dir))
                                      (module-pom (concat module-dir pom-xml))
-                                     (artifact-id (idee-maven-pom-artifact-id module-pom))
                                      (version (idee-maven-pom-version module-pom))
                                      (version-parts (if version (split-string version "\\.") '("1" "0" "0")))
                                      (major (string-to-number (replace-regexp-in-string "[^0-9]*" "" (or (nth 0 version-parts) "1"))))
@@ -620,8 +619,7 @@ or empty string other wise."
     (intern (or artifact-id "unknown"))))
 
 (defun idee-maven--file-name ()
-  (let* ((root-dir (idee-project-root-dir))
-         (file-name (if (buffer-file-name) (file-name-nondirectory (buffer-file-name)) nil)))
+  (let* ((file-name (if (buffer-file-name) (file-name-nondirectory (buffer-file-name)) nil)))
     (if file-name file-name "<none>")))
 
 ;;
