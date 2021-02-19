@@ -182,7 +182,9 @@
 (defun idee-repl ()
   "Run a REPL."
   (interactive)
-  (funcall  (alist-get 'idee-repl-function idee-function-alist)))
+  (let ((repl-funcition (alist-get 'idee-repl-function idee-function-alist)))
+    (if repl-funcition (funcall repl-funcition)
+      (message "No repl available for mode."))))
 
 ;;;###autoload
 (defun idee-mode-hydra ()
