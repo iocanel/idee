@@ -121,8 +121,8 @@
 ;;;###autoload
 (defun idee-view-reset()
   "Reset view variables."
-  (mapc (lambda (b) (idee-switch-off b)) idee-bottom-area-switch-list)
-  (mapc (lambda (r) (idee-switch-off r)) idee-right-area-switch-list))
+  (mapc (lambda (b) (set b nil)) idee-bottom-area-switch-list)
+  (mapc (lambda (r) (set r nil)) idee-right-area-switch-list))
 
 ;;;###autoload
 (defun idee-project-open-view(&optional path)
