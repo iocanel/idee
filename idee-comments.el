@@ -49,11 +49,11 @@
       nil)))
 
 ;;;###autoload
-(defun idee-remove-comment-at-point ()
+(defun idee-remove-comment-at-point (&optional style)
   "Remove the comment at the current point."
   (interactive)
   (save-excursion
-    (let* ((style (idee--buffer-comment-style))
+    (let* ((style (or style (idee--buffer-comment-style)))
            (block-beginning (idee-comment-style-block-beginning style))
            (prefix (idee-comment-style-line-prefix style))
            (block-ending (idee-comment-style-block-ending style))
