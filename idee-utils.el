@@ -77,6 +77,13 @@
   (and string (string-match (rx-to-string `(: ,suffix eos) t) string)))
 
 ;;;###autoload
+(defun idee-contains-string (item string)
+  "Return t if STRING exists in the ITEM. ITEM may be a buffer a list or a string."
+  (cond ((bufferp item) (with-current-buffer item (idee-buffer-contains-string string)))
+        ((listp item) (member string item))
+        ((stringp item) (string-match (regexp-quote string) item))
+        (t nil)))
+
 (defun idee-buffer-contains-string (string)
   "Return t if STRING exists in the current buffer."
   (save-excursion
