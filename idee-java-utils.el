@@ -65,11 +65,25 @@
 ;;
 
 ;;;###autoload
+
+(defun idee-java-package()
+  "Return the package line for the current file."
+  (idee-java-package-of default-directory))
+
 (defun idee-java-package-line()
   "Return the full package line for the current directory."
   (let ((pkg (idee-java-package-of default-directory)))
     (if pkg
         (concat "package " pkg ";"))))
+
+(defun idee-java-class()
+  "Return the class name for the current file."
+  (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))
+
+(defun idee-java-class-sans-suffix (suffix &optional class-name)
+  "Return the class name for the current file."
+  (let ((class-name (or class-name (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))))
+    (replace-regexp-in-string (format "%s$" suffix) "" class-name)))
 
 (defun idee-java-fqcn-of (f)
   "Return the fully qualified name of class F."
@@ -201,6 +215,11 @@ Finally it returns the last word before '('."
   (goto-char (point-max))
   (re-search-backward "^[ ]*import[ ]+\\(static[ ]+\\)?[a-zA-Z0-9_\\.]+;" nil t)
   (end-of-line))
+
+
+;;
+;; Other utils
+;;
 (defun idee--java-fqcn-matches-p (c)
   "Predicate that matches c against idee--java-symbols."
   (let* ((matches (seq-filter (lambda (i) (idee--java-fqcn-matches c i)) idee--java-symbols)))
@@ -235,6 +254,7 @@ Finally it returns the last word before '('."
     (seq-filter
      (lambda (x) (not (equal "" x))) ;;remove all empty strings (its usually the first)
      (split-string (replace-regexp-in-string "\\([A-Z]\\)" " \\1" s) " "))))
+
 
 (provide 'idee-java-utils)
 ;;; idee-java-utils.el ends here
