@@ -54,7 +54,14 @@
   "Reuturn the parent dir of F."
   (file-name-directory (directory-file-name f)))
 
+(defun idee-current-file-name ()
+  "Return the filename of the current buffer"
+  (file-name-nondirectory (buffer-file-name)))
+
+;;
 ;;; String Functions
+;;
+
 ;;;###autoload
 (defun idee-string-blank (string)
   "Return non-nil if STRING start is blank."
@@ -107,6 +114,22 @@
               (push match matches)
               (setq index (+ 1 index)))))
       matches)))
+
+
+(defun idee-string-camelcase-split (s)
+  "Splits a camel case S into a list of strings."
+  (let ((case-fold-search nil))
+    (seq-filter
+     (lambda (x) (not (equal "" x))) ;;remove all empty strings (its usually the first)
+     (split-string (replace-regexp-in-string "\\([A-Z]\\)" " \\1" s) " "))))
+
+
+(defun idee-string-camelcase-to-kebabcase (s)
+  "Converts S from camel case to kebab case."
+  (if s
+      (mapconcat #'downcase (idee-string-camelcase-split s) "-")
+    nil))
+
 
 ;;; List functions
 ;;;###autoload
@@ -188,6 +211,7 @@
         ((numberp item) (format "%s" item)) 
         ((sequencep item) (format "'%s" (mapcar 'idee-as-code item)))
         (t item)))
+
 ;;;###autoload
 (defun idee-project-settings (settings-file)
   "Return the path of a local SETTINGS-FILE."
