@@ -38,11 +38,12 @@
 (defconst java-prefix "java")
 (defconst test-prefix "test")
 
-
+(defconst idee-java-snippet-class-name "`(idee-java-class)`" "The snippet code to use to replace the actual class name")
 (defconst idee-java-source-directory-list `(,source-main-prefix ,source-test-prefix ,java-prefix ,source-prefix ,test-prefix))
 (defconst build-gradle "build.gradle")
 
 (defconst idee-java-project-file-list `(,pom-xml ,build-gradle))
+
 (defvar idee--java-symbols)
 
 ;;

@@ -29,6 +29,13 @@
 
 (require 'test-helper)
 
+(ert-deftest util/should-convert-camel-case-to-kebab ()
+  (should (equal nil (idee-string-camelcase-to-kebabcase nil)))
+  (should (equal "my" (idee-string-camelcase-to-kebabcase "My")))
+  (should (equal "my-class" (idee-string-camelcase-to-kebabcase "MyClass")))
+  (should (equal "my-a-class" (idee-string-camelcase-to-kebabcase "MyAClass")))
+)
+
 (ert-deftest util/should-find-projectile-project-root ()
   "Should find project root."
   (with-sandbox

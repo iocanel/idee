@@ -1,0 +1,99 @@
+# contributor: Ioannis Canellos <iocanel@gmail.com>
+# name: Abstract Factory
+# key: abstract-factory
+# --
+`(idee-header)`
+`(idee-java-package-line)`
+
+import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.ServiceLoader;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+public abstract class `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`<T, C> {
+
+  T create(C context);
+
+  /**
+   * The type of Object this factory handles.
+   * @return the resource type the factory handles.
+   */
+  default Class<T> getType() {
+    return (Class) getTypeArguments(`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`.class, getClass()).get(0);
+  }
+
+  public static <T,C> Optional<`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`<T,C>> create(C context, Class<T> type) {
+    return find(type).map(f -> f.create(context));
+  }
+
+  public static <T,C> Optional<`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`<T,C>> find(Class<T> type) {
+    return stream()
+      .filter(f -> f.getType().isAssignableFrom(type))
+      .map(f -> ( `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`<T,C>) f)
+      .findFirst();
+
+
+  private static Stream< `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))> stream() {
+    return StreamSupport.stream(ServiceLoader.load(DiagnosticsFactory.class,  `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`.class.getClassLoader()).spliterator(), false);
+  }
+
+  /**
+   * Get the actual type arguments a child class has used to extend a generic base class.
+   *
+   * @param baseClass the base class
+   * @param childClass the child class
+   * @return a list of the raw classes for the actual type arguments.
+   */
+  private static <T> List<Class> getTypeArguments(Class<T> baseClass, Class<? extends T> childClass) {
+    Map<Type, Type> resolvedTypes = new LinkedHashMap<Type, Type>();
+    Type type = childClass;
+    // start walking up the inheritance hierarchy until we hit baseClass
+    while (!getClass(type).equals(baseClass)) {
+      if (type instanceof Class) {
+        // there is no useful information for us in raw types, so just keep going.
+        type = ((Class) type).getGenericSuperclass();
+      } else {
+        ParameterizedType parameterizedType = (ParameterizedType) type;
+        Class<?> rawType = (Class) parameterizedType.getRawType();
+
+        Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+        TypeVariable<?>[] typeParameters = rawType.getTypeParameters();
+        for (int i = 0; i < actualTypeArguments.length; i++) {
+          resolvedTypes.put(typeParameters[i], actualTypeArguments[i]);
+        }
+
+        if (!rawType.equals(baseClass)) {
+          type = rawType.getGenericSuperclass();
+        }
+      }
+    }
+
+    // finally, for each actual type argument provided to baseClass, determine (if possible)
+    // the raw class for that type argument.
+    Type[] actualTypeArguments;
+    if (type instanceof Class) {
+      actualTypeArguments = ((Class) type).getTypeParameters();
+    } else {
+      actualTypeArguments = ((ParameterizedType) type).getActualTypeArguments();
+    }
+    List<Class> typeArgumentsAsClasses = new ArrayList<Class>();
+    // resolve types by chasing down type variables.
+    for (Type baseType : actualTypeArguments) {
+      while (resolvedTypes.containsKey(baseType)) {
+        baseType = resolvedTypes.get(baseType);
+      }
+      typeArgumentsAsClasses.add(getClass(baseType));
+    }
+    return typeArgumentsAsClasses;
+  }
+
+}

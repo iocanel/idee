@@ -1,4 +1,4 @@
-;; Copyright (C) 2018 Ioannis Canellos 
+;; Copyright (C) 2018 Ioannis Canellos   -*- lexical-binding: t -*-
 ;;     
 ;; 
 ;; Licensed under the Apache License, Version 2.0 (the "License");
