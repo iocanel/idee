@@ -22,11 +22,78 @@
 (require 'idee-headers)
 (require 'warnings)
 
-(defvar idee-source-dir nil)
+
 
 (defconst idee-emacs-templates-dir (f-join idee-resources-dir "templates") "The directory where template files are stored.")
 (defconst idee-emacs-snippets-dir (f-join idee-resources-dir "snippets") "The directory where snippet files are stored.")
 (defconst idee-emacs-headers-dir (f-join idee-resources-dir "headers") "The directory where header files are stored.")
+
+(defvar idee-source-dir nil "The source directory of the idee project.")
+
+;;
+;; State
+;;
+(defvar idee-type-modes-alist '(("el" . "emacs-lisp-mode")
+                                ("org" . "org-mode")
+                                ("md" . "markdown-mode")
+                                ("java" . "java-mode")
+                                ("json" . "json-mode")
+                                ("js" . "js2-mode")
+                                ("ts" . "typescript-mode")
+                                ("py" . "python-mode")
+                                ("go" . "go-mode")
+                                ("cl" . "clojure-mode")
+                                ("kt" . "kotlin-mode")
+                                ("groovy" . "groovy-mode")
+                                ("html" . "html-mode")
+                                ("yml" . "yaml-mode")
+                                ("yaml" . "yaml-mode")
+                                ("sql" . "sql-mode")) "Association list for extension to mode.")
+
+;;
+;; Template factories
+;;
+
+(cl-defstruct idee-template-factory
+  mode
+  description
+  func)
+
+(defvar idee-template-factory-list nil "A list of all the available template factories.")
+
+;;;###autoload 
+(defun idee-templates-register-template-factory (template-factory)
+  "Register a TEMPLATE_FACTORY."
+  (setq idee-template-factory-list (delq template-factory idee-template-factory-list))
+  (setq idee-template-factory-list (add-to-list  'idee-template-factory-list template-factory)))
+
+;;;###autoload 
+(defun idee-templates-get-template-factory (mode)
+  "Find the matching template factory for the specified MODE."
+  (car (seq-filter (lambda (f) (equal mode (idee-template-factory-mode f))) idee-template-factory-list)))
+
+(defun idee-template-create-template-for-buffer (&optional buffer-or-name name key)
+  (let* ((buffer (if buffer-or-name (or (get-buffer buffer-or-name) (current-buffer)) (current-buffer)))
+         (file-name (buffer-file-name buffer))
+         (mode (buffer-local-value 'major-mode buffer))
+         (template-factory (idee-templates-get-template-factory mode))
+         (func (if template-factory (idee-template-factory-func template-factory) nil)))
+
+    (if (not func)
+        (message "No template factory found for mode: %s of file: %s" mode file-name) 
+      (funcall func file-name name key))))
+
+
+(defun idee-template-create-template()
+  "Create a template from the current buffer."
+  (interactive)
+  (let* ((name (read-string "Template name: "))
+         (key (read-string "Template key: ")))
+  (idee-template-create-template-for-buffer (current-buffer) name key)))
+
+;;
+;; Utils
+;;
 
 (defun idee--find-source-dir ()
   "Find the source dir of the project."
@@ -52,27 +119,24 @@
   "Find the headers source directory."
   (f-join (idee--find-source-dir) "headers"))
 
+; (KEY TEMPLATE NAME CONDITION GROUP VARS LOAD-FILE KEYBINDING UUID)
+(defun idee-templates-parse-file (f)
+  "Parse template from file F."
+  (with-temp-buffer
+    (insert-file-contents f)
+              (yas--parse-template f)))
+
+(defun idee-snippet-name (definition)
+  "Name of the snippet found in DEFINITION."
+  (car (cdr (cdr definition))))
+
+(defun idee-snippet-key (definition)
+  "Key of the snippet found in DEFINITION."
+  (car definition))
+
+
 ;;
-;; State
-;;
-(defvar idee-type-modes-alist '(("el" . "emacs-lisp-mode")
-                                ("org" . "org-mode")
-                                ("md" . "markdown-mode")
-                                ("java" . "java-mode")
-                                ("json" . "json-mode")
-                                ("js" . "js2-mode")
-                                ("ts" . "typescript-mode")
-                                ("py" . "python-mode")
-                                ("go" . "go-mode")
-                                ("cl" . "clojure-mode")
-                                ("kt" . "kotlin-mode")
-                                ("groovy" . "groovy-mode")
-                                ("html" . "html-mode")
-                                ("yml" . "yaml-mode")
-                                ("yaml" . "yaml-mode")
-                                ("sql" . "sql-mode")) "Association list for extension to mode.")
-;;
-;; Functions
+;; Commands
 ;;
 (defun idee-new-file-function()
   "Create an empty buffer."
@@ -103,29 +167,13 @@
     (setq idee--current-header content)))
 
 
-; (KEY TEMPLATE NAME CONDITION GROUP VARS LOAD-FILE KEYBINDING UUID)
-
-(defun idee-templates-parse-file (f)
-  "Parse template from file F."
-  (with-temp-buffer
-    (insert-file-contents f)
-              (yas--parse-template f)))
-
-(defun idee-snippet-name (definition)
-  "Name of the snippet found in DEFINITION."
-  (car (cdr (cdr definition))))
-
-(defun idee-snippet-key (definition)
-  "Key of the snippet found in DEFINITION."
-  (car definition))
 
 ;;
 ;; Initialization
 ;;
 
-
 ;;;###autoload
-(defun idee-templates-project-init ()
+(defun idee-template-initialize-project ()
   "Initialize idee project templates."
   (interactive)
   (let* ((root-dir (idee-project-root-dir (buffer-file-name)))

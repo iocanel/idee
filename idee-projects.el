@@ -241,7 +241,7 @@
 ;;
 ;; Initialization
 ;;
-(defun idee-projects-project-init ()
+(defun idee-project-initialize-project ()
   "Initialize idee project.
    When called this function will look at the project root for an elisp script called .idee/init.el and will load it if present."
   (interactive)
@@ -253,7 +253,7 @@
 ;;;###autoload
 (defun idee--projects-init ()
   "Initialize idee projects."
-  (advice-add 'projectile-switch-project :after 'idee-projects-project-init))
+  (advice-add 'projectile-switch-project :after 'idee-project-initialize-project))
 
 
 (provide 'idee-projects)
