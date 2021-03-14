@@ -87,5 +87,18 @@
    (idee-with-project-settings "settings.el"
      (should-not test-var)))) 
 
+(ert-deftest util/test-contains-string ()
+  "Should try to load project settings, without error (when project is missing.)."
+  (should (idee-contains-string "clean install" "clean"))
+  (should (idee-contains-string '("clean" "install") "clean"))
+
+  (should (not (idee-contains-string "clean install" "package")))
+
+  (with-temp-buffer
+    (insert "I need to clean up")
+    (should (idee-contains-string (current-buffer) "clean"))
+    (should (not (idee-contains-string (current-buffer) "notfound")))))
+
+
 (provide 'idee-utils-test)
 ;;; idee-utils-test.el ends here.

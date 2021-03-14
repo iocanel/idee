@@ -483,8 +483,7 @@
                                  (debug (push "mvnDebug" mvn-cmd-builder))
                                  (t (push "mvn" mvn-cmd-builder)))
 
-
-                                (when (and idee-maven-clean (not (idee-contains-string "clean" goals)))
+                                (when (and idee-maven-clean (not (idee-contains-string goals "clean")))
                                   (push "clean" mvn-cmd-builder))
                                 
                                 (push goals mvn-cmd-builder)
