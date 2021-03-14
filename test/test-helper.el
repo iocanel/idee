@@ -53,6 +53,7 @@
 (require 'idee-arch (f-expand "idee-arch.el" root-code-path))
 (require 'idee-comments (f-expand "idee-comments.el" root-code-path))
 (require 'idee-eshell (f-expand "idee-eshell.el" root-code-path))
+(require 'idee-git (f-expand "idee-git.el" root-code-path))
 (require 'idee-headers (f-expand "idee-headers.el" root-code-path))
 (require 'idee-projects (f-expand "idee-projects.el" root-code-path))
 (require 'idee-templates (f-expand "idee-templates.el" root-code-path))
