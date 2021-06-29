@@ -33,6 +33,8 @@
 (require 'idee-visitors)
 (require 'idee-views)
 
+(require 'idee-yml)
+
 (defcustom idee-repo-url "git@github.com:iocanel/idee.git" "The repository url of the idee project." :group 'idee :type 'string)
 
 (defun idee-resources-install ()
@@ -49,7 +51,10 @@
   (idee--headers-init)
   (idee--views-init)
   (idee--visitors-init)
-  (idee--evil-init))
+  (idee--evil-init)
+
+  ;; Common staff
+  (idee--yml-init))
 
 (provide 'idee)
 ;;; idee.el ends here
