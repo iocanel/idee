@@ -219,11 +219,13 @@
 
 (defun idee-project-settings-set (settings-file key value)
   "Add or replace a set statement inside the SETTINGS-FILE using the specified KEY and VALUE."
-  (let ((file (idee-project-settings settings-file)))
+  (let* ((file (idee-project-settings settings-file))
+         (settings-dir (file-name-as-directory (file-name-directory (directory-file-name file)))))
+    (when (not (file-exists-p settings-dir)) (make-directory settings-dir t))
     (with-temp-buffer
-      (insert-file-contents file)
+      (when (file-exists-p file) (insert-file-contents file))
       (goto-char (point-min))
-      (if (re-search-forward (regexp-quote key) nil nil)
+      (if (re-search-forward (regexp-quote key) nil t)
           (let* ((start (point))
                  (end start))
             (condition-case nil (forward-sexp) (error t))
@@ -232,7 +234,8 @@
             (write-file file nil))
         (progn
           (goto-char (point-max))
-          (insert "(setq %s %s)" key value))))))
+          (insert (format "(setq %s %s)" key value))
+          (write-file file nil))))))
 ;;; Macros
 
 ;;;###autoload (autoload 'idee-with-project-settings "idee-utils")
