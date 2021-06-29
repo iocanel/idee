@@ -42,7 +42,7 @@ public abstract class `(file-name-nondirectory (file-name-sans-extension (buffer
       .findFirst();
 
 
-  private static Stream< `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))> stream() {
+  private static Stream<`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`> stream() {
     return StreamSupport.stream(ServiceLoader.load(DiagnosticsFactory.class,  `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`.class.getClassLoader()).spliterator(), false);
   }
 

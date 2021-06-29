@@ -40,6 +40,9 @@ before starting the debug process."
                    :startup-function :environment-variables :hostName host) launch-args)
           (session-name (dap--calculate-unique-name name (dap--get-sessions)))
           (default-directory (or cwd default-directory))
+          (process-environment (if environment-variables
+                                   (cl-copy-list process-environment)
+                                 process-environment))
           program-process)
     (mapc (-lambda ((env . value)) (setenv env value)) environment-variables)
     (plist-put launch-args :name session-name)
@@ -60,10 +63,10 @@ before starting the debug process."
          (dap--initialize-message type)
          (dap--session-init-resp-handler
           debug-session
-          (lambda (initialize-result)
+          (-lambda ((&hash "body" capabilities))
             (-let [debug-sessions (dap--get-sessions)]
 
-              (setf (dap--debug-session-initialize-result debug-session) initialize-result)
+              (ht-update! (dap--debug-session-current-capabilities debug-session) capabilities)
 
               (dap--set-sessions (cons debug-session debug-sessions)))
             (dap--send-message
@@ -97,7 +100,9 @@ before starting the debug process."
   (idee-jump-to-non-ide-window)
   (recenter-top-bottom)
   (when (not (idee-hydra-visible-p)) (dap-hydra))
-  (when (not (get-buffer-window "*dap-ui-locals*")) (dap-ui-locals)))
+  (when (not (get-buffer-window "*dap-ui-locals*")) (dap-ui-locals))
+  (dap-ui-expressions))
+
 
 (ad-activate 'dap--go-to-stack-frame)
 

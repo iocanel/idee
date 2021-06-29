@@ -144,7 +144,7 @@ The target module will be the current, unless BASE-PATH has been specified, in w
   "A simple java factory archetype."
   (interactive)
   (let ((fqcn (read-string "Fully qualified class name:")))
-    (idee-java-archetype-create fqcn "abstract-factory")))
+    (idee-java-archetype-create-class fqcn "abstract-factory")))
 
 ;;
 ;; Snippets
