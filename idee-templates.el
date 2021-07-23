@@ -187,7 +187,7 @@
 (defun idee--templates-init ()
   "Initialize idee templates."
 
-  (advice-add 'projectile-switch-project :after 'idee-templates-project-init)
+  (add-hook 'projectile-after-switch-project-hook 'idee-template-initialize-project)
 
   (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
   (when (not (file-exists-p idee-resources-dir)) (mkdir idee-resources-dir t))

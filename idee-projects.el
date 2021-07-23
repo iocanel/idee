@@ -253,7 +253,7 @@
 ;;;###autoload
 (defun idee--projects-init ()
   "Initialize idee projects."
-  (advice-add 'projectile-switch-project :after 'idee-project-initialize-project))
+  (add-hook 'projectile-after-switch-project-hook 'idee-project-initialize-project))
 
 
 (provide 'idee-projects)
