@@ -181,10 +181,11 @@
     (minimize-window)
     (idee-repl)
     (evil-window-set-height 12)))
+
 ;;;###autoload
 (defun idee-diagnostics-subview ()
   (flymake-show-diagnostics-buffer)
-  (let ((name (flymake--diagnostics-buffer-name)))
+  (let ((name (car (idee-matching-buffer-names "^\*Flymake diagnostics"))))
   (idee-jump-to-non-ide-window)
   (delete-other-windows)
   (split-window-below)
@@ -458,7 +459,8 @@ VISITED is an optional list with windows already visited."
   (idee-repl-visible-window))
 (defun idee-diagnostics-visible-window ()
   "Return the visible diagnostics-window."
-  (car (idee-get-visible-windows (flymake--diagnostics-buffer-name))))
+  (car (idee-get-visible-windows (car (idee-matching-buffer-names "^\*Flymake diagnostics")))))
+
 (defun idee-diagnostics-visible-p ()
   "Return non-nil if diagnostics is visible."
   (idee-diagnostics-visible-window))
