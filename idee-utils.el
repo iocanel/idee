@@ -23,7 +23,10 @@
 (require 'idee-vars)
 (require 'projectile)
 
-;;; File funtcionts
+;;
+;; File funtcionts
+;;
+
 ;;;###autoload
 (defun idee-read-file (f)
   "Read the content of file F."
@@ -59,7 +62,7 @@
   (file-name-nondirectory (buffer-file-name)))
 
 ;;
-;;; String Functions
+;; String Functions
 ;;
 
 ;;;###autoload
@@ -99,6 +102,7 @@
 
 ;;
 ;; Original source: https://emacs.stackexchange.com/questions/7148/get-all-regexp-matches-in-buffer-as-a-list
+;;
 ;;;###autoload
 (defun idee-string-match-as-list (regexp string)
   "Get a list of all REGEXP matches in a STRING."
@@ -131,7 +135,10 @@
     nil))
 
 
-;;; List functions
+;;
+;; List functions
+;;
+
 ;;;###autoload
 (defun idee-strip-duplicates (list)
   "Strip duplicate items from LIST."
@@ -141,6 +148,14 @@
         (setq new-list (cons (car list) new-list)))
       (setq list (cdr list)))
     (nreverse new-list)))
+
+;;
+;; Buffers
+;;
+
+(defun idee-matching-buffer-names (regex)
+  "Return a list of buffers names that matches the regexp"
+    (seq-filter (lambda (b) (string-match regex b)) (mapcar 'buffer-name (buffer-list))))
 
 (defun idee--item-to-kind (item)
   "Convert an ITEM to its kind."
