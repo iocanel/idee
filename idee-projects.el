@@ -181,6 +181,21 @@
             ((cl-search "*helm-ag*" name) (kill-buffer name))
             ((cl-search "*grep*" name) (kill-buffer name)))))))
 
+(defun idee-close-non-project-buffers (&optional project-dir)
+  (interactive)
+  (let* ((project-dir (or project-dir (projectile-project-root)))
+         (project (projectile-ensure-project (or project-dir (projectile-project-root))))
+         (project-name (projectile-project-name project))
+         (project-dir-name (file-name-nondirectory (directory-file-name (file-name-directory project-dir)))))
+       (when project-dir
+         (progn
+           (dolist (buffer (buffer-list))
+             (let* ((name (buffer-name buffer))
+                    (file-name (buffer-file-name buffer)))
+               (when (not (projectile-project-buffer-p buffer project-dir))
+                 (message "Killing buffer: %s that does not belong to project: %s." name project-dir)
+                 (kill-buffer name))))))))
+
 (defun idee-project-init (&optional path)
   (interactive)
   "Initialize project."

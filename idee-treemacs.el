@@ -110,7 +110,7 @@
              (path (treemacs-project->path (car project))))
         (when path
           (projectile-switch-project-by-name path)
-          (idee-refresh-view)
+          (idee-reset-view)
           (idee-jump-to-non-ide-window)))))
 
 
