@@ -55,14 +55,13 @@
 (defvar idee-messages-active t)
 (defvar idee-grep-active nil)
 (defvar idee-helm-ag-active nil)
-(defvar idee-xref-active nil)
 (defvar idee-eww-active nil)
 (defvar idee-xwidget-webkit-active nil)
 (defvar idee-side-by-side-active nil)
 (defvar idee-bottom-buffer-command 'idee-projectile-run-eshell)
 
 
-(defvar idee-selected-window nil "The selected window. This is used to optionally define which window should be selected after refresh.")
+(defvar idee-selected-window nil "The selected window. This should be selected after refresh.")
 (defvar idee-primary-buffer nil "Primary buffer")
 (defvar idee-side-by-side-buffer nil "Secondary buffer")
 
@@ -71,29 +70,19 @@
 (defvar idee-repl-buffer-prompt nil "The prompt of the repl buffer. This is framework/lang specific.")
 
 ;; A list with all component switches that are meant to be placed in the bottom
-(defvar idee-bottom-area-switch-list '(idee-cli-active idee-repl-active idee-diagnostics-active idee-errors-active idee-messages-active idee-grep-active idee-helm-ag-active idee-xref-active))
+(defvar idee-bottom-area-switch-list '(idee-cli-active idee-repl-active idee-diagnostics-active idee-errors-active idee-messages-active idee-grep-active idee-helm-ag-active))
 
 (defvar idee-right-area-switch-list '(idee-eww-active idee-xwidget-webkit-active idee-side-by-side-active))
 
-;;
-;; Quit / Kill / Burry Listener functions
-;;
 
-;; These list hold functions that are called when we need to send a buffer away via (quit-window, kill-current-buffer, burry-buffer).
-;; The idea is that these functions will be applied to specific buffers and produce a `hide and kill buffer` effect, but may be used for other situations too, since they will override the behavior of the function they intercept.
-;; In other words, when  there is a match, the intercepted function will not be called.
-;; Each function needs to check if the current buffer is a matching buffer and if so perform the desired action, returning non-nil if a matching buffer was found.
-;; Examples:
-;;;; 1. When killing *Messages* also close remaining window
-;;;; 2. When closing *eshell xxx* kill both window and buffer
-(defvar idee-quit-window-listener-list '(idee-kill-messages-and-window idee-kill-eshell-and-window idee-kill-grep-and-window idee-kill-helm-ag-and-window idee-kill-eww-and-window idee-kill-xref-and-window) "A list of quit-window functions")
-(defvar idee-kill-current-buffer-listener-list '(idee-kill-messages-and-window idee-kill-eshell-and-window idee-kill-grep-and-window idee-kill-helm-ag-and-window idee-kill-eww-and-window idee-kill-xref-and-window) "A list of kill-current-buffer listener functions")
-(defvar idee-burry-buffer-listener-list '() "A list of burry-buffer listener functions")
+(defcustom idee-eww-url-default "http://duckduckgo.com" "The default eww url." :group 'idee-view :type 'string)
+(defvar idee-eww-url () "The url the browser should point at when opened.")
 
 ;;; The following is based on Protesilaos Stavrou configuration: https://gitlab.com/protesilaos/dotfiles/-/blob/master/emacs/.emacs.d/emacs-init.org
 (defvar idee-focus-window-configuration nil "Current window configuration.")
 (defvar idee-focus-treemacs-visible nil "Additional varaible to hold info about treemacs, as idee-window-configuration does not apply to treemacs.")
 (defvar idee-focus-fringe-mode fringe-mode)
+
 (define-minor-mode idee-focus-mode
   "Toggle between multiple windows and single window. This is the equivalent of maximising a window."
   :lighter " [M]"
@@ -141,6 +130,8 @@
 (defun idee-reset-view()
   "Reset the view by closing all buffers and keep the first non ide buffer available."
   (interactive)
+  (setq idee-side-by-side-buffer nil
+        idee-side-by-side-active nil)
   (idee-jump-to-non-ide-window ())
   ;; In some cases, it's better to swtich (e.g. when current bufer is a side buffer
   (when (and idee-primary-buffer (idee-ide-buffer-p (buffer-name (current-buffer)))
@@ -182,8 +173,7 @@
         (idee-repl-active (idee-repl-subview))
         (idee-diagnostics-active (idee-diagnostics-subview))
         (idee-errors-active (idee-errors-subview))
-        (idee-messages-active (idee-messages-subview))
-        (idee-xref-active (idee-xref-subview)))
+        (idee-messages-active (idee-messages-subview)))
   ;; right area
   (cond (idee-eww-active (idee-eww-subview))
         (idee-xwidget-webkit-active (idee-xwidget-webkit-subview))
@@ -273,14 +263,6 @@
     (evil-window-set-height 12)))
 
 ;;;###autoload
-(defun idee-xref-subview ()
-  (split-window-below)
-  (other-window 1)
-  (switch-to-buffer "*xref*")
-  (minimize-window)
- (evil-window-set-height 12))
-
-;;;###autoload
 (defun idee-eww-subview ()
   (idee-jump-to-non-ide-window)
   (split-window-right)
@@ -320,11 +302,13 @@
                     (rename-buffer side-name)
                     (setq idee-side-by-side-buffer side-name))
                   (kill-buffer tmp-buffer))))))
+
 (defun idee-open-side-by-side ()
   (interactive)
   "Open a new file in the side buffer."
   (setq idee-side-by-side-buffer nil)
   (idee-switch-side-by-side-on))
+
 ;;;###autoload
 (defun idee-terminal-view()
   "Maximize terminal in the project root."
@@ -510,12 +494,6 @@ VISITED is an optional list with windows already visited."
 (defun idee-helm-ag-visible-p ()
   "Return non-nil if helm-ag is visible."
   (idee-helm-ag-visible-window))
-(defun idee-xref-visible-window ()
-  "Return the xref if visible."
-  (car (idee-get-visible-windows "*xref*")))
-(defun idee-xref-visible-p ()
-  "Return non-nil if xref is visible."
-  (idee-xref-visible-window))
 (defun idee-eww-visible-window ()
   "Return the eww window if visible."
   (car (idee-get-visible-windows "*eww*")))
@@ -631,6 +609,37 @@ PIVOT indicates how many windows should be switched at the end of the operation.
       (funcall (intern (format "idee-toggle-%s" ,name)))
     (idee-refresh-view)))))
 
+(defun idee-side-by-side ()
+  (interactive)
+  "Display the side by side buffer."
+  (if (and idee-side-by-side-buffer (get-buffer idee-side-by-side-buffer))
+      (display-buffer idee-side-by-side-buffer)
+    (progn
+      (projectile--find-file-dwim nil 'find-file-other-window) 
+      (let* ((name (buffer-name (current-buffer)))
+             (actual-name (if (idee-starts-with "*side " name) (substring name 6 (- (length name)  7)) name))
+             (side-name (format "*side %s*" actual-name)))
+        (setq idee-side-by-side-buffer side-name
+              idee-side-by-side-active t)
+        (rename-buffer side-name)))))
+
+(defun idee-messages ()
+  (interactive)
+  "Display the messages buffer."
+(display-buffer "*Messages*"))
+
+
+(defun idee-eww ()
+  (interactive)
+  "Open the browser."
+  (idee-with-project-settings "eww.el" idee-eww-url
+                              (eww (or idee-eww-url idee-eww-url-default))))
+
+(defun idee-xwidget-webkit ()
+  (interactive)
+  "Open the browser."
+  (idee-with-project-settings "eww.el" idee-eww-url
+                              (xwidget-webkit-browse-url (or idee-eww-url idee-eww-url-default))))
 ;;
 ;; Create component view functions
 ;;
@@ -644,27 +653,28 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 (idee--create-view-component "cli" idee-projectile-run-eshell idee-cli-visible-window idee-cli-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-repl "idee-views")
 ;;;###autoload (autoload 'idee-switch-repl-on "idee-views")
-(idee--create-view-component "repl" nil idee-repl-visible-window idee-repl-active idee-bottom-area-switch-list 0)
+(idee--create-view-component "repl" idee-repl idee-repl-visible-window idee-repl-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-messages "idee-views")
-(idee--create-view-component "messages" nil  idee-messages-visible-window idee-messages-active idee-bottom-area-switch-list 0)
+(idee--create-view-component "messages" idee-messages  idee-messages-visible-window idee-messages-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-grep "idee-views")
-(idee--create-view-component "grep" nil idee-grep-visible-window idee-grep-active idee-bottom-area-switch-list 0)
+(idee--create-view-component "grep" projectile-grep idee-grep-visible-window idee-grep-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-helm-ag "idee-views")
-(idee--create-view-component "helm-ag" helm-ag  idee-helm-ag-visible-window idee-helm-ag-active idee-bottom-area-switch-list 0)
-;;;###autoload (autoload 'idee-toggle-xref "idee-views")
-(idee--create-view-component "xref"  nil idee-xref-visible-window idee-xref-active idee-bottom-area-switch-list 0)
+(idee--create-view-component "helm-ag" helm-do-ag-project-root  idee-helm-ag-visible-window idee-helm-ag-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-eww "idee-views")
-(idee--create-view-component "eww" eww idee-eww-visible-window idee-eww-active idee-right-area-switch-list 0)
+(idee--create-view-component "eww" idee-eww idee-eww-visible-window idee-eww-active idee-right-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-xwidget-webkit "idee-views")
-(idee--create-view-component "xwidget-webkit" nil idee-xwidget-webkit-visible-window idee-xwidget-webkit-active idee-right-area-switch-list 0)
+(idee--create-view-component "xwidget-webkit" idee-xwidget-webkit idee-xwidget-webkit-visible-window idee-xwidget-webkit-active idee-right-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-side-by-side "idee-views")
-(idee--create-view-component "side-by-side" nil  idee-side-by-side-visible-window idee-side-by-side-active idee-right-area-switch-list 0)
+(idee--create-view-component "side-by-side" idee-side-by-side  idee-side-by-side-visible-window idee-side-by-side-active idee-right-area-switch-list 0)
+
 (defun idee-repl--get-buffer ()
   "Return first matching repl buffer."
   (car (idee-repl--get-buffers)))
+
 (defun idee-repl--get-buffers ()
   "Return matching repl buffers."
   (seq-filter (lambda (b) (and idee-repl-buffer-prefix (string-prefix-p idee-repl-buffer-prefix (buffer-name b)))) (buffer-list)))
+
 (defun idee-repl-eval-string (s)
   "Evaluate S in the repl."
   (let* ((buffer (idee-repl--get-buffer))
@@ -684,141 +694,13 @@ PIVOT indicates how many windows should be switched at the end of the operation.
   "Evaluate region in the repl."
   (interactive "r")
   (idee-repl-eval-string (buffer-substring beginning end)))
+
 (defun idee-repl-eval-region-tooltip (beginning end)
   "Evaluate region in the repl and show result in a tooltip."
   (interactive "r")
   (let ((result (string-trim (idee-repl-eval-region beginning end))))
     (if (idee-string-blank result) (tooltip-show "Ok")
       (tooltip-show result))))
-;; Close and kill
-(defun idee-kill-eshell-and-window ()
-  "Kill the eshell window and buffer.  Return t if grep window was found."
-  (let ((buffer (current-buffer)))
-    (if (string-prefix-p "*eshell" (buffer-name buffer))
-        (progn
-          (kill-buffer-and-window)
-          (setq idee-cli-active nil)
-          (idee-refresh-view)
-          t)
-      nil)))
-
-(defun idee-kill-messages-and-window ()
-  "Kill the eshell window and buffer.  Return t if grep window was found."
-  (let ((buffer (current-buffer)))
-    (if (equal "*Messages*" (buffer-name buffer))
-        (progn
-          (kill-buffer-and-window)
-          (setq idee-messages-active nil)
-          (idee-refresh-view)
-          t)
-      nil)))
-
-(defun idee-kill-grep-and-window ()
-  "Kill the grep window and buffer.  Return t if grep window was found."
-  (let ((buffer (current-buffer)))
-    (if (equal "*grep*" (buffer-name buffer))
-        (progn
-          (kill-buffer-and-window)
-          (setq idee-grep-active nil)
-          (idee-refresh-view)
-          t)
-      nil)))
-
-(defun idee-kill-helm-ag-and-window ()
-  "Kill the helm-ag window and buffer.  Return t if helm-ag/edit window was found."
-  (let ((buffer (current-buffer)))
-    (if (or (equal "*helm-ag*" (buffer-name buffer)) (equal "*helm-ag-edit*" (buffer-name buffer)))
-        (progn
-          (kill-buffer-and-window)
-          (setq idee-helm-ag-active nil)
-          (idee-refresh-view)
-          t)
-      nil)))
-
-(defun idee-kill-xref-and-window ()
-  "Kill the xref window and buffer.  Return t if grep window was found."
-  (let ((buffer (current-buffer)))
-    (if (equal "*xref*" (buffer-name buffer))
-        (progn
-          (kill-buffer-and-window)
-          (setq idee-xref-active nil)
-          (idee-refresh-view)
-          t)
-      nil)))
-
-(defun idee-kill-eww-and-window ()
-  "Kill the eww window and buffer.  Return t if grep window was found."
-  (let ((buffer (current-buffer)))
-    (if (equal "*eww*" (buffer-name buffer))
-        (progn
-          (kill-buffer-and-window)
-          (setq idee-eww-active nil)
-          (idee-refresh-view)
-          t)
-      nil)))
-
-(defun idee-on-delete-other-windows-internal (orig-fun &rest args)
-    (let ((window (or (car args) (selected-window))))
-      (when (not (window-parameter window 'window-side))
-                 (apply orig-fun args))))
-
-(defun idee-on-projectile-switch-project-by-name (orig-fun &rest args)
-  "Intercept projectile-switch-project-by-name to get a hold of the name."
-  (apply orig-fun args)
-  (let ((project-name (car args)))
-    (idee-project-init project-name)
-    (idee-project-open-view project-name)))
-
-(defadvice kill-current-buffer (around idee-on-kill-current-buffer (&optional kill window))
-  "Handles things when quiting window."
-  (let ((match nil))
-    (dolist (func idee-kill-current-buffer-listener-list match)
-      (when (not match) (setq match (funcall func))))
-    (when (not match) ad-do-it)))
-
-(defadvice bury-buffer (around idee-on-bury-buffer (&optional buffer-or-name))
-  "Handles things when quiting window."
-  (let ((match nil))
-    (dolist (func idee-burry-buffer-listener-list match)
-      (when (not match) (setq match (funcall func))))
-    (when (not match) ad-do-it)))
-                 
-(defadvice quit-window (around idee-on-quit-window (&optional kill window))
-  "Handles things when quiting window."
-  (let ((match nil))
-    (dolist (func idee-quit-window-listener-list match)
-      (when (not match) (setq match (funcall func))))
-    (when (not match) ad-do-it)))
-
-(defadvice pop-to-buffer-same-window (around idee-pop-to-buffer-same-window (buffer &optional norecordd))
-  "Handles things when quiting window."
-  (let* ((name (buffer-name (current-buffer)))
-         (is-side (idee-starts-with name "*side ")))
-    (if is-side
-      (let* ((new-name (cond ((stringp buffer) buffer) ((bufferp buffer) (buffer-name buffer)) (:else nil)))
-             (new-side-name (if new-name  (format "*side %s*" new-name) nil)))
-             ad-do-it
-             (rename-buffer new-side-name)
-             (setq idee-side-by-side-buffer new-side-name)
-             (kill-buffer name))
-      ad-do-it)))
-
-;;;###autoload
-(defun idee--views-init ()
-  "Initialize idee views."
-  (ad-activate 'bury-buffer)
-  (ad-activate 'quit-window)
-  (ad-activate 'kill-current-buffer)
-  (ad-activate 'pop-to-buffer-same-window)
-  (advice-add 'delete-other-windows-internal :around #'idee-on-delete-other-windows-internal)
-  (advice-add 'projectile-switch-project-by-name :around #'idee-on-projectile-switch-project-by-name)
-
-  (advice-add 'next-error :after 'idee-after-next-error)
-
-  (advice-add 'helm-ag--edit :after 'idee-refresh-view)
-  (advice-add 'helm-ag-edit--commit :after 'idee-refresh-view)
-  (advice-add 'helm-ag-edit--abort :after 'idee-refresh-view)
-  (advice-add 'lsp-show-xrefs :after 'idee-refresh-view))
 
 (provide 'idee-views)
 ;;; idee-views.el ends here

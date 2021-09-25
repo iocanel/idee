@@ -49,7 +49,6 @@
   (idee--projects-init)
   (idee--templates-init)
   (idee--headers-init)
-;  (idee--views-init)
   (idee--visitors-init)
   (idee--evil-init)
 

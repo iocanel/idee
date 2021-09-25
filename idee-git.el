@@ -97,7 +97,7 @@ message and add a section in the respective process buffer."
   (interactive)
   "Do shit."
   (let* ((commit (idee-git-select-commit))
-         (new-files (idee-git-get-new-files commit))
+         (new-files (idee-git-get-new-file-names commit))
          (first-file (car new-files)))
        (message "%s" (idee-git-get-file-from-commit commit first-file))))
 

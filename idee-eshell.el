@@ -36,7 +36,7 @@
 
 (defcustom idee-eshell-cat-alias-enabled t "/dev/clip aware cat alias toggle." :group 'idee-eshell :type 'boolean)
 (defcustom idee-eshell-edit-alias-enabled t "Edit alias toggle." :group 'idee-eshell :type 'boolean)
-(defcustom idee-eshell-save-on-shell-enabled t "Save on shell toggle.  Save on shell will save all buffers each time the shell is used." :group 'idee-eshell :type 'boolean)
+(defcustom idee-eshell-save-on-shell-enabled t "Save on shell toggle." :group 'idee-eshell :type 'boolean)
 (defcustom idee-eshell-demo-it-enabled nil "Demo-it for eshell feature toggle." :group 'idee-eshell :type 'string)
 (defcustom idee-eshell-demo-it-speed :fast "Demo-it for eshell typing speed." :group 'idee-eshell  :type '(choice (const :tag "fast" :fast)
                  (const :tag "faster"  :faster)

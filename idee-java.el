@@ -132,7 +132,7 @@ The target module will be the current, unless BASE-PATH has been specified, in w
     (let* ((spi-file-name (concat (idee-module-root-dir) (format "src/main/resources/META-INF/services/%s" interface))))
       (when (file-exists-p spi-file-name)
         (set-visited-file-name spi-file-name)
-        (insert-file spi-file-name))
+        (insert-file-contents spi-file-name))
 
       (if (not (idee-buffer-contains-string impl))
           (progn
@@ -176,7 +176,7 @@ The target module will be the current, unless BASE-PATH has been specified, in w
   "Create snippet from file."
   (with-temp-buffer
     (save-excursion
-        (insert-file f)
+        (insert-file-contents f)
         (goto-char (point-min))
         (idee-remove-comment-at-point java-comment-style)
         (let* ((content (buffer-substring-no-properties (point-min) (point-max)))

@@ -107,10 +107,6 @@
   "Visual represntation of the messages visibility."
   (if (idee-messages-visible-p) (intern "*") (intern "_")))
 
-(defun idee-hydra--xref-flag ()
-  "Visual represntation of the xref visibility."
-  (if (idee-xref-visible-p) (intern "*") (intern "_")))
-
 (defun idee-hydra--eww-flag ()
   "Visual represntation of the eww visibility."
   (if (idee-eww-visible-p) (intern "*") (intern "_")))
@@ -131,6 +127,12 @@
         ((file-exists-p (concat (idee-project-root-dir) "header.txt")) (intern "project"))
         (t (intern "none"))))
 
+;; Hydra helpers
+(defun idee-hydra--selected-url ()
+  "List all selected profiles"
+  (idee-with-project-settings "eww.el" idee-eww-url
+      (or (mapcar 'intern idee-eww-url) idee-eww-url-default)))
+
 ;;;###autoload (autoload 'idee-hydra/body "idee-hydra")
 (defhydra idee-hydra (:hint none :exit t)
   "
@@ -142,12 +144,12 @@
    _F_: new file   _r_: indent region      _=_: implementation   _v_: find variable                       ^^_d_: ?d? diagnostics
    _b_: by side    _T_: ?T? tab enabled    _<_: back                                                    ^^^^_e_: ?e? errors
    _R_: recent     _W_: ?W? tab width      _>_: forward                                                 ^^^^_m_: ?m? messages
-   _S_: save all   _s_: insert snippet     _._: set mark                                               ^^^^ _x_: ?x? xrefs
-   _C_: close      _a_: code actions                                                                  ^^^^^^_w_: ?w? eww
-   _B_: build      _H_: apply header (?H?)                                                        ^^^^^^^^^^_X_: ?X? xwidget webkit   
+   _S_: save all   _s_: insert snippet     _._: set mark                                                ^^^^_w_: ?w? eww [%(idee-hydra--selected-url)]
+   _C_: close      _a_: code actions                                                                  ^^^^^^_x_: ?x? xwidget webkit [%(idee-hydra--selected-url)]       
+   _B_: build      _H_: apply header (?H?)                                                       
    _V_: vcs        _h_: select headers 
-                                                                                                  ^^^^^^^^^^_0_: ?0? terminal
-                                                                                                  ^^^^^^^^^^_1_: ?1? ide
+                                                                                                  ^^^^^^^^^^_0_: reset
+                                                                                                  ^^^^^^^^^^_1_: ?1? terminal
                                                                                                   ^^^^^^^^^^_2_: ?2?   
                                                                                                   ^^^^^^^^^^_3_: ?3? repl
    [_q_]: quit
@@ -186,18 +188,17 @@
   ("r" idee-run-or-eval)
   ("u" idee-test)
 
-  ("1" idee-ide-view (if (eq idee-current-view 'idee-ide-view) "[*]" "[ ]"))
-  ("2" idee-toggle-side-by-side (if (idee-side-by-side-visible-p) (format "[*] side by side: (%s)" (idee-hydra--side-by-side-buffer)) "[ ] side by side"))
+  ("0" idee-reset-view) 
+  ("1" idee-terminal-view (if (eq idee-current-view 'idee-terminal-view) "[*]" "[ ]"))
+  ("2" idee-toggle-side-by-side (if (and idee-side-by-side-buffer (get-buffer idee-side-by-side-buffer)) (format "[*] side by side: (%s)" (idee-hydra--side-by-side-buffer)) "[ ] side by side"))
   ("3" idee-toggle-repl (if (idee-repl-visible-p) "[*]" "[ ]"))
-  ("0" idee-terminal-view (if (eq idee-current-view 'idee-terminal-view) "[*]" "[ ]"))
   ("t" idee-toggle-tree (if (eq (treemacs-current-visibility) 'visible) "[*]" "[ ]"))
   ("c" idee-toggle-cli (if (idee-cli-visible-p) "[*]" "[ ]"))
   ("d" idee-toggle-diagnostics (if (idee-diagnostics-visible-p) "[*]" "[ ]"))
   ("e" idee-toggle-errors (if (idee-errors-visible-p) "[*]" "[ ]"))
   ("m" idee-toggle-messages (if (idee-messages-visible-p) "[*]" "[ ]"))
-  ("x" idee-toggle-xref (if (idee-xref-visible-p) "[*]" "[ ]"))
   ("w" idee-toggle-eww (if (idee-eww-visible-p) "[*]" "[ ]"))
-  ("X" idee-toggle-xwidget-webkit (if (idee-xwidget-webkit-visible-p) "[*]" "[ ]"))
+  ("x" idee-toggle-xwidget-webkit (if (idee-xwidget-webkit-visible-p) "[*]" "[ ]"))
   ("q" nil "quit"))
 
 

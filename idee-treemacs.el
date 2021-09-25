@@ -154,7 +154,7 @@
   ("S" idee-treemacs-switch-to-project-workspace)
   ("E" treemacs-edit-workspaces)
   ("F" treemacs-finish-edit)
-  ("t" idee-toggle-tree (if (eq (treemacs-current-visibility) 'visible) "[*]" "[ ]") :exit nil)
+  ("t" treemacs (if (eq (treemacs-current-visibility) 'visible) "[*]" "[ ]") :exit nil)
   ("h" treemacs-toggle-show-dotfiles (if treemacs-show-hidden-files "[*]" "[ ]") :exit nil)
   ("c" idee-treemacs-collapse-dir-toggle :exit nil)
   ("g" magit-status)
