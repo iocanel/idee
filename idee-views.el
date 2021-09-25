@@ -139,7 +139,7 @@
                (message "No project buffer visible, switching to %s." (buffer-name idee-primary-buffer))
                (switch-to-buffer idee-primary-buffer))))
   (delete-other-windows-internal)
-  (if (and idee-tree-enabled idee-tree-active)
+  (if (and idee-tree-enabled (not (eq 'visible (treemacs-current-visibility)))
       (progn
         (treemacs--init (projectile-project-root))
         ;; we remove the mode-line to hide the treemacs label
@@ -364,16 +364,13 @@ VISITED is an optional list with windows already visited."
 (defun idee-toggle-tree ()
   "Toggle the tree."
   (interactive)
-  (idee-update-tree-state)
-  (if idee-tree-enabled
+  (if (and idee-tree-enabled (not (eq 'visible (treemacs-current-visibility))))
       (progn
         (setq idee-tree-enabled nil)
-        (setq idee-tree-active nil)
-        (idee-refresh-view))
+        (treemacs))
     (progn
       (setq idee-tree-enabled t)
-      (setq idee-tree-active t)
-      (idee-refresh-view))))
+      (treemacs))))
 
 ;;;###autoload
 (defun idee-toggle-helm-ag-or-grep  ()
