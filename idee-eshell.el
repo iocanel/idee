@@ -25,7 +25,6 @@
 (require 'esh-mode)
 (require 'em-alias)
 (require 'em-hist)
-(require 'demo-it)
 (require 'projectile)
 
 
