@@ -27,8 +27,6 @@
 (require 'idee-eshell)
 (require 'idee-visitors)
 
-(require 'demo-it)
-
 (defcustom idee-quarkus-version "1.0.1.Final" "The quarkus version." :group 'idee-quarkus :type 'string)
 (defcustom idee-quarkus-remote-dev-url nil "The remote dev url." :group 'idee-quarkus :type 'string)
 (defcustom idee-quarkus-init-group-id "org.acme" "The initial value for group-id in the quarkus project factory." :group 'idee-quarkus :type 'string)

@@ -42,7 +42,6 @@
 
 ; Eshell
 (depends-on "queue")
-(depends-on "demo-it")
 (depends-on "counsel")
 
  ; Golang
