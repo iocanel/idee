@@ -19,7 +19,6 @@
 ;;; Code:
 (require 'seq)
 (require 'yasnippet)
-(require 'editorconfig)
 (require 'idee-vars)
 (require 'projectile)
 
@@ -69,7 +68,7 @@
 (defun idee-string-blank (string)
   "Return non-nil if STRING start is blank."
   (let* ((transformed
-          (replace-in-string "\n" "" (replace-in-string "\r" "" (replace-in-string "\t" "" (string-trim string))))))
+          (replace-regexp-in-string (regexp-quote "\n") "" (replace-regexp-in-string (regexp-quote "\r") "" (replace-regexp-in-string (regexp-quote "\t") "" (string-trim string))))))
     (if (= 0 (length transformed)) t nil)))
 
 (defun idee-string-up-to (string prefix)

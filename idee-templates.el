@@ -186,7 +186,6 @@
 ;;;###autoload
 (defun idee--templates-init ()
   "Initialize idee templates."
-
   (add-hook 'projectile-after-switch-project-hook 'idee-template-initialize-project)
 
   (add-to-list 'warning-suppress-types '(yasnippet backquote-change))

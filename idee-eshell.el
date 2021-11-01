@@ -36,12 +36,6 @@
 (defcustom idee-eshell-cat-alias-enabled t "/dev/clip aware cat alias toggle." :group 'idee-eshell :type 'boolean)
 (defcustom idee-eshell-edit-alias-enabled t "Edit alias toggle." :group 'idee-eshell :type 'boolean)
 (defcustom idee-eshell-save-on-shell-enabled t "Save on shell toggle." :group 'idee-eshell :type 'boolean)
-(defcustom idee-eshell-demo-it-enabled nil "Demo-it for eshell feature toggle." :group 'idee-eshell :type 'string)
-(defcustom idee-eshell-demo-it-speed :fast "Demo-it for eshell typing speed." :group 'idee-eshell  :type '(choice (const :tag "fast" :fast)
-                 (const :tag "faster"  :faster)
-                 (const :tag "medium"  :medium)
-                 (const :tag "slow"    :slow)
-                 (const :tag "instant" :instant)))
 
 (defun idee-eshell-cleanup  ()
   "Cleanup eshell queues and flags."
@@ -133,10 +127,7 @@
   ;; This also helps, if left over chars or half written commands are there.
   (setq idee-eshell-command-inserting t)
   (when (< (point) (point-max)) (kill-line))
-
-  (if (and idee-eshell-demo-it-enabled (require 'demo-it nil t))
-      (demo-it-insert str idee-eshell-demo-it-speed)
-    (insert str))
+    (insert str)
 
   (setq idee-eshell-command-inserting nil))
 

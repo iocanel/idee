@@ -46,25 +46,35 @@
 
 (defun idee-lsp-close-workspace ()
   "Close the current workspace."
-    (when (lsp-workspaces) (lsp-shutdown-workspace)))
+  (let ((workspace (idee-lsp-get-current-workspace)))
+    (when workspace (lsp-workspace-shutdown workspace))))
 
-(defun idee-lsp-switch-workspace (&optional w)
-  "Switch to workspace W."
+(defun idee-lsp-switch-workspace (&optional dir)
+  "Switch to workspace directory DIR."
   (let* ((current (treemacs-current-workspace))
          (name (if current (treemacs-workspace->name current) nil))
-         (workspace
+         (workspace (idee-lsp-get-current-workspace))
+         (workspace-dir
           (cond
-           (w w)
+           (dir dir)
            ((and name idee-lsp-workspace-per-project-enabled (f-join (f-join (locate-user-emacs-file "lsp") "workspace") name)))
            (t (locate-user-emacs-file "workspace")))))
 
-    (make-directory workspace t)
-    (message (format "Using LSP workspace: %s." workspace))
-    (dolist (element idee-lsp-before-workspace-restart-hook)
-      (funcall element workspace))
+    (when workspace-dir
+      (make-directory workspace-dir t)
+      (message (format "Using LSP workspace: %s." workspace-dir))
+      (dolist (element idee-lsp-before-workspace-restart-hook)
+        (funcall element workspace-dir)))
 
-    (setq lsp-session-file (f-join workspace ".lsp-session-v1"))
-    (when (lsp-workspaces) (lsp-restart-workspace))))
+    (when workspace
+      (setq lsp-session-file (f-join workspace ".lsp-session-v1"))
+      (when (lsp-workspaces) (lsp-workspace-restart workspace)))))
+
+(defun idee-lsp-get-current-workspace ()
+  (let ((project-root (projectile-project-root)))
+    (car (seq-filter (lambda (w) (eq 
+                                  (file-name-as-directory (file-truename project-root))
+                                  (file-name-as-directory (file-truename w)))) (lsp-workspaces)))))
 
 (defun idee-lsp-init ()
   (interactive)

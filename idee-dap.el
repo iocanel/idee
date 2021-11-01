@@ -20,6 +20,8 @@
 
 ;;; Commentary:
 
+;; Package-Requires: ((dap-mode "0.6"))
+
 ;;; Code:
 (require 'dap-mode)
 (require 'idee-eshell)
@@ -44,13 +46,14 @@ before starting the debug process."
                                    (cl-copy-list process-environment)
                                  process-environment))
           program-process)
-    (mapc (-lambda ((env . value)) (setenv env value)) environment-variables)
+    (mapc (-lambda ((env . value)) (setenv env value t)) environment-variables)
     (plist-put launch-args :name session-name)
 
     (when program-to-start (idee-with-project-shell
                                   (mapc (-lambda ((env . value)) (setenv env value)) environment-variables)
                                   (when cwd (insert (format "cd %s\n" cwd)))
                                   (insert program-to-start)))
+
     (when wait-for-port
       (dap--wait-for-port host port dap-connect-retry-count dap-connect-retry-interval))
 
@@ -72,6 +75,8 @@ before starting the debug process."
             (dap--send-message
              (dap--make-request request (-> launch-args
                                             (cl-copy-list)
+                                            (dap--plist-delete :dap-compilation)
+                                            (dap--plist-delete :dap-compilation-dir)
                                             (dap--plist-delete :cleanup-function)
                                             (dap--plist-delete :startup-function)
                                             (dap--plist-delete :dap-server-path)

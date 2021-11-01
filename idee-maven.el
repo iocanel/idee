@@ -581,13 +581,13 @@
 (defun idee-maven-local-artifact-ids  (group-id)
   "Retrieve all artifact ids found in the local maven repository, under GROUP-ID."
   (interactive)
-  (let* ((group-path (format "~/.m2/repository/%s" (replace-in-string "." "/" group-id))))
+  (let* ((group-path (format "~/.m2/repository/%s" (replace-regexp-in-string (regexp-quote ".") "/" group-id))))
     (cdr (cdr (mapcar 'file-name-nondirectory (seq-filter 'file-directory-p (directory-files group-path t)))))))
 
 (defun idee-maven-local-versions  (group-id artifact-id)
   "Retrieve all versions found in the local maven repository, under GROUP-ID and ARTIFACT-ID."
   (interactive)
-  (let* ((artifact-path (format "~/.m2/repository/%s/%s" (replace-in-string "." "/" group-id) artifact-id)))
+  (let* ((artifact-path (format "~/.m2/repository/%s/%s" (replace-regexp-in-string (regexp-quote ".") "/" group-id) artifact-id)))
     (cdr (cdr (mapcar 'file-name-nondirectory (seq-filter 'file-directory-p (directory-files artifact-path t)))))))
 
 ;;; Utilities

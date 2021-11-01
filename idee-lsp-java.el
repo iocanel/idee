@@ -83,10 +83,11 @@
                  (equal ".project" x))) (directory-files root)))
 
 ;;;###autoload
-(defun idee-lsp-java-switch-workspace (w)
+(defun idee-lsp-java-switch-workspace (workspace-dir)
   "Switch to workspace W."
-    (setq lsp-java-workspace-dir w)
-    (setq lsp-java-workspace-cache-dir (f-join lsp-java-workspace-dir ".cache")))
+  (when workspace-dir
+    (setq lsp-java-workspace-dir workspace-dir)
+    (setq lsp-java-workspace-cache-dir (f-join lsp-java-workspace-dir ".cache"))))
 
 ;;;###autoload
 (defun idee-visitor-lsp-java (root)

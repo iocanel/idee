@@ -103,7 +103,7 @@ The target module will be the current, unless BASE-PATH has been specified, in w
              (src-path (file-name-as-directory (or src-path "src/main/java")))
              (package (idee-java-package-of-fqcn fqcn))
              (class-name (substring fqcn (+ 1 (length package))))
-             (package-path (replace-in-string "." "/" package))
+             (package-path (replace-regexp-in-string (regexp-quote ".") "/" package))
              (class (concat base-path (format "%s/%s/%s.java" src-path package-path class-name))))
         (set-visited-file-name class)
         (insert archetype)
@@ -183,7 +183,7 @@ The target module will be the current, unless BASE-PATH has been specified, in w
                (class-name (idee-java-class-name-of f))
                (updated (concat
                          "`idee-header`\n" (replace-regexp-in-string "package[ ]+[a-zA-Z0-9\.-]+;" "`idee-java-package-line`"
-                                                                   (replace-in-string class-name idee-java-snippet-class-name content)))))
+                                                                   (replace-regexp-in-string (regexp-quote class-name) idee-java-snippet-class-name content)))))
           updated))))
 
 ;;; Visitor
