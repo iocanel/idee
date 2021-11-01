@@ -1,7 +1,6 @@
 * IDE for Emacs
 
-[[https://circleci.com/gh/iocanel/idee.svg?style=svg]]
-
+[[../../actions/workflows/build.yml/badge.svg]]
 
 Unified way to perform IDE-like tasks across multiple languages and frameworks in Emacs.
 

@@ -28,12 +28,8 @@ TAR     := dist/idee-$(VERSION).tar
 	git-release github-browse-release
 
 
-build : $(TARGETS)
-
-$(TARGETS) : $(SRCS) $(CASKDIR)
-	${CASK} clean-elc
-	${CASK} build
-
+compile :
+	${CASK} install
 
 dist : $(TAR)
 
