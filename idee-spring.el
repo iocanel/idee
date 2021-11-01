@@ -90,8 +90,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
   (setq projectile-project-root idee-spring-extract-dir)
   (projectile-switch-project-by-name idee-spring-extract-dir)
   (revert-buffer)
-  (dired idee-spring-extract-dir)
-  (idee-ide-view)))
+  (dired idee-spring-extract-dir)))
 
 ;;;###autoload
 (defun idee--spring-init ()

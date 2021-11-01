@@ -189,7 +189,7 @@
   ("u" idee-test)
 
   ("0" idee-reset-view) 
-  ("1" idee-terminal-view (if (eq idee-current-view 'idee-terminal-view) "[*]" "[ ]"))
+  ("1" idee-terminal-view (if (idee-cli-visible-p) "[*]" "[ ]"))
   ("2" idee-toggle-side-by-side (if (and idee-side-by-side-buffer (get-buffer idee-side-by-side-buffer)) (format "[*] side by side: (%s)" (idee-hydra--side-by-side-buffer)) "[ ] side by side"))
   ("3" idee-toggle-repl (if (idee-repl-visible-p) "[*]" "[ ]"))
   ("t" idee-toggle-tree (if (eq (treemacs-current-visibility) 'visible) "[*]" "[ ]"))

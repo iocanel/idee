@@ -139,7 +139,6 @@
     (idee-jump-to-non-ide-window)
     (dired path)
     (auto-revert-mode 1)
-    (idee-ide-view)
     (idee-switch-cli-on)
     (idee-refresh-view)
     (idee-eshell-project-command-enqueue commands)

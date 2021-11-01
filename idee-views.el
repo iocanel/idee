@@ -34,15 +34,11 @@
 ;;
 ;; State
 ;;
-
 (defcustom idee-tree-enabled-default t "Default state of the tree view" :group 'idee-view :type 'boolean)
-(defcustom idee-www-default-url nil "The url to use when opening the eww subview." :group 'idee-view :type 'boolean)
-(defcustom idee-eww-default-width 80 "The default width of the eww window" :group 'idee-view :type 'int)
-(defcustom idee-xwidget-webit-default-width 80 "The default width of the xwidget-webkit window" :group 'idee-view :type 'int)
+(defcustom idee-www-default-url nil "The url to use when opening the eww view." :group 'idee-view :type 'boolean)
 
 (defcustom idee-focus-center-buffer t "Flag to specify that the focus buffer needs to be centered." :group 'idee-view :type 'boolean) 
 (defcustom idee-focus-center-buffer-columns 160 "The number of columns of the centered buffer." :group 'idee-view :type 'int) 
-(defvar idee-current-view 'idee-ide-view)
 (defvar idee-tree-enabled idee-tree-enabled-default)
 
 ;; Active Components
@@ -80,7 +76,7 @@
 
 ;;; The following is based on Protesilaos Stavrou configuration: https://gitlab.com/protesilaos/dotfiles/-/blob/master/emacs/.emacs.d/emacs-init.org
 (defvar idee-focus-window-configuration nil "Current window configuration.")
-(defvar idee-focus-treemacs-visible nil "Additional varaible to hold info about treemacs, as idee-window-configuration does not apply to treemacs.")
+(defvar idee-focus-treemacs-visible nil "Treemacs visibility, as idee-window-configuration does not apply to treemacs.")
 (defvar idee-focus-fringe-mode fringe-mode)
 
 (define-minor-mode idee-focus-mode
@@ -103,7 +99,6 @@
       (when idee-focus-center-buffer (set-fringe-mode (/ (- (frame-pixel-width) (* idee-focus-center-buffer-columns (frame-char-width))) 2)))))
   (setq idee-focus-treemacs-visible (treemacs-current-visibility)))
 
-(setq idee-current-view 'idee-ide-view)
 
 ;; Functions
 
@@ -121,7 +116,6 @@
     (dolist (b idee-bottom-area-switch-list)
       (set b nil))
     (dired path)
-    (idee-ide-view)
     (idee-jump-to-non-ide-window)
     (magit-status-setup-buffer path)))
 
@@ -145,163 +139,8 @@
         ;; we remove the mode-line to hide the treemacs label
         (setq mode-line-format nil)))
   (idee-jump-to-non-ide-window)
-  (setq idee-primary-buffer (current-buffer)))
+  (setq idee-primary-buffer (current-buffer))))
 
-;;;###autoload
-(defun idee-ide-view()
-  "Switch to a traditional IDE view for the buffer.  (project tree, main buffer & terminal)."
-  (interactive)
-  (setq idee-current-view 'idee-ide-view)
-  (idee-jump-to-non-ide-window ())
-  ;; In some cases, it's better to swtich (e.g. when current bufer is a side buffer
-  (when (and idee-primary-buffer (idee-ide-buffer-p (buffer-name (current-buffer)))
-             (progn
-               (message "No project buffer visible, switching to %s." (buffer-name idee-primary-buffer))
-               (switch-to-buffer idee-primary-buffer))))
-  (delete-other-windows-internal)
-  (if (and idee-tree-enabled idee-tree-active)
-      (progn
-        (treemacs--init (projectile-project-root))
-        ;; we remove the mode-line to hide the treemacs label
-        (setq mode-line-format nil)))
-  (idee-jump-to-non-ide-window)
-  (setq idee-primary-buffer (current-buffer))
-  ;; bottom area
-  (cond (idee-grep-active (idee-grep-subview))
-        (idee-helm-ag-active (idee-helm-ag-subview))
-        (idee-cli-active (idee-cli-subview))
-        (idee-repl-active (idee-repl-subview))
-        (idee-diagnostics-active (idee-diagnostics-subview))
-        (idee-errors-active (idee-errors-subview))
-        (idee-messages-active (idee-messages-subview)))
-  ;; right area
-  (cond (idee-eww-active (idee-eww-subview))
-        (idee-xwidget-webkit-active (idee-xwidget-webkit-subview))
-        (idee-side-by-side-active (idee-side-by-side-subview))))
-
-;;;###autoload
-(defun idee-cli-subview ()
-  (when (not (idee-cli-visible-p))
-    (idee-split-and-follow-vertically)
-    (minimize-window)
-    (idee-projectile-run-eshell)
-    (evil-window-set-height 12)))
-(defun idee-repl-subview ()
-  (when (not (idee-repl-visible-p))
-    (idee-split-and-follow-vertically)
-    (minimize-window)
-    (idee-repl)
-    (evil-window-set-height 12)))
-
-;;;###autoload
-(defun idee-diagnostics-subview ()
-  (flymake-show-diagnostics-buffer)
-  (let ((name (car (idee-matching-buffer-names "^\*Flymake diagnostics"))))
-  (idee-jump-to-non-ide-window)
-  (delete-other-windows)
-  (split-window-below)
-  (other-window 1)
-  (switch-to-buffer name)
-  (minimize-window)
-  (evil-window-set-height 12)))
-
-;;;###autoload
-(defun idee-errors-subview ()
-  (flycheck-list-errors)
-  (idee-jump-to-non-ide-window)
-  (delete-other-windows)
-  (split-window-below)
-  (other-window 1)
-  (switch-to-buffer "*Flycheck errors*")
-  (minimize-window)
-  (evil-window-set-height 12))
-
-;;;###autoload
-(defun idee-messages-subview ()
-  (split-window-below)
-  (other-window 1)
-  (switch-to-buffer "*Messages*")
-  (minimize-window)
- (evil-window-set-height 12))
-
- (defun idee-grep-subview ()
-  (if (get-buffer "*grep*")
-      (progn
-        (split-window-below)
-        (other-window 1)
-        (switch-to-buffer "*grep*"))
-    (progn
-      (projectile-grep)
-      (idee-jump-to-non-ide-window)
-      (delete-other-windows)
-      (split-window-below)
-      (other-window 1)
-      (switch-to-buffer "*grep*")))
-  (minimize-window)
-  (evil-window-set-height 12))
-
-;;;###autoload
-(defun idee-helm-ag-subview ()
-  (when (and (require 'helm-projectile nil t) (require 'helm-ag nil t))
-    (cond
-     ((get-buffer "*helm-ag-edit*") (progn
-                                    (split-window-below)
-                                    (other-window 1)
-                                    (switch-to-buffer "*helm-ag-edit*")))
-     ((get-buffer "*helm-ag*") (progn
-                                    (split-window-below)
-                                    (other-window 1)
-                                    (switch-to-buffer "*helm-ag*")))
-     (t (progn
-        (helm-projectile-ag)
-        (idee-jump-to-non-ide-window)
-        (delete-other-windows)
-        (split-window-below)
-        (other-window 1)
-        (switch-to-buffer "*helm-ag*"))))
-    (minimize-window)
-    (evil-window-set-height 12)))
-
-;;;###autoload
-(defun idee-eww-subview ()
-  (idee-jump-to-non-ide-window)
-  (split-window-right)
-  (other-window 1)
-  (cond ((get-buffer "*eww*") (switch-to-buffer "*eww*"))
-        (t (progn
-             (if idee-www-default-url
-                 (eww idee-www-default-url)
-               (eww (format "http://localhost:%s" (idee-eshell-find-web-port))))
-             (switch-to-buffer "*eww*"))))
-  (evil-window-set-width idee-eww-default-width))
-
-(defun idee-xwidget-webkit-subview ()
-  (idee-jump-to-non-ide-window)
-  (split-window-right)
-  (other-window 1)
-  (cond ((get-buffer "*xwidget-webkit*") (switch-to-buffer "*xwidget-webkit*"))
-        (t (progn
-             (if idee-www-default-url
-                 (xwidget-webkit-browse-url idee-www-default-url)
-               (xwidget-webkit-browse-url (format "http://localhost:%s" (idee-eshell-find-web-port))))
-             (switch-to-buffer "*xwidget-webkit*"))))
-  (evil-window-set-width idee-xwidget-webit-default-width))
-
-(defun idee-side-by-side-subview ()
-  (idee-jump-to-non-ide-window)
-  (split-window-right)
-  (other-window 1)
-     (cond ((and idee-side-by-side-buffer (get-buffer idee-side-by-side-buffer)) (switch-to-buffer idee-side-by-side-buffer))
-           (t (progn
-                (let ((tmp-buffer (generate-new-buffer "*side*")))
-                  (switch-to-buffer tmp-buffer) 
-                  (idee-find-file)
-                  (let* ((name (buffer-name (current-buffer)))
-                         (actual-name (if (idee-starts-with "*side " name) (substring name 6 (- (length name)  7)) name))
-                         (side-name (format "*side %s*" actual-name)))
-                    (rename-buffer side-name)
-                    (setq idee-side-by-side-buffer side-name))
-                  (kill-buffer tmp-buffer))))))
 
 (defun idee-open-side-by-side ()
   (interactive)
@@ -313,9 +152,8 @@
 (defun idee-terminal-view()
   "Maximize terminal in the project root."
   (interactive)
-  (setq idee-current-view 'idee-terminal-view)
-  (delete-other-windows-internal)
-  (idee-projectile-run-eshell))
+  (idee-projectile-run-eshell)
+  (delete-other-windows-internal))
 
 ;;
 ;;
@@ -698,6 +536,8 @@ PIVOT indicates how many windows should be switched at the end of the operation.
   (let ((result (string-trim (idee-repl-eval-region beginning end))))
     (if (idee-string-blank result) (tooltip-show "Ok")
       (tooltip-show result))))
+
+
 
 (provide 'idee-views)
 ;;; idee-views.el ends here
