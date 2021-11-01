@@ -36,15 +36,12 @@
 (defun idee-lsp-java-enable()
   "Enable lsp-java, add hooks, visitors etc."
   (interactive)
-  (if idee-lsp-java-completion-enabled
-      (progn (add-to-list 'company-backends 'company-lsp)
-             (lsp-workspace-folders-add (projectile-project-root)))
-    (setq company-backends (delete 'company-lsp company-backends))))
+  (when idee-lsp-java-enabled
+      (lsp-workspace-folders-add (projectile-project-root))))
 
 (defun idee-lsp-java-disable()
   "Disable lsp-java, remove hooks, visitors etc."
-  (interactive)
-  (setq company-backends (delete 'company-lsp company-backends)))
+  (interactive))
 
 (defun idee-lsp-java-hook()
   "Hook for lsp-java."

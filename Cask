@@ -24,7 +24,6 @@
  (depends-on "treemacs")
  (depends-on "treemacs-projectile")
  (depends-on "company")
- (depends-on "company-lsp")
  (depends-on "use-package")
  (depends-on "markdown-mode")
  
