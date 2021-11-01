@@ -120,8 +120,7 @@
   (let* ((project-pom (concat (projectile-project-root) pom-xml)))
     (if (file-exists-p project-pom)
         (progn (idee-jump-to-non-ide-window)
-               (find-file project-pom)
-               (idee-refresh-view)))))
+               (find-file project-pom)))))
 
 (defun idee-maven-clean-project ()
   "Clean the current maven project."
@@ -199,8 +198,7 @@
          (module-pom (concat module-dir pom-xml)))
     (if  (file-exists-p module-pom)
         (progn (idee-jump-to-non-ide-window)
-               (find-file module-pom)
-               (idee-refresh-view)))))
+               (find-file module-pom)))))
 
 (defun idee-maven-package-module ()
   "Package the current maven module."

@@ -219,18 +219,6 @@ VISITED is an optional list with windows already visited."
     (idee-toggle-grep)))
 
 ;;;###autoload
- (defun idee-refresh-view (&optional window)
-  "Refresh the current view."
-  (interactive))
-
-  ;; (let ((current-window (selected-window)))
-  ;;   (funcall idee-current-view)
-  ;;   (cond ((and window (windowp window)) (select-window window))
-  ;;         ((and idee-selected-window (windowp idee-selected-window)) (select-window idee-selected-window))
-  ;;         ((window-live-p current-window) (select-window current-window)))))
-          
-
-;;;###autoload
 (defun idee-new-empty-buffer()
   "Create an empty buffer."
   (let ((fl (make-temp-file "Untitled")))
@@ -349,10 +337,6 @@ VISITED is an optional list with windows already visited."
 (defun idee-side-by-side-visible-p ()
   "Return non-nil if eww is visible."
   (idee-side-by-side-visible-window))
-(defun idee-after-next-error ()
-  "Refresh the view each time next error is caled."
-  (if next-error-last-buffer
-      (idee-refresh-view)))
 
 ;;;###autoload
 (defun idee-region-copy-to-other-window (start end)
@@ -422,14 +406,11 @@ PIVOT indicates how many windows should be switched at the end of the operation.
   (interactive)
   (funcall (intern (format "idee-update-%s-state" ,name)))
   (if ,flag
-      (progn
         (setq ,flag nil)
-        (idee-refresh-view))
     (progn
       (dolist (c ,candidates)
                (set c nil))
       (setq ,flag t)
-      (idee-refresh-view)
       (other-window ,pivot)
       (let ((window (or (,window-provider) (,window-creator))))
         (when window
@@ -441,8 +422,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
   (interactive)
   (funcall (intern (format "idee-update-%s-state" ,name)))
   (if (not ,flag)
-      (funcall (intern (format "idee-toggle-%s" ,name)))
-    (idee-refresh-view)))))
+      (funcall (intern (format "idee-toggle-%s" ,name)))))))
 
 (defun idee-side-by-side ()
   (interactive)

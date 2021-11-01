@@ -92,16 +92,9 @@ before starting the debug process."
         (push (cons session-name launch-args) dap--debug-configuration)
         (run-hook-with-args 'dap-session-created-hook debug-session))))))
 
-(defun idee-dap-refresh (&rest _)
-  "A wrapper to idee-refresh-view, for using from withing dap."
-  (when (dap--cur-session) ;; If we always refresh unpredictable things happen !!!
-    (idee-refresh-view)))
-(advice-add 'dap-ui--update-controls :after 'idee-dap-refresh)
-                                          
 (defadvice dap--go-to-stack-frame (after idee-refresh-on-stack-frame
                                       (&optional debug-session stack-frame))
   "Refresh IDE after a breakpoint has been hit."
-  (idee-refresh-view)
   (idee-jump-to-non-ide-window)
   (recenter-top-bottom)
   (when (not (idee-hydra-visible-p)) (dap-hydra))

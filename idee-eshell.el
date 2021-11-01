@@ -152,7 +152,6 @@
   "Edit the the specified FILES."
   (let ((file (car files))
         (remaining (cdr files)))
-    (idee-refresh-view)
     (idee-jump-to-non-ide-window)
     (find-file file)
     (mapc (lambda (f) (split-window-horizontally) (find-file f)) remaining))
@@ -173,8 +172,7 @@
           (when (not (file-exists-p git)) (shell-command "git init"))
           (projectile-add-known-project path)
           (setq projectile-project-root path)
-          (projectile-switch-project-by-name path)
-          (idee-refresh-view))
+          (projectile-switch-project-by-name path))
       (idee-eshell-edit path))))
 
 (when idee-eshell-edit-alias-enabled

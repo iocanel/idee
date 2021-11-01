@@ -29,10 +29,10 @@
 
 ;;;###autoload
 (defun idee--evil-init()
-  ;; Let's set some bindings so that helm-projectile-ag and projectile-grep are consistent.o
+  ;; Let's set some bindings so that helm-projectile-ag and projectile-grep are consistent.
   (when (and (require 'helm nil 'noerror) idee-helm-ag-bindings-enabled)
     (evil-define-key 'normal helm-major-mode-map "q" 'quit-window)
-    (evil-define-key 'normal helm-major-mode-map (kbd "RET") '(lambda () (interactive) (helm-ag-mode-jump-other-window) (idee-refresh-view) (idee-jump-to-non-ide-window))))
+    (evil-define-key 'normal helm-major-mode-map (kbd "RET") '(lambda () (interactive) (helm-ag-mode-jump-other-window) (idee-jump-to-non-ide-window))))
 
   (when (and (require 'flymake nil 'noerror) idee-flymake-bindings-enabled)
     (evil-define-key 'normal flymake-diagnostics-buffer-mode-map "q" 'idee-toggle-diagnostics))
