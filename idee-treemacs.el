@@ -31,6 +31,7 @@
 (require 'treemacs-bookmarks)
 (require 'hydra)
 (require 'idee-views)
+
 (defun idee-treemacs-collapse-dir-toggle ()
   "Toggle value of treemacs-collapse-dir between 3 0."
   (interactive)
@@ -39,6 +40,7 @@
     (setq treemacs-collapse-dirs 0))
   (treemacs-refresh))
 
+;;;###autoload
 (defun idee-treemacs-create-and-switch-to-workspace ()
   "Create and switch to a new treemacs workspace."
   (interactive)
@@ -71,6 +73,7 @@
     ;; END
     (idee-treemacs-open-project-workspace workspace)))
 
+;;;###autoload
 (defun idee-treemacs-switch-to-project-workspace ()
     "Select a different workspace for treemacs."
     (interactive)
@@ -114,6 +117,7 @@
           (idee-jump-to-non-ide-window)))))
 
 
+;;;###autoload
 (defun idee-workspace-close ()
   (interactive)
   (idee-view-reset)
