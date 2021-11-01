@@ -32,7 +32,7 @@
 (require 'idee-views)
 (require 'idee-visitors)
 
-(defconst clojure-comment-style (make-idee-comment-style :line-prefix ";;"))
+(defconst clojure-comment-style (make-ide-comment-style :line-prefix ";;"))
 
 (defun idee-clojure-enable()
   "Enable clojure bindings."

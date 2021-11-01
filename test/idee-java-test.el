@@ -32,7 +32,7 @@
 
 (ert-deftest java/comment-java ()
   "Should properly comment java."
-    (should (equal (idee-comment "bingo" "java") "/**\n * bingo\n**/\n")))
+    (should (equal (ide-comment "bingo" "java") "/**\n * bingo\n**/\n")))
 
 (ert-deftest java/set-tab-width ()
   "Should set tab width."

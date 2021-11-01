@@ -27,12 +27,12 @@
 
 ;;; Code:
 
-(defcustom idee-comment-yml-custom-block-beginning nil "Custom block comment beginning to use when commenting yml code." :group 'idee-yml :type 'string)
-(defcustom idee-comment-yml-custom-block-ending nil "Custom block comment ending to use when commenting yml code." :group 'idee-yml :type 'string)
-(defcustom idee-comment-yml-custom-line-prefix "# " "Custom line prefix to use when commenting yml code." :group 'idee-yml :type 'string)
+(defcustom ide-comment-yml-custom-block-beginning nil "Custom block comment beginning to use when commenting yml code." :group 'idee-yml :type 'string)
+(defcustom ide-comment-yml-custom-block-ending nil "Custom block comment ending to use when commenting yml code." :group 'idee-yml :type 'string)
+(defcustom ide-comment-yml-custom-line-prefix "# " "Custom line prefix to use when commenting yml code." :group 'idee-yml :type 'string)
 
-(defconst yml-comment-style (make-idee-comment-style :line-prefix " #"
-                                                      :custom-block-beginning idee-comment-yml-custom-block-beginning :custom-line-prefix idee-comment-yml-custom-line-prefix :custom-block-ending idee-comment-yml-custom-block-ending))
+(defconst yml-comment-style (make-ide-comment-style :line-prefix " #"
+                                                      :custom-block-beginning ide-comment-yml-custom-block-beginning :custom-line-prefix ide-comment-yml-custom-line-prefix :custom-block-ending ide-comment-yml-custom-block-ending))
 
 
 ;;;###autoload

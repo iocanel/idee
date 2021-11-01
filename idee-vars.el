@@ -64,8 +64,8 @@
 ;;
 ;; Comments
 ;;
-;;;###autoload (autoload 'make-idee-comment-style "idee-comments")
-(cl-defstruct idee-comment-style
+;;;###autoload (autoload 'make-ide-comment-style "idee-comments")
+(cl-defstruct ide-comment-style
   ;Language (used for comment detection.)
   block-beginning
   line-prefix
@@ -86,17 +86,17 @@
 ;;
 
 ;; General purpose comment styles
-(defcustom idee-comment-elisp-custom-line-prefix ";; " "Custom line comment prefix to use when commenting elisp code." :group 'idee-elisp :type 'string)
-(defcustom idee-comment-shell-custom-line-prefix "# " "Custom line comment prefix to use when commenting shell code." :group 'idee-shell :type 'string)
+(defcustom ide-comment-elisp-custom-line-prefix ";; " "Custom line comment prefix to use when commenting elisp code." :group 'idee-elisp :type 'string)
+(defcustom ide-comment-shell-custom-line-prefix "# " "Custom line comment prefix to use when commenting shell code." :group 'idee-shell :type 'string)
 
-(defcustom idee-comment-xml-custom-block-beginning "<!--\n" "Custom block comment beginning to use when commenting xml code." :group 'idee-xml :type 'string)
-(defcustom idee-comment-xml-custom-block-ending "-->\n" "Custom block comment ending to use when commenting xml code." :group 'idee-xml :type 'string)
-(defcustom idee-comment-xml-custom-line-prefix "~ " "Custom line prefix to use when commenting xml code." :group 'idee-xml :type 'string)
+(defcustom ide-comment-xml-custom-block-beginning "<!--\n" "Custom block comment beginning to use when commenting xml code." :group 'idee-xml :type 'string)
+(defcustom ide-comment-xml-custom-block-ending "-->\n" "Custom block comment ending to use when commenting xml code." :group 'idee-xml :type 'string)
+(defcustom ide-comment-xml-custom-line-prefix "~ " "Custom line prefix to use when commenting xml code." :group 'idee-xml :type 'string)
 
-(defconst elisp-comment-style (make-idee-comment-style :line-prefix ";" :custom-line-prefix idee-comment-elisp-custom-line-prefix))
-(defconst shell-comment-style (make-idee-comment-style :line-prefix "#" :custom-line-prefix idee-comment-shell-custom-line-prefix))
-(defconst xml-comment-style (make-idee-comment-style :block-beginning "<!-" :block-ending "-->"
-                                                     :custom-block-beginning idee-comment-xml-custom-block-beginning :custom-block-ending idee-comment-xml-custom-block-ending))
+(defconst elisp-comment-style (make-ide-comment-style :line-prefix ";" :custom-line-prefix ide-comment-elisp-custom-line-prefix))
+(defconst shell-comment-style (make-ide-comment-style :line-prefix "#" :custom-line-prefix ide-comment-shell-custom-line-prefix))
+(defconst xml-comment-style (make-ide-comment-style :block-beginning "<!-" :block-ending "-->"
+                                                     :custom-block-beginning ide-comment-xml-custom-block-beginning :custom-block-ending ide-comment-xml-custom-block-ending))
 
 (defvar idee-type-comment-styles-alist `(
                                          ("el" . ,elisp-comment-style)

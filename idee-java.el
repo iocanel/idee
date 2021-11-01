@@ -40,12 +40,12 @@
 (require 'dap-hydra)
 (require 'dap-ui)
 
-(defcustom idee-comment-java-custom-block-beginning "/**\n" "Custom block comment beginning to use when commenting java code." :group 'idee-java :type 'string)
-(defcustom idee-comment-java-custom-block-ending "**/\n" "Custom block comment ending to use when commenting java code." :group 'idee-java :type 'string)
-(defcustom idee-comment-java-custom-line-prefix " * " "Custom line prefix to use when commenting java code." :group 'idee-java :type 'string)
+(defcustom ide-comment-java-custom-block-beginning "/**\n" "Custom block comment beginning to use when commenting java code." :group 'idee-java :type 'string)
+(defcustom ide-comment-java-custom-block-ending "**/\n" "Custom block comment ending to use when commenting java code." :group 'idee-java :type 'string)
+(defcustom ide-comment-java-custom-line-prefix " * " "Custom line prefix to use when commenting java code." :group 'idee-java :type 'string)
 
-(defconst java-comment-style (make-idee-comment-style :block-beginning "/*" :block-ending "*/"
-                                                      :custom-block-beginning idee-comment-java-custom-block-beginning :custom-line-prefix idee-comment-java-custom-line-prefix :custom-block-ending idee-comment-java-custom-block-ending))
+(defconst java-comment-style (make-ide-comment-style :block-beginning "/*" :block-ending "*/"
+                                                      :custom-block-beginning ide-comment-java-custom-block-beginning :custom-line-prefix ide-comment-java-custom-line-prefix :custom-block-ending ide-comment-java-custom-block-ending))
 (defvar idee-java-last-visited-class nil)
 
 
@@ -178,7 +178,7 @@ The target module will be the current, unless BASE-PATH has been specified, in w
     (save-excursion
         (insert-file-contents f)
         (goto-char (point-min))
-        (idee-remove-comment-at-point java-comment-style)
+        (ide-comment-remove-at-point java-comment-style)
         (let* ((content (buffer-substring-no-properties (point-min) (point-max)))
                (class-name (idee-java-class-name-of f))
                (updated (concat

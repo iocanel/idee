@@ -28,17 +28,17 @@
 ;;; Code:
 (require 'test-helper)
 
-(ert-deftest comments/comment-sh ()
+(ert-deftest ide-comments/comment-sh ()
   "Should properly comment shell."
-    (should (equal (idee-comment "bingo" "sh") "# bingo\n")))
+    (should (equal (ide-comment "bingo" "sh") "# bingo\n")))
 
-(ert-deftest comments/comment-el ()
+(ert-deftest ide-comments/comment-el ()
   "Should properly comment elisp."
-    (should (equal (idee-comment "bingo" "el") ";; bingo\n")))
+    (should (equal (ide-comment "bingo" "el") ";; bingo\n")))
 
-(ert-deftest comments/comment-xml ()
+(ert-deftest ide-comments/comment-xml ()
   "Should properly comment xml."
-    (should (equal (idee-comment "bingo" "xml") "<!--\nbingo\n-->\n")))
+    (should (equal (ide-comment "bingo" "xml") "<!--\nbingo\n-->\n")))
 
 (provide 'idee-comments-test)
 ;;; idee-comments-test.el ends here

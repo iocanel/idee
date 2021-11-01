@@ -29,7 +29,7 @@
 ;;
 ;; Functions
 ;;
-(defun idee--buffer-comment-style()
+(defun ide-comment-style-of-buffer()
   "Return the buffer comment style."
   (let* ((name (buffer-file-name))
          (extension (if name (file-name-extension name) nil)))
@@ -37,26 +37,26 @@
 
 
 ;;;###autoload
-(defun idee-comment (content extension)
+(defun ide-comment (content extension)
   "Apply comments to CONTENT for file EXTENSION."
   (let ((s (cdr (assoc extension idee-type-comment-styles-alist))))
     (if content
-        (concat (idee-comment-style-custom-block-beginning s)
+        (concat (ide-comment-style-custom-block-beginning s)
                 (mapconcat 'identity (mapcar
-                                      (lambda (l) (concat (idee-comment-style-custom-line-prefix s) l "\n"))
+                                      (lambda (l) (concat (ide-comment-style-custom-line-prefix s) l "\n"))
                                       (split-string content "\n")) "")
-                (idee-comment-style-custom-block-ending s))
+                (ide-comment-style-custom-block-ending s))
       nil)))
 
 ;;;###autoload
-(defun idee-remove-comment-at-point (&optional style)
+(defun ide-comment-remove-at-point (&optional style)
   "Remove the comment at the current point."
   (interactive)
   (save-excursion
-    (let* ((style (or style (idee--buffer-comment-style)))
-           (block-beginning (idee-comment-style-block-beginning style))
-           (prefix (idee-comment-style-line-prefix style))
-           (block-ending (idee-comment-style-block-ending style))
+    (let* ((style (or style (ide-comment-style-of-buffer)))
+           (block-beginning (ide-comment-style-block-beginning style))
+           (prefix (ide-comment-style-line-prefix style))
+           (block-ending (ide-comment-style-block-ending style))
            (current (point))
            (begin (point-min))
            (end (point-min))
@@ -79,39 +79,39 @@
                     (message "no comment detected at point.")))))
         (progn
           (if (not (equal 1 (line-number-at-pos)))
-              (while (idee--line-above-commented-or-empty-p) (forward-line -1)))
-          (while (idee--line-commented-p) (kill-whole-line)))))))
+              (while (ide-line-above-commented-or-empty-p) (forward-line -1)))
+          (while (ide-line-commented-p) (kill-whole-line)))))))
 
-(defun idee--line-commented-p ()
+(defun ide-line-commented-p ()
   "Check if current line is commented."
   (interactive)
-    (let* ((style (idee--buffer-comment-style))
-           (prefix (idee-comment-style-line-prefix style))
+    (let* ((style (ide-comment-style-of-buffer))
+           (prefix (ide-comment-style-line-prefix style))
            ;;(line (thing-at-point 'line t))
            (begin (idee--point-beginning-of-line))
            (end (idee--point-end-of-line))
            (line (buffer-substring begin end)))
       (string-match (format "^[[:space:]]*%s" prefix) line)))
 
-(defun idee--line-empty-p ()
+(defun ide-line-empty-p ()
   "Check if current line is empty."
     (save-excursion
     (beginning-of-line)
     (looking-at "[[:space:]]*$")))
 
-(defun idee--line-commented-or-empty-p ()
+(defun ide-line-commented-or-empty-p ()
   "Check if current line is commented."
   (interactive)
-      (or (idee--line-empty-p) (idee--line-commented-p)))
+      (or (ide-line-empty-p) (ide-line-commented-p)))
 
-(defun idee--line-above-commented-or-empty-p()
+(defun ide-line-above-commented-or-empty-p()
   "Check if the line above is commented or empty."
   (save-excursion
     (if (= (line-number-at-pos) 0)
         nil
       (progn
         (forward-line -1)
-        (idee--line-commented-or-empty-p)))))
+        (ide-line-commented-or-empty-p)))))
 
 (provide 'idee-comments)
 ;;; idee-comments.el ends here
