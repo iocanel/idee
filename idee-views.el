@@ -39,6 +39,9 @@
 
 (defcustom idee-focus-center-buffer t "Flag to specify that the focus buffer needs to be centered." :group 'idee-view :type 'boolean) 
 (defcustom idee-focus-center-buffer-columns 160 "The number of columns of the centered buffer." :group 'idee-view :type 'int) 
+(defcustom idee-display-buffer-enabled nil "Enabled management of display-buffer-alist." :group 'idee-view :type 'boolean) 
+(defcustom idee-popper-enabled nil "Enabled popper." :group 'idee-view :type 'boolean) 
+
 (defvar idee-tree-enabled idee-tree-enabled-default)
 
 ;; Active Components
@@ -111,7 +114,7 @@
 ;;;###autoload
 (defun idee-project-open-view(&optional path)
   "Switch to a traditional IDE view for the buffer.  (project tree, main buffer & terminal)."
- (interactive)
+  (interactive)
   (let* ((path (or path (or (projectile-project-root) default-directory))))
     (dolist (b idee-bottom-area-switch-list)
       (set b nil))
@@ -134,12 +137,12 @@
                (switch-to-buffer idee-primary-buffer))))
   (delete-other-windows-internal)
   (if (and idee-tree-enabled (not (eq 'visible (treemacs-current-visibility)))
-      (progn
-        (treemacs--init (projectile-project-root))
-        ;; we remove the mode-line to hide the treemacs label
-        (setq mode-line-format nil)))
-  (idee-jump-to-non-ide-window)
-  (setq idee-primary-buffer (current-buffer))))
+           (progn
+             (treemacs--init (projectile-project-root))
+             ;; we remove the mode-line to hide the treemacs label
+             (setq mode-line-format nil)))
+      (idee-jump-to-non-ide-window)
+    (setq idee-primary-buffer (current-buffer))))
 
 
 (defun idee-open-side-by-side ()
@@ -163,10 +166,10 @@
   "Predicate to check if BUFFER-NAME is an ide buffer (e.g. tree, cli, repl, diagnostics etc)."
   (let ((mode (with-current-buffer buffer-name major-mode))
         (name (string-trim buffer-name)))
-  (cond ((provided-mode-derived-p 'prog-mode mode) t)
-        ((and (string-prefix-p "*" name)  (string-suffix-p "*" name)) t)
-        ((string-prefix-p "magit:" name) t)
-        (:else nil))))
+    (cond ((provided-mode-derived-p 'prog-mode mode) t)
+          ((and (string-prefix-p "*" name)  (string-suffix-p "*" name)) t)
+          ((string-prefix-p "magit:" name) t)
+          (:else nil))))
 
 (defun idee-window-has-current-buffer-p ()
   "Returns non-nil when the current window display the current buffer."
@@ -344,8 +347,8 @@ VISITED is an optional list with windows already visited."
   (interactive "r")
   (if (use-region-p) 
       (let* ((buffer (current-buffer))
-            (name (buffer-name buffer))
-            (current-window (selected-window)))
+             (name (buffer-name buffer))
+             (current-window (selected-window)))
         (save-excursion
           (kill-ring-save start end)
           (other-window 1)
@@ -361,8 +364,8 @@ VISITED is an optional list with windows already visited."
   (interactive "r")
   (if (use-region-p) 
       (let* ((buffer (current-buffer))
-            (name (buffer-name buffer))
-            (current-window (selected-window)))
+             (name (buffer-name buffer))
+             (current-window (selected-window)))
         (save-excursion
           (kill-region start end)
           (other-window 1)
@@ -392,37 +395,37 @@ CANDIDATES is a list containing all other flags that take up the same space as t
 PIVOT indicates how many windows should be switched at the end of the operation."
   (declare (indent 1) (debug t))
   `(progn
-    (defun ,(intern (format "idee-update-%s-state" name)) ()
-  ,(format "Update the state of the %s (in case the winodw has been externally closed)." name)
-  (idee-jump-to-non-ide-window)
-  (if (,window-provider)
-      (progn (dolist (c ,candidates)
-               (set c nil))
-               (setq ,flag t))
-    (setq ,flag nil)))
-  
- (defun ,(intern (format "idee-toggle-%s" name)) ()
-  ,(format "Toggle the state of the %s." name)
-  (interactive)
-  (funcall (intern (format "idee-update-%s-state" ,name)))
-  (if ,flag
-        (setq ,flag nil)
-    (progn
-      (dolist (c ,candidates)
-               (set c nil))
-      (setq ,flag t)
-      (other-window ,pivot)
-      (let ((window (or (,window-provider) (,window-creator))))
-        (when window
-          (select-window (,window-provider))
-          (goto-char (point-max)))))))
+     (defun ,(intern (format "idee-update-%s-state" name)) ()
+       ,(format "Update the state of the %s (in case the winodw has been externally closed)." name)
+       (idee-jump-to-non-ide-window)
+       (if (,window-provider)
+           (progn (dolist (c ,candidates)
+                    (set c nil))
+                  (setq ,flag t))
+         (setq ,flag nil)))
+     
+     (defun ,(intern (format "idee-toggle-%s" name)) ()
+       ,(format "Toggle the state of the %s." name)
+       (interactive)
+       (funcall (intern (format "idee-update-%s-state" ,name)))
+       (if ,flag
+           (setq ,flag nil)
+         (progn
+           (dolist (c ,candidates)
+             (set c nil))
+           (setq ,flag t)
+           (other-window ,pivot)
+           (let ((window (or (,window-provider) (,window-creator))))
+             (when window
+               (select-window (,window-provider))
+               (goto-char (point-max)))))))
 
- (defun ,(intern (format "idee-switch-%s-on" name)) ()
-  ,(format "Switch %s on." name)
-  (interactive)
-  (funcall (intern (format "idee-update-%s-state" ,name)))
-  (if (not ,flag)
-      (funcall (intern (format "idee-toggle-%s" ,name)))))))
+     (defun ,(intern (format "idee-switch-%s-on" name)) ()
+       ,(format "Switch %s on." name)
+       (interactive)
+       (funcall (intern (format "idee-update-%s-state" ,name)))
+       (if (not ,flag)
+           (funcall (intern (format "idee-toggle-%s" ,name)))))))
 
 (defun idee-side-by-side ()
   (interactive)
@@ -441,7 +444,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 (defun idee-messages ()
   (interactive)
   "Display the messages buffer."
-(display-buffer "*Messages*"))
+  (display-buffer "*Messages*"))
 
 
 (defun idee-eww ()
@@ -504,7 +507,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
                (start (+ (length idee-repl-buffer-prompt) (search-backward idee-repl-buffer-prompt nil t)))
                (result (buffer-substring start end)))
           result)))))
-          
+
 (defun idee-repl-eval-region (beginning end)
   "Evaluate region in the repl."
   (interactive "r")
@@ -517,7 +520,79 @@ PIVOT indicates how many windows should be switched at the end of the operation.
     (if (idee-string-blank result) (tooltip-show "Ok")
       (tooltip-show result))))
 
+(defun idee-display-buffer-alist-contains (str)
+  "Return non-nil if display-buffer-alsit has entry that contains STR."
+  (seq-filter (lambda (s) (and (stringp s) (idee-contains-string s str))) (mapcar (lambda (e) (car e)) display-buffer-alist)))
 
+(defun idee-views-setup ()
+  "Setup views"
+  (when idee-display-buffer-enabled
+    (when (and idee-popper-enabled (boundp  'popper-display-control-p))
+      (setq display-buffer-alist (add-to-list 'display-buffer-alist `(popper-display-control-p (`popper-display-function)))))
+
+    (when (not (idee-display-buffer-alist-contains "*undo-tree"))
+      (setq display-buffer-alist (add-to-list 'display-buffer-alist 
+                                              `("\\*undo-tree\\*"
+                                                (display-buffer-in-side-window)
+                                                (window-width . 0.10)
+                                                (side . right)
+                                                (slot . 0)))))
+
+    (when (not (idee-display-buffer-alist-contains "*side"))
+      (setq display-buffer-alist (add-to-list 'display-buffer-alist 
+                                              `("\\*side .*\\*"
+                                                (display-buffer-in-side-window)
+                                                (window-width . 0.50)
+                                                (side . right)
+                                                (slot . 1)))))
+
+    (when (not (idee-display-buffer-alist-contains "*eww"))
+      (setq display-buffer-alist (add-to-list 'display-buffer-alist 
+                                              `("\\*eww\\*"
+                                                (display-buffer-in-side-window)
+                                                (window-width . 0.30)
+                                                (side . right)
+                                                (slot . 2)))))
+
+    (when (not (idee-display-buffer-alist-contains "shell"))
+      (setq display-buffer-alist (add-to-list 'display-buffer-alist 
+                                              `("\\*\\(Async [s\\|S]hell [c\\|C]ommand.*\\|eshell.*\\|shell.*\\|vterm.*\\|helm-ag\\|helm-ag-edit\\|xref\\|.*compilation\\)\\*"
+                                                (display-buffer-in-side-window)
+                                                (window-height . 0.20)
+                                                (side . bottom)
+                                                (slot . 0)))))
+
+    (when (not (idee-display-buffer-alist-contains "Flycheck"))
+      (setq display-buffer-alist (add-to-list 'display-buffer-alist 
+                                              `("\\*\\(Flycheck errors\\|Flymake diagnostics for .*\\)\\*"
+                                                (display-buffer-in-side-window)
+                                                (window-height . 0.20)
+                                                (side . bottom)
+                                                (slot . 1)))))
+
+    (when (not (idee-display-buffer-alist-contains "*Messages"))
+      (setq display-buffer-alist (add-to-list 'display-buffer-alist 
+                                              `("\\*Messages\\*"
+                                                (display-buffer-in-side-window)
+                                                (window-height . 0.20)
+                                                (side . bottom)
+                                                (slot . 1)))))
+
+    (when (not (idee-display-buffer-alist-contains "*Warnings"))
+      (setq display-buffer-alist (add-to-list 'display-buffer-alist 
+                                              `("\\*\\(Warnings\\|Backtrace\\)\\*"
+                                                (display-buffer-in-side-window)
+                                                (window-height . 0.20)
+                                                (side . bottom)
+                                                (slot . 2)))))
+
+    (when (not (idee-display-buffer-alist-contains "*Org QL"))
+      (setq display-buffer-alist (add-to-list 'display-buffer-alist 
+                                              `("\\*Org QL View: Github issues for .*\\*"
+                                                (display-buffer-in-side-window)
+                                                (window-height . 0.20)
+                                                (side . bottom)
+                                                (slot . 2)))))))
 
 (provide 'idee-views)
 ;;; idee-views.el ends here

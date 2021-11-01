@@ -4,7 +4,6 @@
 
 Unified way to perform IDE-like tasks across multiple languages and frameworks in Emacs.
 
-
 [[./doc/images/idee-ide-view.png]]
 
 ** Features
@@ -34,14 +33,14 @@ Unified way to perform IDE-like tasks across multiple languages and frameworks i
 
 This project is not available on any emacs package repository so you will either have to install it manually, or using something like [[https://github.com/raxod502/straight.el][straight-use-package]]:
 #+begin_src emacs-lisp
-  (use-package idee :straight (idee :host github :repo "iocanel/idee") :config idee-init)
+  (use-package idee :straight (idee :host github :repo "iocanel/idee") :config (idee-init))
 
 #+end_src
     Using `use-package` you can enable additional modules, for example:
 #+begin_src emacs-lisp
-  (use-package idee-java :straight (idee :host github :repo "iocanel/idee") :config idee-java-init)
-  (use-package idee-javascript :straight (idee :host github :repo "iocanel/idee") :config idee-javascript-init)
-  (use-package idee-golang :straight (idee :host github :repo "iocanel/idee") :config idee-golang-init)
+  (use-package idee-java :straight (idee :host github :repo "iocanel/idee") :config (idee-java-init))
+  (use-package idee-javascript :straight (idee :host github :repo "iocanel/idee") :config (idee-javascript-init))
+  (use-package idee-golang :straight (idee :host github :repo "iocanel/idee") :config (idee-golang-init))
 #+end_src
 
 *** Installing required resources

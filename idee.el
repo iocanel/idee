@@ -51,6 +51,7 @@
   (idee--headers-init)
   (idee--visitors-init)
   (idee--evil-init)
+  (idee-views-setup)
 
   ;; Common staff
   (idee--yml-init))

@@ -23,7 +23,7 @@ TAR     := dist/idee-$(VERSION).tar
 
 
 
-.PHONY: build dist install help test clean clean-all release \
+.PHONY: compile dist install help test clean clean-all release \
 	set-package-version assert-on-master assert-clean-worktree \
 	git-release github-browse-release
 
@@ -43,7 +43,7 @@ help :
 	@echo
 	@echo 'Main tasks:'
 	@echo
-	@echo '  build (default) Compile Lisp files.'
+	@echo '  compile (default) Compile Lisp files.'
 	@echo '  help            Show this usage information.'
 	@echo '  install         Install idee using the Emacs package manager.'
 	@echo '  test            Run automated test suites.'
