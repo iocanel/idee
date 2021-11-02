@@ -2,7 +2,7 @@
 # name: JAX-RS Resource
 # key: jaxrs-resource
 # --
-`(idee-header)`
+`(ide-header-of-buffer)`
 `(idee-java-package-line)`
 
 import javax.ws.rs.GET;

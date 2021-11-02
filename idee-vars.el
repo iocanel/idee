@@ -80,7 +80,7 @@
 ;;
 ;; Headers
 ;;
-(defvar idee--current-header nil)
+(defvar ide-header-current nil)
 ;;
 ;; Comments
 ;;
@@ -119,7 +119,7 @@
                               (idee-optimizie-imports-function . nil)
                               (idee-indent-function . evil-indent)
                               (idee-indent-region-function . nil)
-                              (idee-select-project-header-function . idee-select-project-header-function)
+                              (ide-header-select-function . ide-header-select)
                               (idee-apply-code-actions-function . idee-execute-code-actions)
                               (idee-references-function . nil)
                               (idee-implementation-function . nil)

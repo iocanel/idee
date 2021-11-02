@@ -2,7 +2,7 @@
 # name: Spring DataSource Postgres
 # key: spring-datasource-postgres
 # --
-`(idee-header)`
+`(ide-header-of-buffer)`
 `(idee-java-package-line)`
 
 import org.springframework.beans.factory.annotation.Value;

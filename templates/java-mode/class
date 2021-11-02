@@ -2,7 +2,7 @@
 # name: Java Class
 # key: class
 # --
-`(idee-header)`
+`(ide-header-of-buffer)`
 `(idee-java-package-line)`
 
 public class `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {

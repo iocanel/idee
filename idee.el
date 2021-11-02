@@ -48,7 +48,7 @@
   "Initialize idee"
   (idee--projects-init)
   (idee--templates-init)
-  (idee--headers-init)
+  (ide-header-setup)
   (idee--visitors-init)
   (idee--evil-init)
   (idee-views-setup)

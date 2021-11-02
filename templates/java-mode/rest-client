@@ -2,7 +2,7 @@
 # name: Rest Client
 # key: rest-client
 # --
-`(idee-header)`
+`(ide-header-of-buffer)`
 `(idee-java-package-line)`
 
 import javax.ws.rs.GET;

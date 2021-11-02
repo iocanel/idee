@@ -105,10 +105,10 @@
   (funcall  (alist-get 'idee-indent-region-function idee-function-alist)))
 
 ;;;###autoload
-(defun idee-select-project-header()
+(defun ide-header-select()
   "Select header for project files."
   (interactive)
-  (funcall  (alist-get 'idee-select-project-header-function idee-function-alist)))
+  (funcall  (alist-get 'ide-header-select-function idee-function-alist)))
 
 (defun idee-apply-code-actions()
   "Select header for project files."

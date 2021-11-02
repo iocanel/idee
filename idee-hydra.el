@@ -171,8 +171,8 @@
   ("W" idee-toggle-tab-width (format "[%s]" idee-tab-width) :exit nil)
   ("T" idee-toggle-use-tabs (if idee-use-tabs "[*]" "[ ]") :exit nil)
   ("s" company-yasnippet)
-  ("h" idee-select-project-header :exit nil)
-  ("H" idee-apply-buffer-header (idee-hydra--selected-header-kind))
+  ("h" ide-header-select :exit nil)
+  ("H" ide-header-apply-to-buffer (idee-hydra--selected-header-kind))
   ("a" idee-apply-code-actions)
 
   ("?" idee-declaration)

@@ -2,7 +2,7 @@
 # name: Java Enum
 # key: enum
 # --
-`(idee-header)`
+`(ide-header-of-buffer)`
 `(idee-java-package-line)`
 
 import java.util.Map;

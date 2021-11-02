@@ -2,7 +2,7 @@
 # name: Spring Data Repository
 # key: repository
 # --
-`(idee-header)`
+`(ide-header-of-buffer)`
 `(idee-java-package-line)`
 
 import org.springframework.data.repository.PagingAndSortingRepository;

@@ -33,7 +33,7 @@
   (with-sandbox
    (f-mkdir ".git")
    (append-to-file "bingo" nil "header.txt")
-   (let ((header (idee--read-project-header)))
+   (let ((header (ide-header-of-project)))
          (should header)
          (should (equal header "bingo")))))
 
@@ -43,7 +43,7 @@
    (f-mkdir ".git")
    (append-to-file "bingo `var`" nil "header.txt")
    (let* ((var "123")
-          (header (idee--read-project-header)))
+          (header (ide-header-of-project)))
          (should header)
          (should (equal header "bingo 123")))))
 

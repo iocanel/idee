@@ -35,9 +35,14 @@
 ;;
 ;; Functions
 ;; 
-(defun idee--read-project-header ()
+(defun idee-header-detect ()
+  "Detect and set the value of ide-header-current, if exists."
+  (let ((h (ide-header-of-project)))
+    (if h
+        (setq ide-header-current h))))
+
+(defun ide-header-of-project ()
   "Read the header from header.txt."
-  (interactive)
   (let ((root-dir-header (concat (idee-project-root-dir (buffer-file-name)) "header.txt"))
         (idee-dir-header (concat (idee-project-root-dir (buffer-file-name)) (file-name-as-directory idee-project-conf-dir) "header.txt")))
 
@@ -45,52 +50,45 @@
              ((file-exists-p idee-dir-header) (idee-read-and-eval-template idee-dir-header))
              (t nil))))
 
-(defun idee--set-header ()
-  "Set the header value, if exists."
-  (let ((h (idee--read-project-header)))
-    (if h
-        (setq idee--current-header h))))
-
-(defun idee-header ()
+(defun ide-header-of-buffer ()
   "Return the header commented for the current buffer style."
-    (idee--set-header)
-    (ide-comment idee--current-header (file-name-extension (buffer-file-name (current-buffer)))))
+    (ide-header-detect)
+    (ide-comment ide-header-current (file-name-extension (buffer-file-name (current-buffer)))))
 
 ;;;###autoload
-(defun idee-select-project-header ()
+(defun ide-header-select ()
   "Select a header for the project from the existing selection of headers."
   (interactive)
   (let* ((headers (directory-files idee-emacs-headers-dir))
         (kind (projectile-completing-read "Select header:" headers)))
-    (setq idee--current-header (idee-read-and-eval-template (concat (file-name-as-directory idee-emacs-headers-dir) kind)))))
+    (setq ide-header-current (idee-read-and-eval-template (concat (file-name-as-directory idee-emacs-headers-dir) kind)))))
 
 ;;;###autoload
-(defun idee-apply-buffer-header ()
+(defun ide-header-apply-to-buffer ()
   "Apply the selected header to the current buffer."
   (interactive)
   (save-excursion
     (goto-char (point-min))
     (ide-comment-remove-at-point)
-    (insert (idee-header))))
+    (insert (ide-header-of-buffer))))
 
 ;;;###autoload
-(defun idee-apply-header-to-file (f)
+(defun ide-header-apply-to-project ()
+  "Recursively visit all project files nad apply the selected header."
+  (interactive)
+  (idee-visit-project-files 'ide-header-apply-to-file))
+
+;;;###autoload
+(defun ide-header-apply-to-file (f)
   "Apply the selected header to the specified file F."
   (find-file f)
-  (idee-apply-buffer-header)
+  (ide-header-apply-to-buffer)
   (write-file f))
 
 ;;;###autoload
-(defun idee-apply-header-to-project-files ()
-  "Recursively visit all project files nad apply the selected header."
-  (interactive)
-  (idee-visit-project-files 'idee-apply-header-to-file))
-
-
-;;;###autoload
-(defun idee--headers-init ()
+(defun ide-header-setup ()
   "Initialize idee headers."
-  (advice-add 'projectile-switch-project :after 'idee--set-header))
+  (advice-add 'projectile-switch-project :after 'idee-header-detect))
 
 (provide 'idee-headers)
 ;;; idee-headers.el ends here

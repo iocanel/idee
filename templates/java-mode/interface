@@ -2,7 +2,7 @@
 # name: Java Interface
 # key: interface
 # --
-`(idee-header)`
+`(ide-header-of-buffer)`
 `(idee-java-package-line)`
 
 public interface `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {

@@ -2,7 +2,7 @@
 # name: Abstract Factory
 # key: abstract-factory
 # --
-`(idee-header)`
+`(ide-header-of-buffer)`
 `(idee-java-package-line)`
 
 import java.lang.reflect.Array;

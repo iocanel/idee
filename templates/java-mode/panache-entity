@@ -2,7 +2,7 @@
 # name: Panache Entity
 # key: panache-entity
 # --
-`(idee-header)`
+`(ide-header-of-buffer)`
 `(idee-java-package-line)`
 
 import javax.persistence.Entity;

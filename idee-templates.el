@@ -158,15 +158,6 @@
     (funcall (intern mode))
     (yas-expand)))
 
-(defun idee-select-project-header-function ()
-  "Select a header for the project from the existing selection of headers."
-  (interactive)
-  (let* ((headers (directory-files idee-emacs-headers-dir))
-         (header (projectile-completing-read "Select header:" headers))
-         (content (idee-read-and-eval-template (concat (file-name-as-directory idee-emacs-headers-dir) header))))
-    (setq idee--current-header content)))
-
-
 
 ;;
 ;; Initialization

@@ -2,7 +2,7 @@
 # name: Spring Rest Controller
 # key: restcontroller
 # --
-`(idee-header)`
+`(ide-header-of-buffer)`
 `(idee-java-package-line)`
 
 import org.springframework.web.bind.annotation.RequestMapping;
