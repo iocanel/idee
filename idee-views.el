@@ -68,11 +68,6 @@
 (defvar ide-repl-buffer-prefix nil "The prefix of the repl buffer. This is framework/lang specific.")
 (defvar ide-repl-buffer-prompt nil "The prompt of the repl buffer. This is framework/lang specific.")
 
-;; A list with all component switches that are meant to be placed in the bottom
-(defvar idee-bottom-area-switch-list '(idee-cli-active ide-repl-active idee-diagnostics-active idee-errors-active idee-messages-active idee-grep-active idee-helm-ag-active))
-
-(defvar idee-right-area-switch-list '(idee-eww-active idee-xwidget-webkit-active idee-side-by-side-active))
-
 
 (defcustom idee-eww-url-default "http://duckduckgo.com" "The default eww url." :group 'idee-view :type 'string)
 (defvar idee-eww-url () "The url the browser should point at when opened.")
@@ -107,17 +102,13 @@
 
 ;;;###autoload
 (defun idee-view-reset()
-  "Reset view variables."
-  (mapc (lambda (b) (set b nil)) idee-bottom-area-switch-list)
-  (mapc (lambda (r) (set r nil)) idee-right-area-switch-list))
+  "Reset view variables.")
 
 ;;;###autoload
 (defun ide-project-open-view(&optional path)
   "Switch to a traditional IDE view for the buffer.  (project tree, main buffer & terminal)."
   (interactive)
   (let* ((path (or path (or (projectile-project-root) default-directory))))
-    (dolist (b idee-bottom-area-switch-list)
-      (set b nil))
     (dired path)
     (idee-jump-to-non-ide-window)
     (magit-status-setup-buffer path)))
@@ -384,14 +375,13 @@ VISITED is an optional list with windows already visited."
     (ediff-files3 left right "/tmp/ediff-down")))
 
 ;; Macros
-(defmacro idee--create-view-component (name window-creator window-provider flag candidates pivot)
+(defmacro idee--create-view-component (name window-creator window-provider flag)
   "Update the state of the FLAG (in case the winodw has been externally closed).
 
 NAME is the name of the view component.
 WINDOW-CREATOR is a function that creator the buffer.
 WINDOW-PROVIDER is a function that returns non-nil if buffer is currently visible.
 FLAG is the variable that holds the  visibility state of the component (e.g. visible or not visible).
-CANDIDATES is a list containing all other flags that take up the same space as the target component (e.g. cli and  diagnostics use the same area).
 PIVOT indicates how many windows should be switched at the end of the operation."
   (declare (indent 1) (debug t))
   `(progn
@@ -399,9 +389,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
        ,(format "Update the state of the %s (in case the winodw has been externally closed)." name)
        (idee-jump-to-non-ide-window)
        (if (,window-provider)
-           (progn (dolist (c ,candidates)
-                    (set c nil))
-                  (setq ,flag t))
+           (setq ,flag t)
          (setq ,flag nil)))
      
      (defun ,(intern (format "idee-toggle-%s" name)) ()
@@ -409,12 +397,14 @@ PIVOT indicates how many windows should be switched at the end of the operation.
        (interactive)
        (funcall (intern (format "idee-update-%s-state" ,name)))
        (if ,flag
-           (setq ,flag nil)
+           (progn
+             (setq ,flag nil)
+             (let ((window (,window-provider)))
+               (when window
+                 (idee-jump-to-non-ide-window)
+                 (delete-window (,window-provider)))))
          (progn
-           (dolist (c ,candidates)
-             (set c nil))
            (setq ,flag t)
-           (other-window ,pivot)
            (let ((window (or (,window-provider) (,window-creator))))
              (when window
                (select-window (,window-provider))
@@ -463,33 +453,31 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 ;;
 
 ;;;###autoload (autoload 'idee-toggle-errors "idee-views")
-(idee--create-view-component "errors" flycheck-list-errors idee-errors-visible-window idee-errors-active idee-bottom-area-switch-list 0)
+(idee--create-view-component "errors" flycheck-list-errors idee-errors-visible-window idee-errors-active)
 ;;;###autoload (autoload 'idee-toggle-diagnostics "idee-views")
-(idee--create-view-component "diagnostics" flymake-show-diagnostics-buffer idee-diagnostics-visible-window idee-diagnostics-active idee-bottom-area-switch-list 0)
+(idee--create-view-component "diagnostics" flymake-show-diagnostics-buffer idee-diagnostics-visible-window idee-diagnostics-active)
 ;;;###autoload (autoload 'idee-toggle-cli "idee-views")
 ;;;###autoload (autoload 'idee-switch-cli-on "idee-views")
-(idee--create-view-component "cli" idee-projectile-run-eshell idee-cli-visible-window idee-cli-active idee-bottom-area-switch-list 0)
+(idee--create-view-component "cli" idee-projectile-run-eshell idee-cli-visible-window idee-cli-active)
 ;;;###autoload (autoload 'idee-toggle-repl "idee-views")
 ;;;###autoload (autoload 'idee-switch-repl-on "idee-views")
-(idee--create-view-component "repl" idee-repl ide-repl-visible-window ide-repl-active idee-bottom-area-switch-list 0)
+(idee--create-view-component "repl" idee-repl ide-repl-visible-window ide-repl-active)
 ;;;###autoload (autoload 'idee-toggle-messages "idee-views")
-(idee--create-view-component "messages" idee-messages  idee-messages-visible-window idee-messages-active idee-bottom-area-switch-list 0)
+(idee--create-view-component "messages" idee-messages  idee-messages-visible-window idee-messages-active)
 ;;;###autoload (autoload 'idee-toggle-grep "idee-views")
-(idee--create-view-component "grep" projectile-grep idee-grep-visible-window idee-grep-active idee-bottom-area-switch-list 0)
+(idee--create-view-component "grep" projectile-grep idee-grep-visible-window idee-grep-active)
 ;;;###autoload (autoload 'idee-toggle-helm-ag "idee-views")
-(idee--create-view-component "helm-ag" helm-do-ag-project-root  idee-helm-ag-visible-window idee-helm-ag-active idee-bottom-area-switch-list 0)
+(idee--create-view-component "helm-ag" helm-do-ag-project-root  idee-helm-ag-visible-window idee-helm-ag-active)
 ;;;###autoload (autoload 'idee-toggle-eww "idee-views")
-(idee--create-view-component "eww" idee-eww idee-eww-visible-window idee-eww-active idee-right-area-switch-list 0)
+(idee--create-view-component "eww" idee-eww idee-eww-visible-window idee-eww-active)
 ;;;###autoload (autoload 'idee-toggle-xwidget-webkit "idee-views")
-(idee--create-view-component "xwidget-webkit" idee-xwidget-webkit idee-xwidget-webkit-visible-window idee-xwidget-webkit-active idee-right-area-switch-list 0)
+(idee--create-view-component "xwidget-webkit" idee-xwidget-webkit idee-xwidget-webkit-visible-window idee-xwidget-webkit-active)
 ;;;###autoload (autoload 'idee-toggle-side-by-side "idee-views")
-(idee--create-view-component "side-by-side" idee-side-by-side  idee-side-by-side-visible-window idee-side-by-side-active idee-right-area-switch-list 0)
-
+(idee--create-view-component "side-by-side" idee-side-by-side  idee-side-by-side-visible-window idee-side-by-side-active)
 
 ;;
 ;; Repl
 ;;
-
 (defun ide-repl-buffer-get ()
   "Return first matching repl buffer."
   (car (ide-repl-buffers-get)))
