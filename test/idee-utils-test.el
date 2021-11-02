@@ -53,13 +53,13 @@
    (f-mkdir ".git")
    (f-mkdir ".idee")
    (f-touch ".idee/settings.el")
-   (should (equal (concat root-sandbox-path "/.idee/settings.el") (idee-project-settings "settings.el")))))
+   (should (equal (concat root-sandbox-path "/.idee/settings.el") (ide-project-settings "settings.el")))))
 
 (ert-deftest util/should-not-find-project-settings ()
   "Should find not project settings."
   (with-sandbox
    (f-mkdir ".git")
-   (should-not (file-exists-p (idee-project-settings "settings.el")))))
+   (should-not (file-exists-p (ide-project-settings "settings.el")))))
 
 (ert-deftest util/should-load-project-settings ()
   "Should load project settings."

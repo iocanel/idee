@@ -42,7 +42,7 @@
   "Test stuff"
   (interactive)
   (let* ((buffer (pm-get-buffer-of-mode 'java-mode))
-         (file-name (concat (concat (idee-project-root-dir) ".idee") ".jshell")))
+         (file-name (concat (concat (ide-project-root-dir) ".idee") ".jshell")))
     (with-current-buffer buffer
       (message "Enable lsp on %s using %s" buffer file-name)
       (setq-local buffer-file-name file-name) 

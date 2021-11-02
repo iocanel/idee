@@ -124,7 +124,7 @@
   (when (treemacs-current-workspace)
   (let* ((projects (treemacs-workspace->projects (treemacs-current-workspace))))
       (dolist (project projects)
-        (idee-close-project-buffers (treemacs-project->path project))))))
+        (ide-project-close-buffers (treemacs-project->path project))))))
 
 (defun idee-treemacs--enabled-flag ()
   "Visual represntation of the offline flag."

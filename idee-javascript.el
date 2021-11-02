@@ -59,24 +59,24 @@
 ;;; Project Factory
 (defun idee-new-npm-project (&optional create-function)
   "Create a new npm project.
-The command supports accepting an external CREATE-FUNCTION or defaults to idee-create-project-with-shell."
+The command supports accepting an external CREATE-FUNCTION or defaults to ide-project-create-with-shell."
   (interactive)
   (let* ((initializer (read-string "Intializer:" "react-app"))
          (recomended-dir (concat (file-name-as-directory default-directory) initializer))
          (temp-dir (concat temporary-file-directory "npm-" (format "%06x-%06x" (random (expt 16 6)) (random (expt 16 6)))))
          (generated-dir (concat (file-name-as-directory temp-dir) initializer))
-         (target-dir (idee--select-new-project-dir))
+         (target-dir (ide-project-dir-select))
          (parent-dir (file-name-directory (directory-file-name target-dir)))
          (dir-name (substring target-dir (length parent-dir)))
          (generate-command (format "npm init %s ." initializer)))
 
-    (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command)
-    (idee-project-set-name dir-name)
-    (idee-project-set-version "1.0.0")))
+    (funcall (or create-function 'ide-project-create-with-shell) target-dir generate-command)
+    (ide-project-name-set dir-name)
+    (ide-project-version-set "1.0.0")))
 
 
 (defconst idee-npm-project-factory
-  (make-idee-project-factory
+  (make-ide-project-factory
    :name "Npm"
    :description "A project factory that creates a new project using npm."
    :func 'idee-new-npm-project))
@@ -93,7 +93,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
 (defun ide-visitor-javascript (root)
   "Check if a javascript project is available under the specified ROOT."
   (when (idee-javascript-project-p root)
-    (idee-project-set-version (idee-javascript-package-json-version (concat root package-json)))
+    (ide-project-version-set (idee-javascript-package-json-version (concat root package-json)))
     (idee-javascript-enable)))
 
 
@@ -106,7 +106,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
 (defun idee-javascript-init ()
   "Initialize IDEE javascript."
   (interactive)
-  (idee-register-project-factory idee-npm-project-factory)
+  (ide-project-factory-register idee-npm-project-factory)
   (ide-visitor-register 'ide-visitor-javascript)
 ;; Hooks
   (add-hook 'javascipt-mode-hook 'idee-javascript-hook)

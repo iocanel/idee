@@ -6,12 +6,12 @@ kind: "Service"
 metadata:
   labels:
     app: ${1:`(projectile-project-name)`}
-    version: "${2:`(idee-project-get-version)`}"
+    version: "${2:`(ide-project-version-get)`}"
   name: "$1"
 spec:
   selector:
     app: $1
-    version: "${2:`(idee-project-get-version)`}"
+    version: "${2:`(ide-project-version-get)`}"
   ports:
   - port: ${2:8080}
     targetPort: ${3:8080}

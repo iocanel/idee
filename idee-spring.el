@@ -36,7 +36,7 @@
 
 (defun idee-new-spring-starter-project (&optional create-function)
   "Create a new project from https://start.spring.io.
-The command supports accepting an external CREATE-FUNCTION or defaults to idee-create-project-with-shell."
+The command supports accepting an external CREATE-FUNCTION or defaults to ide-project-create-with-shell."
   (interactive)
   (let* ((language (completing-read "Select language: " idee-spring-languages))
          (project-type (completing-read "Select build tool: " idee-spring-project-types))
@@ -44,12 +44,12 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
          (group-id (read-string "Group Id:" idee-spring-init-group-id))
          (artifact-id (read-string "Artifact Id:"))
          (version (read-string "Version:" "0.1-SNAPSHOT"))
-         (target-dir (idee--select-new-project-dir))
+         (target-dir (ide-project-dir-select))
          (generate-command (format "spring init -g %s -a %s -v %s -d%s %s" group-id artifact-id version (mapconcat 'identity dependencies ",") artifact-id))
          (cleanup-command (format "mv %s/* . && rm -r %s" artifact-id artifact-id)))
-    (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command cleanup-command)
-    (idee-project-set-name artifact-id)
-    (idee-project-set-version version)))
+    (funcall (or create-function 'ide-project-create-with-shell) target-dir generate-command cleanup-command)
+    (ide-project-name-set artifact-id)
+    (ide-project-version-set version)))
 
 (defun idee-new-spring-starter-project-internal ()
   "Create a new project from https://start.spring.io."
@@ -58,7 +58,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
     (setq language (completing-read "Select language: " idee-spring-languages))
     (setq project-type (completing-read "Select build tool: " idee-spring-project-types))
     (setq dependencies (completing-read-multiple "Select dependencies: " idee-spring-dependencies))
-    (setq idee-spring-extract-dir (idee--select-new-project-dir))
+    (setq idee-spring-extract-dir (ide-project-dir-select))
     (setq idee-spring-extract-dir-buffer (current-buffer))
     (idee-http-post "https://start.spring.io/starter.zip" `(
                                                             ("language" . ,language)
@@ -67,7 +67,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
                     'idee-spring-starter-download-callback)))
 
 (defconst idee-spring-starter-project-factory
-  (make-idee-project-factory
+  (make-ide-project-factory
    :name "Spring"
    :description "New Spring project created using https://start.spring.io"
    :func 'idee-new-spring-starter-project))
@@ -94,7 +94,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
 
 ;;;###autoload
 (defun idee--spring-init ()
-  (idee-register-project-factory idee-spring-starter-project-factory))
+  (ide-project-factory-register idee-spring-starter-project-factory))
 
 (provide 'idee-spring)
 ;;; idee-spring.el ends here

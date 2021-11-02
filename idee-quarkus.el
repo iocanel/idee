@@ -81,14 +81,14 @@
                                          "vertx"))
 
 (defconst idee-quarkus-rest-project-factory
-  (make-idee-project-factory
+  (make-ide-project-factory
    :name "Quarkus"
    :description "New Quarkus project created using the quarkus maven plugin."
    :func 'idee-new-quarkus-rest-project))
 
 (defun idee-new-quarkus-rest-project (&optional create-function)
   "Create a new quarkus rest project.
-The command supports accepting an external CREATE-FUNCTION or defaults to idee-create-project-with-shell."
+The command supports accepting an external CREATE-FUNCTION or defaults to ide-project-create-with-shell."
   (interactive)
   (let* ((group-id (read-string "Group Id:" idee-quarkus-init-group-id))
          (artifact-id (read-string "Artifact Id:"))
@@ -96,34 +96,34 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
          (endpoint (read-string "Endpoint:" "/hello"))
          (extensions (completing-read-multiple "Select extensions: " idee-quarkus-extensions-list))
          (extension-names (mapcar 'idee-quarkus-extension-qualified-name extensions))
-         (target-dir (idee--select-new-project-dir))
+         (target-dir (ide-project-dir-select))
          (generate-command (format "mvn io.quarkus:quarkus-maven-plugin:%s:create -DprojectGroupId=%s -DprojectArtifactId=%s -DprojectVersion=%s -DclassName=%s.Endpoint -Dendpoint=%s" idee-quarkus-version group-id artifact-id version group-id endpoint))
          (cleanup-command (format "mv %s/* . && mv %s/.[^.]* . && rm -r %s" artifact-id artifact-id artifact-id))
          (add-extension-command (if (not extension-names) nil
                                     (format "mvn quarkus:add-extension -Dextensions=\"%s\"" (mapconcat 'identity extension-names ",")))))
 
     (if add-extension-command
-        (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command cleanup-command add-extension-command)
-      (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command cleanup-command))
+        (funcall (or create-function 'ide-project-create-with-shell) target-dir generate-command cleanup-command add-extension-command)
+      (funcall (or create-function 'ide-project-create-with-shell) target-dir generate-command cleanup-command))
 
-    (idee-project-set-name artifact-id)
-    (idee-project-set-version version)
+    (ide-project-name-set artifact-id)
+    (ide-project-version-set version)
     (idee-quarkus-init-maven-project-settings)))
 
 (defun idee-new-quarkus-remote-dev-project (&optional create-function)
   "Create a new quarkus rest project.
-The command supports accepting an external CREATE-FUNCTION or defaults to idee-create-project-with-shell."
+The command supports accepting an external CREATE-FUNCTION or defaults to ide-project-create-with-shell."
   (interactive)
   (let* ((group-id (read-string "Group Id:" idee-quarkus-init-group-id))
          (artifact-id (read-string "Artifact Id:"))
          (version (read-string "Version:" "0.1-SNAPSHOT"))
          (endpoint (read-string "Endpoint:" "/hello"))
-         (target-dir (idee--select-new-project-dir))
+         (target-dir (ide-project-dir-select))
          (generate-command (format "mvn io.quarkus:quarkus-maven-plugin:%s:create -DprojectGroupId=%s -DprojectArtifactId=%s -DprojectVersion=%s -DclassName=%s.Endpoint -Dendpoint=%s" idee-quarkus-version group-id artifact-id version group-id endpoint))
          (cleanup-command (format "mv %s/* . && mv %s/.* . && rm -r %s" artifact-id artifact-id artifact-id))
          (tune-application-properties-command "echo quarkus.live-reload.password=secret >> src/main/resources/application.properties")
          (add-extension-command "mvn quarkus:add-extension -Dextensions=\"kubernetes,smallrye-fault-tolerance,smallrye-rest-client,undertow-websockets\""))
-         (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command cleanup-command add-extension-command tune-application-properties-command)
+         (funcall (or create-function 'ide-project-create-with-shell) target-dir generate-command cleanup-command add-extension-command tune-application-properties-command)
       (idee-quarkus-init-maven-project-settings)))
 
 
@@ -213,14 +213,14 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
   "Check if a java project is available under the specified ROOT."
   (let ((project-pom (concat root pom-xml)))
     (when (idee-quarkus-project-p root)
-      (idee-project-set-version (idee-maven-pom-version project-pom))
-      (idee-project-set-name (idee-maven-pom-artifact-id project-pom))
+      (ide-project-version-set (idee-maven-pom-version project-pom))
+      (ide-project-name-set (idee-maven-pom-artifact-id project-pom))
       (idee-quarkus-init-maven-project-settings))))
 
 ;;;###autoload
 (defun idee--quarkus-init ()
   (ide-visitor-register 'ide-visitor-quarkus) 
-  (idee-register-project-factory idee-quarkus-rest-project-factory))
+  (ide-project-factory-register idee-quarkus-rest-project-factory))
 
 (provide 'idee-quarkus)
 ;;; idee-quarkus.el ends here

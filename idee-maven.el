@@ -487,7 +487,7 @@
                                      (profiles-opt (idee--maven-profiles-option))
                                      (mvn-cmd-builder nil))
 
-                                (when goto-project-root (push (format "cd %s && " (idee-project-root-dir)) mvn-cmd-builder))
+                                (when goto-project-root (push (format "cd %s && " (ide-project-root-dir)) mvn-cmd-builder))
 
                                 (cond
                                  (invoker-test (push "mvn" mvn-cmd-builder))
@@ -599,11 +599,11 @@ or empty string other wise."
 (defun idee-maven-select-profiles ()
   (interactive)
   "Select profiles"
-  (idee-project-settings-set "maven.el" "idee-maven-profiles" (idee-as-code (completing-read-multiple "Maven profiles:" (idee-maven--all-profiles)))))
+  (ide-project-settings-set "maven.el" "idee-maven-profiles" (idee-as-code (completing-read-multiple "Maven profiles:" (idee-maven--all-profiles)))))
 
 (defun idee-maven--all-profiles ()
   "List all available profiles"
-  (split-string (shell-command-to-string (format "cd %s && mvn help:all-profiles | grep \"Profile Id:\" | cut -d\" \" -f5 | sort | uniq" (idee-project-root-dir))) "\n" ))
+  (split-string (shell-command-to-string (format "cd %s && mvn help:all-profiles | grep \"Profile Id:\" | cut -d\" \" -f5 | sort | uniq" (ide-project-root-dir))) "\n" ))
 
 (defun idee-maven-version-set ()
   (interactive)
@@ -632,7 +632,7 @@ or empty string other wise."
       (mapcar 'intern idee-maven-profiles)))
 
 (defun idee-maven--project-name ()
-    (intern (or (idee-project-get-name) "unknown")))
+    (intern (or (ide-project-name-get) "unknown")))
 
 (defun idee-maven--module-name ()
   (let* ((module-dir (idee-maven-module-root-dir))
@@ -714,20 +714,20 @@ or empty string other wise."
 ;;; Project Factory
 (defun idee-new-maven-from-archetype-project (&optional create-function)
   "Create a new maven from archetype project.
-The command supports accepting an external CREATE-FUNCTION or defaults to idee-create-project-with-shell."
+The command supports accepting an external CREATE-FUNCTION or defaults to ide-project-create-with-shell."
   (interactive)
   (let* ((group-id (read-string "Group Id:" idee-maven-init-group-id))
          (artifact-id (read-string "Artifact Id:"))
          (version (read-string "Version:" "0.1-SNAPSHOT"))
-         (target-dir (idee--select-new-project-dir))
+         (target-dir (ide-project-dir-select))
          (generate-command (format "mvn archetype:generate -DgroupId=%s -DartifactId=%s -Dversion=%s -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false" group-id artifact-id version))
          (cleanup-command (format "mv %s/* . && rm -r %s" artifact-id artifact-id)))
-    (funcall (or create-function 'idee-create-project-with-shell) target-dir generate-command cleanup-command)
-    (idee-project-set-name artifact-id)
-    (idee-project-set-version version)))
+    (funcall (or create-function 'ide-project-create-with-shell) target-dir generate-command cleanup-command)
+    (ide-project-name-set artifact-id)
+    (ide-project-version-set version)))
 
 (defconst idee-maven-project-factory
-  (make-idee-project-factory
+  (make-ide-project-factory
    :name "Maven"
    :description "New Maven project from archetype."
    :func 'idee-new-maven-from-archetype-project))
@@ -744,12 +744,12 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
   "Check if a java project is available under the specified ROOT."
   (let ((project-pom (concat root pom-xml)))
     (when (file-exists-p project-pom)
-      (idee-project-set-version (idee-maven-pom-version project-pom))
-      (idee-project-set-name (idee-maven-pom-artifact-id project-pom)))))
+      (ide-project-version-set (idee-maven-pom-version project-pom))
+      (ide-project-name-set (idee-maven-pom-artifact-id project-pom)))))
 
 ;;;###autoload
 (defun idee--maven-init ()
-  (idee-register-project-factory idee-maven-project-factory)
+  (ide-project-factory-register idee-maven-project-factory)
   (ide-visitor-register 'ide-visitor-maven))
 
 (provide 'idee-maven)

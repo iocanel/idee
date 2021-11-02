@@ -28,8 +28,8 @@
 (require 'hydra)
 (require 'company-yasnippet)
 
-;;;###autoload (autoload 'idee-project-hydra/body "idee-hydra")
-(defhydra idee-project-hydra (:hint nil :exit t)
+;;;###autoload (autoload 'ide-project-hydra/body "idee-hydra")
+(defhydra ide-project-hydra (:hint nil :exit t)
 "
         ^ Project      
         ^^^^^^---------
@@ -88,7 +88,7 @@
  
 
 (defun idee-hydra--project-name ()
-  (let ((name (idee-project-get-name)))
+  (let ((name (ide-project-name-get)))
     (if name (intern name) (intern "_"))))
 
 (defun idee-hydra--side-by-side-flag ()
@@ -124,7 +124,7 @@
 (defun idee-hydra--selected-header-kind ()
   "Visual represntation of the side by side visibility."
   (cond (idee-header-selected-kind (intern idee-header-selected-kind))
-        ((file-exists-p (concat (idee-project-root-dir) "header.txt")) (intern "project"))
+        ((file-exists-p (concat (ide-project-root-dir) "header.txt")) (intern "project"))
         (t (intern "none"))))
 
 ;; Hydra helpers
@@ -154,7 +154,7 @@
                                                                                                   ^^^^^^^^^^_3_: ?3? repl
    [_q_]: quit
    "
-  ("HEADER" nil (idee-project-get-name))
+  ("HEADER" nil (ide-project-name-get))
   ("o" idee-open)
   ("b" idee-open-side-by-side)
   ("p" idee-new-project)

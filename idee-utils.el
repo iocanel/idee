@@ -227,13 +227,13 @@
         (t item)))
 
 ;;;###autoload
-(defun idee-project-settings (settings-file)
+(defun ide-project-settings (settings-file)
   "Return the path of a local SETTINGS-FILE."
   (concat (file-name-as-directory (concat (projectile-project-root) ".idee")) settings-file))
 
-(defun idee-project-settings-set (settings-file key value)
+(defun ide-project-settings-set (settings-file key value)
   "Add or replace a set statement inside the SETTINGS-FILE using the specified KEY and VALUE."
-  (let* ((file (idee-project-settings settings-file))
+  (let* ((file (ide-project-settings settings-file))
          (settings-dir (file-name-as-directory (file-name-directory (directory-file-name file)))))
     (when (not (file-exists-p settings-dir)) (make-directory settings-dir t))
     (with-temp-buffer
@@ -257,7 +257,7 @@
   "Load a SETTINGS-FILE as local OPTIONS and evaluate BODY."
   (declare (indent 1) (debug t))
        `(let (,options)
-          (let ((f (idee-project-settings ,settings-file)))
+          (let ((f (ide-project-settings ,settings-file)))
             (when (and f (file-exists-p f)) (load-file f))) ,@body))
 
 ;;;###autoload (autoload 'idee-toggle "idee-utils")

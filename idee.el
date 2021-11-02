@@ -45,7 +45,7 @@
 (defun idee-init ()
   (interactive)
   "Initialize idee"
-  (idee--projects-init)
+  (ide-project-setup)
   (ide-template-setup)
   (ide-header-setup)
   (ide-visitor-setup)

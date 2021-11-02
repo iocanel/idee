@@ -37,8 +37,8 @@
 (defcustom idee-tree-enabled-default t "Default state of the tree view" :group 'idee-view :type 'boolean)
 (defcustom idee-www-default-url nil "The url to use when opening the eww view." :group 'idee-view :type 'boolean)
 
-(defcustom idee-focus-center-buffer t "Flag to specify that the focus buffer needs to be centered." :group 'idee-view :type 'boolean) 
-(defcustom idee-focus-center-buffer-columns 160 "The number of columns of the centered buffer." :group 'idee-view :type 'int) 
+(defcustom ide-focus-center-buffer t "Flag to specify that the focus buffer needs to be centered." :group 'idee-view :type 'boolean) 
+(defcustom ide-focus-center-buffer-columns 160 "The number of columns of the centered buffer." :group 'idee-view :type 'int) 
 (defcustom idee-display-buffer-enabled nil "Enabled management of display-buffer-alist." :group 'idee-view :type 'boolean) 
 (defcustom idee-popper-enabled nil "Enabled popper." :group 'idee-view :type 'boolean) 
 
@@ -78,29 +78,29 @@
 (defvar idee-eww-url () "The url the browser should point at when opened.")
 
 ;;; The following is based on Protesilaos Stavrou configuration: https://gitlab.com/protesilaos/dotfiles/-/blob/master/emacs/.emacs.d/emacs-init.org
-(defvar idee-focus-window-configuration nil "Current window configuration.")
-(defvar idee-focus-treemacs-visible nil "Treemacs visibility, as idee-window-configuration does not apply to treemacs.")
-(defvar idee-focus-fringe-mode fringe-mode)
+(defvar ide-focus-window-configuration nil "Current window configuration.")
+(defvar ide-focus-treemacs-visible nil "Treemacs visibility, as idee-window-configuration does not apply to treemacs.")
+(defvar ide-focus-fringe-mode fringe-mode)
 
-(define-minor-mode idee-focus-mode
+(define-minor-mode ide-focus-mode
   "Toggle between multiple windows and single window. This is the equivalent of maximising a window."
   :lighter " [M]"
   :global nil
-  (if (not (and (boundp 'idee-focus-mode) idee-focus-mode))       ;; If we have idee-focus-mode
-      (when idee-focus-window-configuration                       ;; And and exisitng configuration
+  (if (not (and (boundp 'ide-focus-mode) ide-focus-mode))       ;; If we have ide-focus-mode
+      (when ide-focus-window-configuration                       ;; And and exisitng configuration
         (progn                                                    ;; Restore ...
-          (set-window-configuration idee-focus-window-configuration)
-          (when idee-focus-center-buffer (set-fringe-mode idee-focus-fringe-mode))
+          (set-window-configuration ide-focus-window-configuration)
+          (when ide-focus-center-buffer (set-fringe-mode ide-focus-fringe-mode))
           (when (and
-                 (equal 'visible idee-focus-treemacs-visible)
+                 (equal 'visible ide-focus-treemacs-visible)
                  (not (equal 'visible (treemacs-current-visibility)))) (treemacs))))
     ;; Focus
     (progn
-      (setq idee-focus-window-configuration (current-window-configuration))
-      (setq idee-focus-treemacs-visible (treemacs-current-visibility))
+      (setq ide-focus-window-configuration (current-window-configuration))
+      (setq ide-focus-treemacs-visible (treemacs-current-visibility))
       (delete-other-windows)
-      (when idee-focus-center-buffer (set-fringe-mode (/ (- (frame-pixel-width) (* idee-focus-center-buffer-columns (frame-char-width))) 2)))))
-  (setq idee-focus-treemacs-visible (treemacs-current-visibility)))
+      (when ide-focus-center-buffer (set-fringe-mode (/ (- (frame-pixel-width) (* ide-focus-center-buffer-columns (frame-char-width))) 2)))))
+  (setq ide-focus-treemacs-visible (treemacs-current-visibility)))
 
 
 ;; Functions
@@ -112,7 +112,7 @@
   (mapc (lambda (r) (set r nil)) idee-right-area-switch-list))
 
 ;;;###autoload
-(defun idee-project-open-view(&optional path)
+(defun ide-project-open-view(&optional path)
   "Switch to a traditional IDE view for the buffer.  (project tree, main buffer & terminal)."
   (interactive)
   (let* ((path (or path (or (projectile-project-root) default-directory))))

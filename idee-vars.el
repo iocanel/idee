@@ -20,7 +20,7 @@
 
 ;;; Code:
 (defcustom idee-resources-dir (locate-user-emacs-file "idee") "The directory where idee files are stored." :group 'idee :type 'string)
-(defcustom idee-project-conf-dir ".idee" "The directory where idee configuration files are stored." :group 'idee :type 'string)
+(defcustom ide-project-conf-dir ".idee" "The directory where idee configuration files are stored." :group 'idee :type 'string)
 
 (defvar ide-source-dir nil "The source directory of the idee project.")
 
@@ -57,30 +57,30 @@
 ;;
 ;; Projects
 ;;
-(cl-defstruct idee-project-factory
+(cl-defstruct ide-project-factory
   name
   description
   func)
 
-(cl-defstruct idee-project-info
+(cl-defstruct ide-project-info
   name
   version
   path
   properties)
 
-(defconst idee-cask-project-factory (make-idee-project-factory
+(defconst idee-cask-project-factory (make-ide-project-factory
   :name "Cask"
   :description "Create an elisp project based on Cask."
   :func ()))
 
-(defconst idee-project-root-markers '(".idee" ".projectile" ".git") "Files that indicate the root of a project")
-(defconst idee-module-root-markers '() "Files that indicate the root of a module")
-(defvar idee-project-factories-list `(,idee-cask-project-factory))
+(defconst ide-project-root-markers '(".idee" ".projectile" ".git") "Files that indicate the root of a project")
+(defconst ide-module-root-markers '() "Files that indicate the root of a module")
+(defvar ide-project-factories-list `(,idee-cask-project-factory))
 
-(defvar idee-project-info-alist nil)
+(defvar ide-project-info-alist nil)
 
-(defvar idee-project-get-name nil)
-(defvar idee-project-version nil)
+(defvar ide-project-name-get nil)
+(defvar ide-project-version nil)
 
 ;;
 ;; Comments
@@ -129,11 +129,11 @@
 
 ;; Functions
 (defvar idee-function-alist '((idee-open-function . projectile-switch-project)
-                              (idee-new-project-function . idee-new-project-function)
+                              (idee-new-project-function . ide-project-new)
                               (idee-new-file-function . idee-file-new)
                               (idee-recent-function . projectile-recentf)
                               (idee-save-all-function . projectile-save-project-buffers)
-                              (idee-close-function . idee-close-project-buffers)
+                              (idee-close-function . ide-project-close-buffers)
                               (idee-build-function . projectile-compile-project)
                               (idee-run-or-eval-function . projectile-run-project)
                               (idee-vcs-function . magit-status)
@@ -146,7 +146,7 @@
                               (idee-implementation-function . nil)
                               (idee-declaration-function . nil)
                               (idee-back-function . nil)
-                              (idee-grep-function . idee-project-grep)
+                              (idee-grep-function . ide-project-grep)
                               (idee-find-file-function . projectile-find-file-dwim)
                               (idee-find-variable-function . find-variable)
                               (idee-test-function . nil)

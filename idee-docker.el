@@ -68,8 +68,8 @@
   "Get the docker image name from settings or project parameters."
   (idee-with-project-settings "docker.el" idee-docker-image
                               (let  ((org (user-login-name))
-                                     (name (idee-project-get-name))
-                                     (version (idee-project-get-version))
+                                     (name (ide-project-name-get))
+                                     (version (ide-project-version-get))
                                      (docker-image idee-docker-image))
 
                                 ;;
@@ -79,7 +79,7 @@
                                 ;;
                                 (when (not version)
                                   (ide-visitor-apply)
-                                  (setq version (or (idee-project-get-version) "latest")))
+                                  (setq version (or (ide-project-version-get) "latest")))
 
                                 (or  docker-image
                                      (if idee-docker-registry
@@ -111,7 +111,7 @@ The criteria are the following:
   (let* ((buffer (buffer-file-name))
          (path (if buffer (buffer-file-name) nil))
          (provider-dockerfile (car (idee-docker-get-dockerfiles-from-providers)))
-         (last-visited-dockerfile (idee-project-get-property idee-last-visited-dockerfile))
+         (last-visited-dockerfile (ide-project-property-get idee-last-visited-dockerfile))
          (dockerfile))
 
     (setq dockerfile
@@ -131,7 +131,7 @@ The criteria are the following:
   "Initialize idee-docker."
   (interactive)
   (add-to-list 'idee-dockerfile-provider-list 'idee-docker-dockerfile-from-project-root)
-  (add-hook 'dockerfile-mode-hook (lambda () (idee-project-set-property idee-last-visited-dockerfile (buffer-file-name)))))
+  (add-hook 'dockerfile-mode-hook (lambda () (ide-project-property-set idee-last-visited-dockerfile (buffer-file-name)))))
 
 (provide 'idee-docker)
 ;;; idee-docker.el ends here

@@ -6,7 +6,7 @@ kind: "ConfigMap"
 metadata:
   labels:
     app: ${1:`(projectile-project-name)`}
-    version: "${2:`(idee-project-get-version)`}"
+    version: "${2:`(ide-project-version-get)`}"
   name: "$1"
 data:
   ${3:<key>}:${4:<value>}

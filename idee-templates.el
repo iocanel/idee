@@ -123,8 +123,8 @@
 (defun ide-template-load-from-project ()
   "Load project templates."
   (interactive)
-  (let* ((root-dir (idee-project-root-dir (buffer-file-name)))
-         (conf-dir (concat (file-name-as-directory root-dir) idee-project-conf-dir))
+  (let* ((root-dir (ide-project-root-dir (buffer-file-name)))
+         (conf-dir (concat (file-name-as-directory root-dir) ide-project-conf-dir))
          (template-dir (concat (file-name-as-directory conf-dir) "templates")))
     (when (file-exists-p template-dir)
       (yas-load-directory template-dir)

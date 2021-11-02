@@ -43,8 +43,8 @@
 
 (defun ide-header-of-project ()
   "Read the header from header.txt."
-  (let ((root-dir-header (concat (idee-project-root-dir (buffer-file-name)) "header.txt"))
-        (idee-dir-header (concat (idee-project-root-dir (buffer-file-name)) (file-name-as-directory idee-project-conf-dir) "header.txt")))
+  (let ((root-dir-header (concat (ide-project-root-dir (buffer-file-name)) "header.txt"))
+        (idee-dir-header (concat (ide-project-root-dir (buffer-file-name)) (file-name-as-directory ide-project-conf-dir) "header.txt")))
 
        (cond ((file-exists-p root-dir-header) (idee-read-and-eval-template root-dir-header))
              ((file-exists-p idee-dir-header) (idee-read-and-eval-template idee-dir-header))

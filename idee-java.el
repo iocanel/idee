@@ -72,8 +72,8 @@
   (interactive)
   (let* ((module-dir (idee-maven-module-root-dir))
          (module-pom (concat module-dir pom-xml))
-         (jshell-buffer-name (format "jshell %s" (if module-dir module-dir (idee-project-root-dir))))
-         (jshell-process-name (format "*jshell %s" (if module-dir module-dir (idee-project-root-dir))))
+         (jshell-buffer-name (format "jshell %s" (if module-dir module-dir (ide-project-root-dir))))
+         (jshell-process-name (format "*jshell %s" (if module-dir module-dir (ide-project-root-dir))))
          (existing-buffer (car (seq-filter  (lambda (b) (idee-starts-with (buffer-name b) jshell-process-name)) (buffer-list)))))
     (if existing-buffer
           (switch-to-buffer existing-buffer)
@@ -99,7 +99,7 @@
 The new class will be created under SRC-PATH or `src/main/java` if the src path is ommitted.
 The target module will be the current, unless BASE-PATH has been specified, in which case it will be used."
     (with-temp-buffer
-      (let* ((base-path (file-name-as-directory (or base-path (idee-module-root-dir))))
+      (let* ((base-path (file-name-as-directory (or base-path (ide-module-root-dir))))
              (src-path (file-name-as-directory (or src-path "src/main/java")))
              (package (idee-java-package-of-fqcn fqcn))
              (class-name (substring fqcn (+ 1 (length package))))
@@ -114,7 +114,7 @@ The target module will be the current, unless BASE-PATH has been specified, in w
 (defun idee-java-archetype-create-resource (name archetype &optional src-path base-path)
   "Create a new java class with FQCN in the current module from the specified ARCHETYPE."
     (with-temp-buffer
-      (let* ((base-path (file-name-as-directory (or base-path (idee-module-root-dir))))
+      (let* ((base-path (file-name-as-directory (or base-path (ide-module-root-dir))))
              (src-path (file-name-as-directory (or src-path "src/main/resources")))
              (resource (concat base-path (format "%s/%s" src-path name)))
              (extension (file-name-extension resource))
@@ -129,7 +129,7 @@ The target module will be the current, unless BASE-PATH has been specified, in w
 (defun idee-java-register-spi (interface impl)
   "Create a new java class with FQCN in the current module from the specified ARCHETYPE."
   (with-temp-buffer
-    (let* ((spi-file-name (concat (idee-module-root-dir) (format "src/main/resources/META-INF/services/%s" interface))))
+    (let* ((spi-file-name (concat (ide-module-root-dir) (format "src/main/resources/META-INF/services/%s" interface))))
       (when (file-exists-p spi-file-name)
         (set-visited-file-name spi-file-name)
         (insert-file-contents spi-file-name))
@@ -153,8 +153,8 @@ The target module will be the current, unless BASE-PATH has been specified, in w
 (defun idee-java-create-snippet (source-file name key &optional templates-dir)
   "Create snippet from file."
     (with-temp-buffer
-      (let* ((root-dir (idee-project-root-dir (buffer-file-name)))
-             (conf-dir (concat (file-name-as-directory root-dir) idee-project-conf-dir))
+      (let* ((root-dir (ide-project-root-dir (buffer-file-name)))
+             (conf-dir (concat (file-name-as-directory root-dir) ide-project-conf-dir))
              (project-templates-dir (concat (file-name-as-directory conf-dir) "templates"))
              (templates-dir (or templates-dir project-templates-dir))
              (body (idee-java-snippet-body-from source-file))
