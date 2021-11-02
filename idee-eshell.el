@@ -28,60 +28,60 @@
 (require 'projectile)
 
 
-(defvar idee-eshell-command-queue (queue-create))
-(defvar idee-eshell-command-inserting nil)
-(defvar idee-eshell-command-running nil)
-(defvar idee-eshell-initialized nil)
+(defvar ide-eshell-command-queue (queue-create))
+(defvar ide-eshell-command-inserting nil)
+(defvar ide-eshell-command-running nil)
+(defvar ide-eshell-initialized nil)
 
-(defcustom idee-eshell-cat-alias-enabled t "/dev/clip aware cat alias toggle." :group 'idee-eshell :type 'boolean)
-(defcustom idee-eshell-edit-alias-enabled t "Edit alias toggle." :group 'idee-eshell :type 'boolean)
-(defcustom idee-eshell-save-on-shell-enabled t "Save on shell toggle." :group 'idee-eshell :type 'boolean)
+(defcustom ide-eshell-cat-alias-enabled t "/dev/clip aware cat alias toggle." :group 'idee-eshell :type 'boolean)
+(defcustom ide-eshell-edit-alias-enabled t "Edit alias toggle." :group 'idee-eshell :type 'boolean)
+(defcustom ide-eshell-save-on-shell-enabled t "Save on shell toggle." :group 'idee-eshell :type 'boolean)
 
-(defun idee-eshell-cleanup  ()
+(defun ide-eshell-cleanup  ()
   "Cleanup eshell queues and flags."
   (interactive)
-  (setq idee-eshell-command-queue (queue-create))
-  (setq idee-eshell-command-running nil))
+  (setq ide-eshell-command-queue (queue-create))
+  (setq ide-eshell-command-running nil))
 
-(defun idee-eshell-command-started ()
+(defun ide-eshell-command-started ()
   "Mark that an eshell command is running."
-  (setq idee-eshell-command-running t))
+  (setq ide-eshell-command-running t))
 
-(defun idee-eshell-command-finished ()
+(defun ide-eshell-command-finished ()
   "Mark that an eshell command is running."
 
   ;; The first time this function is called will be before the shell is even intialized.
-  (if (not idee-eshell-initialized)
-      (setq idee-eshell-initialized t)
+  (if (not ide-eshell-initialized)
+      (setq ide-eshell-initialized t)
 
   (run-with-timer 1 nil (lambda ()
                             (progn
-                              (when (and (not idee-eshell-command-inserting) idee-eshell-command-running)
-                                (idee-eshell-execute-next-command))
-                              (setq idee-eshell-command-running (and idee-eshell-command-running (not (queue-empty idee-eshell-command-queue)))))))))
+                              (when (and (not ide-eshell-command-inserting) ide-eshell-command-running)
+                                (ide-eshell-execute-next-command))
+                              (setq ide-eshell-command-running (and ide-eshell-command-running (not (queue-empty ide-eshell-command-queue)))))))))
 
-(defun idee-eshell-execute-next-command ()
+(defun ide-eshell-execute-next-command ()
   "Execute the next command found in the queue."
   (interactive)
-  (setq idee-eshell-command-running t)
-  (let* ((cmd (queue-dequeue idee-eshell-command-queue))
+  (setq ide-eshell-command-running t)
+  (let* ((cmd (queue-dequeue ide-eshell-command-queue))
          (should-ignore (equal 'ignore cmd)))
     ;; dequeue one more if you have two.
     (if should-ignore
         (progn
-          (setq cmd (queue-dequeue idee-eshell-command-queue))
+          (setq cmd (queue-dequeue ide-eshell-command-queue))
           (setq should-ignore (equal 'ignore cmd))))
 
     (when (not should-ignore)
-      (when cmd (idee-eshell-project-command-execute cmd)))
+      (when cmd (ide-eshell-command-execute-in-project cmd)))
     should-ignore))
 
-;;;###autoload (autoload 'idee-with-project-shell "idee-eshell")
-(defmacro idee-with-project-shell (&rest body)
+;;;###autoload (autoload 'ide-eshell-inin-project "idee-eshell")
+(defmacro ide-eshell-inin-project (&rest body)
   "Load a SETTINGS-FILE as local OPTIONS and evaluate BODY."
   (declare (indent 1) (debug t))
   `(let ()
-  (when idee-eshell-save-on-shell-enabled (idee-save-all))
+  (when ide-eshell-save-on-shell-enabled (idee-save-all))
   (idee-switch-cli-on)
   (with-current-buffer (format "*eshell %s*" (projectile-project-name))
     (let ((comint-scroll-to-bottom-on-output t))
@@ -91,7 +91,7 @@
       (eshell-send-input)))))
 
 ;;;###autoload
-(defun idee-eshell-project-command-execute (command &optional new-shell)
+(defun ide-eshell-command-execute-in-project (command &optional new-shell)
   "Run a single COMMAND in the current project shell.
    When NEW-SHELL is specified the old eshell project buffer is killed."
   (let* ((name (format "*eshell %s*" (projectile-project-name)))
@@ -103,52 +103,52 @@
     (with-current-buffer name
         (eshell-return-to-prompt)
         (eshell-wait-for-process)
-        (idee-eshell-insert command)
+        (ide-eshell-insert command)
         (eshell-send-input))))
 
 ;;;###autoload
-(defun idee-eshell-project-command-enqueue (commands)
+(defun ide-eshell-command-enqueue-in-project (commands)
   "Execute COMMANDS on eshell."
   (idee-switch-cli-on)
   (with-current-buffer (format "*eshell %s*" (projectile-project-name))
     (let ((comint-scroll-to-bottom-on-output t)
           (eshell-scroll-to-bottom-on-input t))
       (dolist (cmd (if (listp commands) commands (list commands)))
-        (when (not (idee-string-blank cmd)) (queue-enqueue idee-eshell-command-queue cmd)))
-      (when (not idee-eshell-command-running) (idee-eshell-execute-next-command)))))
+        (when (not (idee-string-blank cmd)) (queue-enqueue ide-eshell-command-queue cmd)))
+      (when (not ide-eshell-command-running) (ide-eshell-execute-next-command)))))
 
 
 ;;;###autoload
-(defun idee-eshell-insert (str)
+(defun ide-eshell-insert (str)
   "Insert STR into the current project eshell buffer."
 
   ;; Sometimes eshell decided to insert the last command when trying to insert the new one.
   ;; Not, sure exactly why this happens, but let's kill the line if it does.
   ;; This also helps, if left over chars or half written commands are there.
-  (setq idee-eshell-command-inserting t)
+  (setq ide-eshell-command-inserting t)
   (when (< (point) (point-max)) (kill-line))
     (insert str)
 
-  (setq idee-eshell-command-inserting nil))
+  (setq ide-eshell-command-inserting nil))
 
 ;;
 ;; Aliases
 ;;
-(defun idee-eshell-cat (f)
+(defun ide-eshell-cat (f)
   "Display the contents of file F."
   (if (equal f "/dev/clip")
       (current-kill 0)
     (idee-read-file f)))
 
-(advice-add 'eshell-command-started :before 'idee-eshell-command-started)
-;(advice-add 'eshell-command-finished :after 'idee-eshell-command-finished)
-(add-hook 'eshell-after-prompt-hook 'idee-eshell-command-finished)
-(add-hook 'eshell-after-prompt-hook 'idee-eshell-command-finished)
+(advice-add 'eshell-command-started :before 'ide-eshell-command-started)
+;(advice-add 'eshell-command-finished :after 'ide-eshell-command-finished)
+(add-hook 'eshell-after-prompt-hook 'ide-eshell-command-finished)
+(add-hook 'eshell-after-prompt-hook 'ide-eshell-command-finished)
 
-(when idee-eshell-cat-alias-enabled
-  (add-hook 'eshell-mode-hook (lambda () (eshell/alias "cat" "idee-eshell-cat $1"))))
+(when ide-eshell-cat-alias-enabled
+  (add-hook 'eshell-mode-hook (lambda () (eshell/alias "cat" "ide-eshell-cat $1"))))
 
-(defun idee-eshell-edit (&rest files)
+(defun ide-eshell-edit (&rest files)
   "Edit the the specified FILES."
   (let ((file (car files))
         (remaining (cdr files)))
@@ -158,10 +158,10 @@
     ;; We don't want to return anything back, so let's just return nil.
     nil)
 
-(when idee-eshell-edit-alias-enabled
-  (add-hook 'eshell-mode-hook (lambda () (eshell/alias "edit" "idee-eshell-edit $*"))))
+(when ide-eshell-edit-alias-enabled
+  (add-hook 'eshell-mode-hook (lambda () (eshell/alias "edit" "ide-eshell-edit $*"))))
 
-(defun idee-eshell-open (file)
+(defun ide-eshell-open (file)
   "Edit the the specified FILE."
   (let* ((is-directory (file-directory-p file))
          (path (expand-file-name file))
@@ -173,12 +173,12 @@
           (projectile-add-known-project path)
           (setq projectile-project-root path)
           (projectile-switch-project-by-name path))
-      (idee-eshell-edit path))))
+      (ide-eshell-edit path))))
 
-(when idee-eshell-edit-alias-enabled
-  (add-hook 'eshell-mode-hook (lambda () (eshell/alias "open" "idee-eshell-open $1"))))
+(when ide-eshell-edit-alias-enabled
+  (add-hook 'eshell-mode-hook (lambda () (eshell/alias "open" "ide-eshell-open $1"))))
 
-(defun idee-eshell-find-web-port ()
+(defun ide-eshell-find-web-port ()
   "Find the web port in the current buffer, or return 8080 if none is found."
   (let* ((name (format "*eshell %s*" (projectile-project-name)))
          (buffer (get-buffer name)))

@@ -49,7 +49,7 @@ before starting the debug process."
     (mapc (-lambda ((env . value)) (setenv env value t)) environment-variables)
     (plist-put launch-args :name session-name)
 
-    (when program-to-start (idee-with-project-shell
+    (when program-to-start (ide-eshell-inin-project
                                   (mapc (-lambda ((env . value)) (setenv env value)) environment-variables)
                                   (when cwd (insert (format "cd %s\n" cwd)))
                                   (insert program-to-start)))

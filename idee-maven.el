@@ -454,7 +454,7 @@
   "Prompt the user to execute previous maven build from history."
   (interactive)
   (let ((maven-command (completing-read "Maven command:" idee-maven-exec-history)))
-    (idee-eshell-project-command-execute maven-command t)))
+    (ide-eshell-command-execute-in-project maven-command t)))
 
 
 (defun idee-maven-exec-from-project-settings ()
@@ -473,7 +473,7 @@
                                 (if idee-maven-show-errors
                                     (push "-e" mvn-cmd-builder))
                                 (setq maven-command (string-trim (string-join (reverse mvn-cmd-builder) " ")))
-                                (idee-eshell-project-command-execute maven-command t))))
+                                (ide-eshell-command-execute-in-project maven-command t))))
 
 (cl-defun idee-maven-cmd (&key goals debug surefire-debug failsafe-debug build-scope also-make goto-project-root)
   (idee-with-project-settings "maven.el" idee-maven-profiles
@@ -531,7 +531,7 @@
   (interactive)
   (let ((cmd (idee-maven-cmd :goals goals :debug debug :surefire-debug surefire-debug :failsafe-debug failsafe-debug :build-scope build-scope :also-make also-make)))
     (push cmd idee-maven-exec-history)
-    (idee-eshell-project-command-execute cmd t)))
+    (ide-eshell-command-execute-in-project cmd t)))
 
 ;;; Toggles
 (defun idee-maven-toggle-clean ()
