@@ -52,7 +52,7 @@
   (idee-views-setup)
 
   ;; Common staff
-  (idee--yml-init))
+  (ide-yml-setup))
 
 (provide 'idee)
 ;;; idee.el ends here

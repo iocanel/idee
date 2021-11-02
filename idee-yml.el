@@ -36,7 +36,7 @@
 
 
 ;;;###autoload
-(defun idee--yml-init ()
+(defun ide-yml-setup ()
   (interactive)
   "Initialize yml settings"
   (add-to-list 'idee-type-comment-styles-alist `("yml" . ,yml-comment-style))
