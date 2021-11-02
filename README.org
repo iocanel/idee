@@ -185,5 +185,5 @@ Being able to easily repeat any previously executed maven command is even cooler
 
 [[./doc/images/maven-hydra.png]]
 
-The maven hydra can be called via `idee-maven-hydra/body` or using `<SPC> m` if you enabled `idee-evil`.
+The maven hydra can be called via `idee-maven-hydra/body`.
 

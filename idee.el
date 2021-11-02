@@ -50,7 +50,6 @@
   (ide-template-setup)
   (ide-header-setup)
   (idee--visitors-init)
-  (idee--evil-init)
   (idee-views-setup)
 
   ;; Common staff
