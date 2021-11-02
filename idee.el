@@ -47,7 +47,7 @@
   (interactive)
   "Initialize idee"
   (idee--projects-init)
-  (idee--templates-init)
+  (ide-template-setup)
   (ide-header-setup)
   (idee--visitors-init)
   (idee--evil-init)

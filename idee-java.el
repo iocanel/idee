@@ -211,7 +211,7 @@ The target module will be the current, unless BASE-PATH has been specified, in w
 
   (idee-register-visitor 'idee-visitor-java)
 
-  (idee-templates-register-template-factory (make-idee-template-factory
+  (ide-template-factory-register (make-ide-template-factory
                                              :mode 'java-mode
                                              :description "A java temlate factory"
                                              :func 'idee-java-create-snippet))

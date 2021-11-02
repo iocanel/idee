@@ -85,6 +85,10 @@
   (ide-header-apply-to-buffer)
   (write-file f))
 
+(defun ide-header-source-dir ()
+  "Find the headers source directory."
+  (concat (file-name-as-directory (ide-source-dir)) "headers"))
+
 ;;;###autoload
 (defun ide-header-setup ()
   "Initialize idee headers."

@@ -22,11 +22,32 @@
 (defcustom idee-resources-dir (locate-user-emacs-file "idee") "The directory where idee files are stored." :group 'idee :type 'string)
 (defcustom idee-project-conf-dir ".idee" "The directory where idee configuration files are stored." :group 'idee :type 'string)
 
+(defvar ide-source-dir nil "The source directory of the idee project.")
+
 ;; Tabs and indentation
 (defvar idee-tab-width 2)
 (defvar idee-use-tabs nil)
 
 (defvar idee-source-file-extensions-list '(java kt groovy scala clojure xml go py js el))
+
+(defvar idee-type-modes-alist '(("el" . "emacs-lisp-mode")
+                                ("org" . "org-mode")
+                                ("md" . "markdown-mode")
+                                ("java" . "java-mode")
+                                ("json" . "json-mode")
+                                ("js" . "js2-mode")
+                                ("ts" . "typescript-mode")
+                                ("py" . "python-mode")
+                                ("go" . "go-mode")
+                                ("cl" . "clojure-mode")
+                                ("kt" . "kotlin-mode")
+                                ("groovy" . "groovy-mode")
+                                ("html" . "html-mode")
+                                ("yml" . "yaml-mode")
+                                ("yaml" . "yaml-mode")
+                                ("sql" . "sql-mode")) "Association list for extension to mode.")
+
+
 
 ;;;###autoload
 (defun idee-source-file-extensions ()
@@ -109,7 +130,7 @@
 ;; Functions
 (defvar idee-function-alist '((idee-open-function . projectile-switch-project)
                               (idee-new-project-function . idee-new-project-function)
-                              (idee-new-file-function . idee-new-file-function)
+                              (idee-new-file-function . idee-file-new)
                               (idee-recent-function . projectile-recentf)
                               (idee-save-all-function . projectile-save-project-buffers)
                               (idee-close-function . idee-close-project-buffers)

@@ -283,6 +283,18 @@
      ((and (require 'core-keybinds nil t) (fboundp 'map!)) (map! :leader :prefix ,key :desc ,desc "" ',func))))
 
 ;;; Misc Functions
+(defun ide-source-dir ()
+  "Find the source dir of the idee project."
+  (if ide-source-dir
+      ide-source-dir
+     (progn
+       (setq ide-source-dir (replace-regexp-in-string (regexp-quote "straight/build/idee") "straight/repos/idee"
+                                                       (file-name-directory
+                                                        ;; Copied from ‘yasnippet-snippets’ that copied from ‘f-this-file’ from f.el.
+                                                        (cond (load-in-progress load-file-name) ((and (boundp 'byte-compile-current-file) byte-compile-current-file) byte-compile-current-file)
+                                                              (:else                            (buffer-file-name))))))
+       ide-source-dir)))
+
 ;;;###autoload
 (defun idee-screenshot ()
   "Get a screenshot."
