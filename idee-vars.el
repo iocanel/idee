@@ -96,7 +96,7 @@
   custom-line-prefix
   custom-block-ending)
 
-(defvar idee-project-visitors ())
+(defvar ide-visitor-list () "List of registered visitors.")
 
 ;;
 ;; Headers

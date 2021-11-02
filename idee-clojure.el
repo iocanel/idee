@@ -72,13 +72,13 @@
 (defun idee-clojure-run-project ()
   (async-shell-command "lein run"))
 
-(defun idee-visitor-clojure (root)
+(defun ide-visitor-clojure (root)
   (when (seq-filter (lambda (x) (equal "project.clj" x)) (directory-files root))
     (idee-clojure-enable))) 
 
 (defun idee--clojure-init ()
   (add-hook 'clojure-mode-hook 'idee-clojure-enable)
-  (idee-register-visitor 'idee-visitor-clojure))
+  (ide-visitor-register 'ide-visitor-clojure))
 
 (provide 'idee-clojure)
 ;;; idee-clojure.el ends here

@@ -740,7 +740,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
                 (or (equal pom-xml x)))
               (directory-files root)))
 
-(defun idee-visitor-maven (root)
+(defun ide-visitor-maven (root)
   "Check if a java project is available under the specified ROOT."
   (let ((project-pom (concat root pom-xml)))
     (when (file-exists-p project-pom)
@@ -750,7 +750,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
 ;;;###autoload
 (defun idee--maven-init ()
   (idee-register-project-factory idee-maven-project-factory)
-  (idee-register-visitor 'idee-visitor-maven))
+  (ide-visitor-register 'ide-visitor-maven))
 
 (provide 'idee-maven)
 ;;; idee-maven.el ends here

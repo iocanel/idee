@@ -24,7 +24,6 @@
 
 ;;; Code:
 
-(require 'idee-evil)
 (require 'idee-headers)
 (require 'idee-projects)
 (require 'idee-templates)
@@ -49,7 +48,7 @@
   (idee--projects-init)
   (ide-template-setup)
   (ide-header-setup)
-  (idee--visitors-init)
+  (ide-visitor-setup)
   (idee-views-setup)
 
   ;; Common staff

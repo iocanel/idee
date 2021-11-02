@@ -194,7 +194,7 @@ The target module will be the current, unless BASE-PATH has been specified, in w
                     (equal build-gradle x)))
               (directory-files root)))
 
-(defun idee-visitor-java (root)
+(defun ide-visitor-java (root)
   "Check if a java project is available under the specified ROOT."
   (if (idee-java-project-p root)
       (idee-java-enable)))
@@ -209,7 +209,7 @@ The target module will be the current, unless BASE-PATH has been specified, in w
   (idee--quarkus-init)
   (idee--spring-init)
 
-  (idee-register-visitor 'idee-visitor-java)
+  (ide-visitor-register 'ide-visitor-java)
 
   (ide-template-factory-register (make-ide-template-factory
                                              :mode 'java-mode

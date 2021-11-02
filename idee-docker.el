@@ -78,7 +78,7 @@
                                 ;; So, try to call them again or fallback to the latest
                                 ;;
                                 (when (not version)
-                                  (idee-project-visit)
+                                  (ide-visitor-apply)
                                   (setq version (or (idee-project-get-version) "latest")))
 
                                 (or  docker-image

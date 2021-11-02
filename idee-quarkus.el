@@ -209,7 +209,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
       (string-match-p (regexp-quote idee-quarkus-maven-plugin) content))
     nil))
 
-(defun idee-visitor-quarkus (root)
+(defun ide-visitor-quarkus (root)
   "Check if a java project is available under the specified ROOT."
   (let ((project-pom (concat root pom-xml)))
     (when (idee-quarkus-project-p root)
@@ -219,7 +219,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
 
 ;;;###autoload
 (defun idee--quarkus-init ()
-  (idee-register-visitor 'idee-visitor-quarkus) 
+  (ide-visitor-register 'ide-visitor-quarkus) 
   (idee-register-project-factory idee-quarkus-rest-project-factory))
 
 (provide 'idee-quarkus)

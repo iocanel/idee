@@ -70,7 +70,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
 
 
 ;;; Visitor
-(defun idee-visitor-golang (root)
+(defun ide-visitor-golang (root)
   "Check if a golang project is available under the specified ROOT."
   (when (seq-filter (lambda (x)
                       (or (equal go-mod x)
@@ -83,7 +83,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
 (defun idee-golang-init ()
   "Initialize IDEE golang."
   (interactive)
-  (idee-register-visitor 'idee-visitor-golang)
+  (ide-visitor-register 'ide-visitor-golang)
   (idee-register-project-factory idee-golang-module-factory)
   ;; Hooks
   (add-hook 'go-mode-hook 'idee-golang-hook))

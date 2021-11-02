@@ -87,14 +87,14 @@
     (setq lsp-java-workspace-cache-dir (f-join lsp-java-workspace-dir ".cache"))))
 
 ;;;###autoload
-(defun idee-visitor-lsp-java (root)
+(defun ide-visitor-lsp-java (root)
   "Check if a lsp-java project is available under the specified ROOT."
   (if (and idee-lsp-java-enabled (idee-lsp-java-project-p root))
       (idee-lsp-java-enable)))
 
 ;;;###autoload
 (defun idee--lsp-java-init ()
-  (idee-register-visitor 'idee-visitor-lsp-java)
+  (ide-visitor-register 'ide-visitor-lsp-java)
   (add-hook 'java-mode-hook 'idee-lsp-java-hook)
   (advice-add 'save-buffer :after #'idee--lsp-java--on-save-buffer)
   (add-hook 'idee-lsp-before-workspace-restart-hook 'idee-lsp-java-switch-workspace))

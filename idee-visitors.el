@@ -23,21 +23,20 @@
 (require 'projectile)
 (require 'idee-vars)
 
-;;;###autoload (autoload 'idee-register-visitor "idee-visitors")
-(defmacro idee-register-visitor (visitor)
+;;;###autoload (autoload 'ide-visitor-register "idee-visitors")
+(defmacro ide-visitor-register (visitor)
   "Register a VISITOR."
-  (list 'push  visitor 'idee-project-visitors))
+  (list 'push  visitor 'ide-visitor-list))
 
 ;;;###autoload
-(defun idee-project-visit()
+(defun ide-visitor-apply()
   "Call all registered visitors."
-  (interactive)
-  (dolist (v idee-project-visitors)
+  (dolist (v ide-visitor-list)
     (funcall v default-directory)))
 
 ;;;###autoload
-(defun idee--visitors-init ()
-  (add-to-list 'projectile-after-switch-project-hook 'idee-project-visit))
+(defun ide-visitor-setup ()
+  (add-to-list 'projectile-after-switch-project-hook 'ide-visitor-apply))
 
 (provide 'idee-visitors)
 ;;;  idee-visitors.el ends here

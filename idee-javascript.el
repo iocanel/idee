@@ -90,7 +90,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
                           (equal jsconfig-json x)
                           (equal tsconfig-json x))) (directory-files root)))
 
-(defun idee-visitor-javascript (root)
+(defun ide-visitor-javascript (root)
   "Check if a javascript project is available under the specified ROOT."
   (when (idee-javascript-project-p root)
     (idee-project-set-version (idee-javascript-package-json-version (concat root package-json)))
@@ -107,7 +107,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee-c
   "Initialize IDEE javascript."
   (interactive)
   (idee-register-project-factory idee-npm-project-factory)
-  (idee-register-visitor 'idee-visitor-javascript)
+  (ide-visitor-register 'ide-visitor-javascript)
 ;; Hooks
   (add-hook 'javascipt-mode-hook 'idee-javascript-hook)
   (add-hook 'js2-mode-hook 'idee-javascript-hook)
