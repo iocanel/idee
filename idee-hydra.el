@@ -119,7 +119,7 @@
 
 (defun idee-hydra--repl-kind ()
   "Visual represntation of the side by side visibility."
-    (if (and idee-repl-kind (idee-side-by-side-visible-p)) (intern idee-repl-kind) (intern " ")))
+    (if (and ide-repl-kind (idee-side-by-side-visible-p)) (intern ide-repl-kind) (intern " ")))
 
 (defun idee-hydra--selected-header-kind ()
   "Visual represntation of the side by side visibility."
@@ -191,7 +191,7 @@
   ("0" idee-reset-view) 
   ("1" idee-terminal-view (if (idee-cli-visible-p) "[*]" "[ ]"))
   ("2" idee-toggle-side-by-side (if (and idee-side-by-side-buffer (get-buffer idee-side-by-side-buffer)) (format "[*] side by side: (%s)" (idee-hydra--side-by-side-buffer)) "[ ] side by side"))
-  ("3" idee-toggle-repl (if (idee-repl-visible-p) "[*]" "[ ]"))
+  ("3" idee-toggle-repl (if (ide-repl-visible-p) "[*]" "[ ]"))
   ("t" idee-toggle-tree (if (eq (treemacs-current-visibility) 'visible) "[*]" "[ ]"))
   ("c" idee-toggle-cli (if (idee-cli-visible-p) "[*]" "[ ]"))
   ("d" idee-toggle-diagnostics (if (idee-diagnostics-visible-p) "[*]" "[ ]"))

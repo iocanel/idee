@@ -48,7 +48,7 @@
 (defvar idee-tree-active t)
 (defvar idee-cli-active t)
 (defvar idee-output-active t)
-(defvar idee-repl-active t)
+(defvar ide-repl-active t)
 (defvar idee-diagnostics-active t)
 (defvar idee-errors-active t)
 (defvar idee-messages-active t)
@@ -64,12 +64,12 @@
 (defvar idee-primary-buffer nil "Primary buffer")
 (defvar idee-side-by-side-buffer nil "Secondary buffer")
 
-(defvar idee-repl-kind nil "The kind of the repl buffer. This is framework/lang specific.")
-(defvar idee-repl-buffer-prefix nil "The prefix of the repl buffer. This is framework/lang specific.")
-(defvar idee-repl-buffer-prompt nil "The prompt of the repl buffer. This is framework/lang specific.")
+(defvar ide-repl-kind nil "The kind of the repl buffer. This is framework/lang specific.")
+(defvar ide-repl-buffer-prefix nil "The prefix of the repl buffer. This is framework/lang specific.")
+(defvar ide-repl-buffer-prompt nil "The prompt of the repl buffer. This is framework/lang specific.")
 
 ;; A list with all component switches that are meant to be placed in the bottom
-(defvar idee-bottom-area-switch-list '(idee-cli-active idee-repl-active idee-diagnostics-active idee-errors-active idee-messages-active idee-grep-active idee-helm-ag-active))
+(defvar idee-bottom-area-switch-list '(idee-cli-active ide-repl-active idee-diagnostics-active idee-errors-active idee-messages-active idee-grep-active idee-helm-ag-active))
 
 (defvar idee-right-area-switch-list '(idee-eww-active idee-xwidget-webkit-active idee-side-by-side-active))
 
@@ -283,12 +283,12 @@ VISITED is an optional list with windows already visited."
 (defun idee-cli-visible-p ()
   "Return non-nil if cli is visible."
   (idee-cli-visible-window))
-(defun idee-repl-visible-window ()
+(defun ide-repl-visible-window ()
   "Return the visible repl window."
-  (car (idee-get-visible-windows (lambda (b) (and idee-repl-buffer-prefix (string-prefix-p idee-repl-buffer-prefix (buffer-name b)))))))
-(defun idee-repl-visible-p ()
+  (car (idee-get-visible-windows (lambda (b) (and ide-repl-buffer-prefix (string-prefix-p ide-repl-buffer-prefix (buffer-name b)))))))
+(defun ide-repl-visible-p ()
   "Return non-nil if repl is visible."
-  (idee-repl-visible-window))
+  (ide-repl-visible-window))
 (defun idee-diagnostics-visible-window ()
   "Return the visible diagnostics-window."
   (car (idee-get-visible-windows (car (idee-matching-buffer-names "^\*Flymake diagnostics")))))
@@ -471,7 +471,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 (idee--create-view-component "cli" idee-projectile-run-eshell idee-cli-visible-window idee-cli-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-repl "idee-views")
 ;;;###autoload (autoload 'idee-switch-repl-on "idee-views")
-(idee--create-view-component "repl" idee-repl idee-repl-visible-window idee-repl-active idee-bottom-area-switch-list 0)
+(idee--create-view-component "repl" idee-repl ide-repl-visible-window ide-repl-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-messages "idee-views")
 (idee--create-view-component "messages" idee-messages  idee-messages-visible-window idee-messages-active idee-bottom-area-switch-list 0)
 ;;;###autoload (autoload 'idee-toggle-grep "idee-views")
@@ -485,17 +485,22 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 ;;;###autoload (autoload 'idee-toggle-side-by-side "idee-views")
 (idee--create-view-component "side-by-side" idee-side-by-side  idee-side-by-side-visible-window idee-side-by-side-active idee-right-area-switch-list 0)
 
-(defun idee-repl--get-buffer ()
+
+;;
+;; Repl
+;;
+
+(defun ide-repl-buffer-get ()
   "Return first matching repl buffer."
-  (car (idee-repl--get-buffers)))
+  (car (ide-repl-buffers-get)))
 
-(defun idee-repl--get-buffers ()
+(defun ide-repl-buffers-get ()
   "Return matching repl buffers."
-  (seq-filter (lambda (b) (and idee-repl-buffer-prefix (string-prefix-p idee-repl-buffer-prefix (buffer-name b)))) (buffer-list)))
+  (seq-filter (lambda (b) (and ide-repl-buffer-prefix (string-prefix-p ide-repl-buffer-prefix (buffer-name b)))) (buffer-list)))
 
-(defun idee-repl-eval-string (s)
+(defun ide-repl-eval-string (s)
   "Evaluate S in the repl."
-  (let* ((buffer (idee-repl--get-buffer))
+  (let* ((buffer (ide-repl-buffer-get))
          (process (buffer-name buffer)))
     (when process
       (comint-send-string process (format "%s\n" s))
@@ -504,19 +509,19 @@ PIVOT indicates how many windows should be switched at the end of the operation.
         (goto-char (point-max))
         (beginning-of-line)
         (let* ((end (- (point) 1))
-               (start (+ (length idee-repl-buffer-prompt) (search-backward idee-repl-buffer-prompt nil t)))
+               (start (+ (length ide-repl-buffer-prompt) (search-backward ide-repl-buffer-prompt nil t)))
                (result (buffer-substring start end)))
           result)))))
 
-(defun idee-repl-eval-region (beginning end)
+(defun ide-repl-eval-region (beginning end)
   "Evaluate region in the repl."
   (interactive "r")
-  (idee-repl-eval-string (buffer-substring beginning end)))
+  (ide-repl-eval-string (buffer-substring beginning end)))
 
-(defun idee-repl-eval-region-tooltip (beginning end)
+(defun ide-repl-eval-region-with-tooltip (beginning end)
   "Evaluate region in the repl and show result in a tooltip."
   (interactive "r")
-  (let ((result (string-trim (idee-repl-eval-region beginning end))))
+  (let ((result (string-trim (ide-repl-eval-region beginning end))))
     (if (idee-string-blank result) (tooltip-show "Ok")
       (tooltip-show result))))
 

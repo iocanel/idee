@@ -56,14 +56,14 @@
   ;; Clear functions
   (setq idee-function-alist (delq (assoc 'idee-mode-tab-width-function idee-function-alist) idee-function-alist))
 
-  (setq idee-function-alist (delq (assoc 'idee-repl-view-function idee-function-alist) idee-function-alist))
+  (setq idee-function-alist (delq (assoc 'ide-repl-view-function idee-function-alist) idee-function-alist))
   ;; Set functions
   (add-to-list 'idee-function-alist '(idee-mode-tab-width-function . idee-java-set-tab-width))
 
-  (add-to-list 'idee-function-alist '(idee-repl-view-function . idee-java-repl))
-  (setq idee-repl-kind "jshell")
-  (setq idee-repl-buffer-prefix "*jshell")
-  (setq idee-repl-buffer-prompt "jshell>")
+  (add-to-list 'idee-function-alist '(ide-repl-view-function . idee-java-repl))
+  (setq ide-repl-kind "jshell")
+  (setq ide-repl-buffer-prefix "*jshell")
+  (setq ide-repl-buffer-prompt "jshell>")
   (add-to-list 'idee-type-modes-alist '("java" . "java-mode"))
   (add-to-list 'idee-type-comment-styles-alist `("java" . ,java-comment-style)))
 

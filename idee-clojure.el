@@ -39,13 +39,13 @@
   (interactive)
   ;; Clear functions
   (setq idee-function-alist (delq (assoc 'idee-mode-tab-width-function idee-function-alist) idee-function-alist))
-  (setq idee-function-alist (delq (assoc 'idee-repl-view-function idee-function-alist) idee-function-alist))
+  (setq idee-function-alist (delq (assoc 'ide-repl-view-function idee-function-alist) idee-function-alist))
   ;; Set functions
   (add-to-list 'idee-function-alist '(idee-mode-tab-width-function . idee-java-set-tab-width))
-  (add-to-list 'idee-function-alist '(idee-repl-view-function . idee-clojure-repl))
+  (add-to-list 'idee-function-alist '(ide-repl-view-function . idee-clojure-repl))
   (setq idee-function-alist (delq (assoc 'idee-run-or-eval-function idee-function-alist) idee-function-alist))
   (add-to-list 'idee-function-alist '(idee-run-or-eval-function . idee-clojure-run-project))
-  (setq idee-repl-buffer-prefix "*cider-repl")
+  (setq ide-repl-buffer-prefix "*cider-repl")
   (add-to-list 'idee-type-modes-alist '("clj" . "clojure-mode"))
   (add-to-list 'idee-type-comment-styles-alist `("clj" . ,clojure-comment-style)))
 

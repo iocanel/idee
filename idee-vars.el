@@ -150,7 +150,7 @@
                               (idee-find-file-function . projectile-find-file-dwim)
                               (idee-find-variable-function . find-variable)
                               (idee-test-function . nil)
-                              (idee-repl-view-function . nil)
+                              (ide-repl-view-function . nil)
                               (idee-mode-tab-width-function . idee-global-set-tab-width-function)
                               (idee-mode-hydra-function . nil)))
 
