@@ -235,91 +235,68 @@ VISITED is an optional list with windows already visited."
   (balance-windows)
   (other-window 1))
 
-;;;###autoload
-(defun idee-projectile-run-eshell ()
-  "Invoke `eshell' in the project's root.
-   Switch to the project specific eshell buffer if it already exists."
-  (interactive)
-  (projectile-with-default-dir (projectile-ensure-project (projectile-project-root))
-    (let* ((eshell-buffer-name (format "*eshell %s*" (projectile-project-name)))
-           (buf (get-buffer eshell-buffer-name)))
-      (when (and (not (idee-cli-visible-p)) (not (string-prefix-p "*eshell " (buffer-name))))
-        (cond (buf (switch-to-buffer buf))
-              ((fboundp '+eshell/here) (+eshell/here)) ;; If running inside doom use +eshell/here.
-              (:else (eshell)))
-        ;; In some cases just setting eshell-buffer-name doesn't cut it
-        (when (not (equal (buffer-file-name) eshell-buffer-name)) (rename-buffer eshell-buffer-name))))))
 ;;
 ;; Buffer providers
 ;;
 
-(defun idee-get-visible-windows (pred)
-  "Return a list of all visible windows that satisfy the PRED.
-   PRED can be a function predicate, a buffer name or a buffer."
-  (mapcar (lambda (b) (get-buffer-window b 'visible))
-          (seq-filter (lambda (b) (and (get-buffer-window b 'visible)
-                                       (cond ((functionp pred) (funcall pred b))
-                                             ((stringp pred) (equal pred (buffer-name b)))
-                                             ((bufferp pred) (equal (buffer-name pred) (buffer-name b)))
-                                             (t nil)))) (buffer-list))))
 (defun idee-hydra-visible-window ()
   "Return the hydra window if visible."
-  (car (idee-get-visible-windows (lambda (b) (string-prefix-p "*LV" (buffer-name b))))))
+  (car (idee-windows-visible-get (lambda (b) (string-prefix-p "*LV" (buffer-name b))))))
 (defun idee-hydra-visible-p ()
   "Return non-nil if hydra is visible."
   (idee-hydra-visible-window))
 (defun idee-cli-visible-window ()
   "Return the visible cli window."
-  (car (idee-get-visible-windows (lambda (b) (string-prefix-p "*eshell" (buffer-name b))))))
+  (car (idee-windows-visible-get (lambda (b) (string-prefix-p "*eshell" (buffer-name b))))))
 (defun idee-cli-visible-p ()
   "Return non-nil if cli is visible."
   (idee-cli-visible-window))
 (defun ide-repl-visible-window ()
   "Return the visible repl window."
-  (car (idee-get-visible-windows (lambda (b) (and ide-repl-buffer-prefix (string-prefix-p ide-repl-buffer-prefix (buffer-name b)))))))
+  (car (idee-windows-visible-get (lambda (b) (and ide-repl-buffer-prefix (string-prefix-p ide-repl-buffer-prefix (buffer-name b)))))))
 (defun ide-repl-visible-p ()
   "Return non-nil if repl is visible."
   (ide-repl-visible-window))
 (defun idee-diagnostics-visible-window ()
   "Return the visible diagnostics-window."
-  (car (idee-get-visible-windows (car (idee-matching-buffer-names "^\*Flymake diagnostics")))))
+  (car (idee-windows-visible-get (car (idee-matching-buffer-names "^\*Flymake diagnostics")))))
 
 (defun idee-diagnostics-visible-p ()
   "Return non-nil if diagnostics is visible."
   (idee-diagnostics-visible-window))
 (defun idee-errors-visible-window ()
   "Return the errors window if visible."
-  (car (idee-get-visible-windows "*Flycheck errors*")))
+  (car (idee-windows-visible-get "*Flycheck errors*")))
 (defun idee-errors-visible-p ()
   "Return non-nil if error is visible."
   (idee-errors-visible-window))
 (defun idee-messages-visible-window ()
   "Return the messages if visible."
-  (car (idee-get-visible-windows "*Messages*")))
+  (car (idee-windows-visible-get "*Messages*")))
 (defun idee-messages-visible-p ()
   "Return non-nil if messages is visible."
   (idee-messages-visible-window))
 (defun idee-grep-visible-window ()
   "Return the grep window if visible."
-  (car (idee-get-visible-windows "*grep*")))
+  (car (idee-windows-visible-get "*grep*")))
 (defun idee-grep-visible-p ()
   "Return non-nil if grep is visible."
   (idee-grep-visible-window))
 (defun idee-helm-ag-visible-window ()
   "Return the helm-ag if visible."
-  (car (idee-get-visible-windows "*helm-ag*")))
+  (car (idee-windows-visible-get "*helm-ag*")))
 (defun idee-helm-ag-visible-p ()
   "Return non-nil if helm-ag is visible."
   (idee-helm-ag-visible-window))
 (defun idee-eww-visible-window ()
   "Return the eww window if visible."
-  (car (idee-get-visible-windows "*eww*")))
+  (car (idee-windows-visible-get "*eww*")))
 (defun idee-eww-visible-p ()
   "Return non-nil if eww is visible."
   (idee-eww-visible-window))
 (defun idee-xwidget-webkit-visible-window ()
   "Return the xwidget-webkit window if visible."
-  (car (idee-get-visible-windows "*xwidget-webkit*")))
+  (car (idee-windows-visible-get "*xwidget-webkit*")))
 (defun idee-xwidget-webkit-visible-p ()
   "Return non-nil if xwidget-webkit is visible."
   (idee-xwidget-webkit-visible-window))
@@ -458,7 +435,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 (idee--create-view-component "diagnostics" flymake-show-diagnostics-buffer idee-diagnostics-visible-window idee-diagnostics-active)
 ;;;###autoload (autoload 'idee-toggle-cli "idee-views")
 ;;;###autoload (autoload 'idee-switch-cli-on "idee-views")
-(idee--create-view-component "cli" idee-projectile-run-eshell idee-cli-visible-window idee-cli-active)
+(idee--create-view-component "cli" ide-shell-open-in-project ide-shell-visible-window idee-cli-active)
 ;;;###autoload (autoload 'idee-toggle-repl "idee-views")
 ;;;###autoload (autoload 'idee-switch-repl-on "idee-views")
 (idee--create-view-component "repl" idee-repl ide-repl-visible-window ide-repl-active)

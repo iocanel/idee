@@ -35,7 +35,7 @@
   "Pass the selected region to kubectl/oc create."
   (interactive (if (use-region-p) (list (region-beginning) (region-end))))
   (clipboard-kill-ring-save (region-beginning) (region-end))
-  (ide-eshell-command-execute-in-project (format "cat /dev/clip | %s create -f -" idee-kubernetes-kubectl-binary)))
+  (ide-shell-command-execute-in-project (format "cat /dev/clip | %s create -f -" idee-kubernetes-kubectl-binary)))
 
 (defun idee-kubernetes-create-from-buffer()
   "Pass the current to kubectl/oc create."
@@ -45,7 +45,7 @@
         (let* ((path default-directory)
                (relative-path (file-relative-name file-name path)))
           
-          (ide-eshell-command-enqueue-in-project (format "%s create -f %s" idee-kubernetes-kubectl-binary  relative-path))))))
+          (ide-shell-command-execute-in-project (format "%s create -f %s" idee-kubernetes-kubectl-binary  relative-path))))))
 
 (defun idee-kubernetes-create-dwim (&optional start end)
   "Pass the selected region or currnent buffer (if region not active) to kubectl/oc create."
@@ -61,13 +61,13 @@
     (ide-eshell-inin-project
         (let* ((path default-directory)
                (relative-path (file-relative-name file-name path)))
-          (ide-eshell-command-enqueue-in-project (format "%s delete -f %s" idee-kubernetes-kubectl-binary  relative-path))))))
+          (ide-shell-command-execute-in-project (format "%s delete -f %s" idee-kubernetes-kubectl-binary  relative-path))))))
 
 (defun idee-kubernetes-delete-from-region(start end)
   "Pass the selected region to kubectl/oc delete"
   (interactive (if (use-region-p) (list (region-beginning) (region-end))))
   (clipboard-kill-ring-save (point-min) (point-max))
-  (ide-eshell-command-execute-in-project (format "cat /dev/clip | %s delete -f -" idee-kubernetes-kubectl-binary)))
+  (ide-shell-command-execute-in-project (format "cat /dev/clip | %s delete -f -" idee-kubernetes-kubectl-binary)))
 
 (defun idee-kubernetes-delete-dwim(&optional start end)
   "Pass the selected region or currnent buffer (if region not active) to kubectl/oc delete."
@@ -83,13 +83,13 @@
     (ide-eshell-inin-project
         (let* ((path default-directory)
                (relative-path (file-relative-name file-name path)))
-          (ide-eshell-command-enqueue-in-project (format "%s replace -f %s" idee-kubernetes-kubectl-binary  relative-path))))))
+          (ide-shell-command-execute-in-project (format "%s replace -f %s" idee-kubernetes-kubectl-binary  relative-path))))))
 
 (defun idee-kubernetes-replace-from-region(start end)
   "Pass the selected region to kubectl/oc create."
   (interactive (if (use-region-p) (list (region-beginning) (region-end))))
   (clipboard-kill-ring-save (point-min) (point-max))
-  (ide-eshell-command-execute-in-project (format "cat /dev/clip | %s replace -f -" idee-kubernetes-kubectl-binary)))
+  (ide-shell-command-execute-in-project (format "cat /dev/clip | %s replace -f -" idee-kubernetes-kubectl-binary)))
 
 (defun idee-kubernetes-replace-dwim(&optional start end)
   "Pass the selected region or currnent buffer (if region not active) to kubectl/oc replace."

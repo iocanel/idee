@@ -73,7 +73,7 @@
           (setq should-ignore (equal 'ignore cmd))))
 
     (when (not should-ignore)
-      (when cmd (ide-eshell-command-execute-in-project cmd)))
+      (when cmd (ide-shell-command-execute-in-project cmd)))
     should-ignore))
 
 ;;;###autoload (autoload 'ide-eshell-inin-project "idee-eshell")
@@ -130,6 +130,25 @@
     (insert str)
 
   (setq ide-eshell-command-inserting nil))
+
+(defun ide-eshell-visible-window ()
+  "Return the visible eshell window."
+  (car (idee-windows-visible-get (lambda (b) (string-prefix-p "*eshell" (buffer-name b))))))
+
+;;;###autoload
+(defun ide-eshell-open-in-project ()
+  "Invoke `eshell' in the project's root.
+   Switch to the project specific eshell buffer if it already exists."
+  (interactive)
+  (projectile-with-default-dir (projectile-ensure-project (projectile-project-root))
+    (let* ((eshell-buffer-name (format "*eshell %s*" (projectile-project-name)))
+           (buf (get-buffer eshell-buffer-name)))
+      (when (and (not (idee-cli-visible-p)) (not (string-prefix-p "*eshell " (buffer-name))))
+        (cond (buf (switch-to-buffer buf))
+              ((fboundp '+eshell/here) (+eshell/here)) ;; If running inside doom use +eshell/here.
+              (:else (eshell)))
+        ;; In some cases just setting eshell-buffer-name doesn't cut it
+        (when (not (equal (buffer-file-name) eshell-buffer-name)) (rename-buffer eshell-buffer-name))))))
 
 ;;
 ;; Aliases
@@ -191,6 +210,17 @@
               8080)))
       8080)))
 
+(defun ide-eshell-enable ()
+  "Enable eshell."
+  (interactive)
+  ;;Clear existing associations
+  (setq idee-function-alist (delq (assoc 'idee-shell-command-execute-in-project-function idee-function-alist) idee-function-alist))
+  (setq idee-function-alist (delq (assoc 'idee-shell-visible-window-function idee-function-alist) idee-function-alist))
+  (setq idee-function-alist (delq (assoc 'idee-shell-open-in-project-function idee-function-alist) idee-function-alist))
+  ;; Register eshell functions
+  (add-to-list 'idee-function-alist '(idee-shell-command-execute-in-project-function . ide-eshell-command-execute-in-project))
+  (add-to-list 'idee-function-alist '(idee-shell-visible-window-function . ide-eshell-visible-window))
+  (add-to-list 'idee-function-alist '(idee-shell-open-in-project-function . ide-eshell-open-in-project)))
 
 (provide 'idee-eshell)
 ;;; idee-eshell.el ends here

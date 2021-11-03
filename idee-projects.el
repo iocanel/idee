@@ -25,7 +25,6 @@
 (require 'ido)
 (require 'projectile)
 
-(require 'idee-eshell)
 (require 'idee-vars)
 (require 'idee-views)
 
@@ -125,7 +124,8 @@
     (delete-other-windows-internal)
     (dired path)
     (auto-revert-mode 1)
-    (ide-eshell-command-enqueue-in-project commands)
+    (dolist (c commands)
+      (ide-shell-command-execute-in-project c))
     (idee-jump-to-non-ide-window)))
 
 (defun ide-module-create-with-shell (path &rest commands)
@@ -133,14 +133,15 @@
   (let* ((project-path (projectile-project-root path))
         (relative-path (file-relative-name path project-path))
         (dired-auto-revert-buffer t))
-    (ide-eshell-command-execute-in-project (format "cd %s" relative-path))
+    (ide-shell-command-execute-in-project (format "cd %s" relative-path))
     (make-directory path t)
     (setq default-directory path)
     (idee-jump-to-non-ide-window)
     (dired path)
     (auto-revert-mode 1)
     (idee-switch-cli-on)
-    (ide-eshell-command-enqueue-in-project commands)
+    (dolist (c commands)
+      (ide-shell-command-execute-in-project c))
     (idee-jump-to-non-ide-window)))
 
 (defun idee-buffers-revert-visible-dired ()

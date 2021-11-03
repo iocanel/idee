@@ -32,7 +32,7 @@
   (let* ((dockerfile (idee-docker-find-dockerfile))
         (dockerfile-relative-path (file-relative-name dockerfile (projectile-project-root)))
         (docker-image (idee-docker-get-image-name)))
-    (ide-eshell-command-enqueue-in-project (format "docker build -f %s -t %s ." dockerfile-relative-path docker-image))))
+    (ide-shell-command-execute-in-project (format "docker build -f %s -t %s ." dockerfile-relative-path docker-image))))
 
 (defun idee-docker-kill ()
   "Perform a docker kill for all containers using the applications docker image."
@@ -55,13 +55,13 @@
           (dolist (p ports)
                   (push (format "%s:%s" p p) cmd-builder))))
     (push docker-image cmd-builder)
-    (ide-eshell-command-enqueue-in-project (string-trim (string-join cmd-builder " ")))))
+    (ide-shell-command-execute-in-project (string-trim (string-join cmd-builder " ")))))
 
 (defun idee-docker-push-dockerfile ()
   "Perform a docker push using a known docker-image."
   (interactive)
   (let* ((docker-image (idee-docker-get-image-name)))
-    (ide-eshell-command-enqueue-in-project (format "docker push %s" docker-image))))
+    (ide-shell-command-execute-in-project (format "docker push %s" docker-image))))
 
 
 (defun idee-docker-get-image-name ()

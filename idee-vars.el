@@ -152,13 +152,15 @@
                               (idee-test-function . nil)
                               (ide-repl-view-function . nil)
                               (idee-mode-tab-width-function . idee-global-set-tab-width-function)
-                              (idee-mode-hydra-function . nil)))
+                              (idee-mode-hydra-function . nil)
+                              (idee-shell-command-execute-in-project-function . ide-vterm-command-execute-in-project)
+                              (idee-shell-visible-window-function . ide-vterm-visible-window)
+                              (idee-shell-open-in-project-function . ide-vterm-open-in-project)
+                              ))
 
 ;; On Event Command Association List
 (defvar idee-on-event-command-alist '())
 
-
-;;; File Types
 
 (provide 'idee-vars)
 ;;; idee-vars.el ends here

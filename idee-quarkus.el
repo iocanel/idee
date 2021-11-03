@@ -131,7 +131,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to ide-pr
   "Add a quarkus extension to the project."
   (interactive)
   (let ((extension (completing-read "Extension:" idee-quarkus-extensions-list)))
-    (ide-eshell-command-enqueue-in-project (format "mvn quarkus:add-extension -Dextensions=\"io.quarkus:quarkus-%s\"" extension))))
+    (ide-eshell-command-execute-in-project (format "mvn quarkus:add-extension -Dextensions=\"io.quarkus:quarkus-%s\"" extension))))
 
 (defun idee-quarkus-init-maven-project-settings ()
   "Initialize project with project settings."
@@ -159,14 +159,14 @@ The command supports accepting an external CREATE-FUNCTION or defaults to ide-pr
   (let* ((module-dir (idee-maven-module-root-dir))
                                      (module-pom (concat module-dir pom-xml))
                                      (artifact-id (idee-maven-pom-artifact-id module-pom)))
-    (ide-eshell-command-enqueue-in-project `("mkdir -p target/function"
-                                         "cp target/wiring-classes/bootstrap target/*-runner target/function"
-                                         "chmod 755 target/function/bootstrap"
-                                         "pushd target/function"
-                                         "zip -q function.zip bootstrap *-runner*"
-                                         "popd"
-                                         ,(format "aws lambda delete-function --function-name %s" artifact-id)
-                                         ,(format "aws lambda create-function --function-name %s --timeout 10 --zip-file fileb://target/function/function.zip --handler bootstrap --runtime provided" artifact-id)))))
+    (ide-shell-command-execute-in-project "mkdir -p target/function")
+    (ide-shell-command-execute-in-project "cp target/wiring-classes/bootstrap target/*-runner target/function")
+    (ide-shell-command-execute-in-project "chmod 755 target/function/bootstrap")
+    (ide-shell-command-execute-in-project "pushd target/function")
+    (ide-shell-command-execute-in-project "zip -q function.zip bootstrap *-runner*")
+    (ide-shell-command-execute-in-project "popd")
+    (ide-shell-command-execute-in-project ,(format "aws lambda delete-function --function-name %s" artifact-id))
+    (ide-shell-command-execute-in-project ,(format "aws lambda create-function --function-name %s --timeout 10 --zip-file fileb://target/function/function.zip --handler bootstrap --runtime provided" artifact-id))))
 
 ;;
 ;; Shortcuts
@@ -174,23 +174,23 @@ The command supports accepting an external CREATE-FUNCTION or defaults to ide-pr
 (defun idee-quarkus-build ()
   "Run the quarkus build."
   (interactive)
-  (ide-eshell-command-enqueue-in-project "mvn clean install"))
+  (ide-shell-command-execute-in-project "mvn clean install"))
 
 (defun idee-quarkus-dev ()
   "Run the quarkus dev mode."
   (interactive)
-  (ide-eshell-command-enqueue-in-project "mvn clean compile quarkus:dev")
+  (ide-shell-command-execute-in-project "mvn clean compile quarkus:dev")
   (rename-buffer "**quarkus:dev**"))
 
 (defun idee-quarkus-remote-dev ()
   "Run the quarkus remote dev mode."
   (interactive)
-  (when idee-quarkus-remote-dev-url (ide-eshell-command-enqueue-in-project (format "mvn quarkus:remote-dev -Dquarkus.live-reload.url=%s" idee-quarkus-remote-dev-url))))
+  (when idee-quarkus-remote-dev-url (ide-shell-command-execute-in-project (format "mvn quarkus:remote-dev -Dquarkus.live-reload.url=%s" idee-quarkus-remote-dev-url))))
 
 (defun idee-quarkus-native-build ()
   "Run the quarkus native build."
   (interactive)
-  (ide-eshell-command-enqueue-in-project "mvn clean package -Dnative=true -Dnative-image.docker-build=true"))
+  (ide-shell-command-execute-in-project "mvn clean package -Dnative=true -Dnative-image.docker-build=true"))
 
 ;;
 ;; Utils

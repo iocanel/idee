@@ -240,5 +240,18 @@
   (interactive)
   (funcall  (alist-get 'idee-execute-code-actions-function idee-function-alist)))
 
+(defun ide-shell-command-execute-in-project (command &optional new-shell)
+  "Run a single COMMAND in the current project shell.
+   When NEW-SHELL is specified the old eshell project buffer is killed."
+  (funcall  (alist-get 'idee-shell-command-execute-in-project-function idee-function-alist) command new-shell))
+
+(defun ide-shell-visible-window ()
+  "Return the visible shell window."
+  (funcall  (alist-get 'idee-shell-visible-window-function idee-function-alist)))
+
+(defun ide-shell-open-in-project ()
+  "Return the visible shell window."
+  (funcall  (alist-get 'idee-shell-open-in-project-function idee-function-alist)))
+
 (provide 'idee-actions)
 ;;; idee-actions.el ends here

@@ -156,6 +156,20 @@
   "Return a list of buffers names that matches the regexp"
     (seq-filter (lambda (b) (string-match regex b)) (mapcar 'buffer-name (buffer-list))))
 
+;;
+;; Windows
+;;
+
+(defun idee-windows-visible-get (pred)
+  "Return a list of all visible windows that satisfy the PRED.
+   PRED can be a function predicate, a buffer name or a buffer."
+  (mapcar (lambda (b) (get-buffer-window b 'visible))
+          (seq-filter (lambda (b) (and (get-buffer-window b 'visible)
+                                       (cond ((functionp pred) (funcall pred b))
+                                             ((stringp pred) (equal pred (buffer-name b)))
+                                             ((bufferp pred) (equal (buffer-name pred) (buffer-name b)))
+                                             (t nil)))) (buffer-list))))
+
 (defun idee--item-to-kind (item)
   "Convert an ITEM to its kind."
   (cond
