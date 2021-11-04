@@ -49,11 +49,12 @@ before starting the debug process."
     (mapc (-lambda ((env . value)) (setenv env value t)) environment-variables)
     (plist-put launch-args :name session-name)
 
-    (when program-to-start (ide-eshell-in-project
-                                  (mapc (-lambda ((env . value)) (setenv env value)) environment-variables)
-                                  (when cwd (insert (format "cd %s\n" cwd)))
-                                  (insert program-to-start)))
 
+    (when program-to-start (ide-shell-in-project
+                               (mapc (-lambda ((env . value)) (setenv env value)) environment-variables)
+                             (when cwd (insert (format "cd %s\n" cwd)))
+                             (insert program-to-start)))
+    
     (when wait-for-port
       (dap--wait-for-port host port dap-connect-retry-count dap-connect-retry-interval))
 

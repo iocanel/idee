@@ -52,7 +52,8 @@
       (let ((kill-buffer-query-functions (delq 'process-kill-buffer-query-function kill-buffer-query-functions)))
         (kill-buffer buf)))
     (ide-vterm-open-in-project)
-    (vterm-insert command)
+    (when (not (idee-string-blank command))
+      (vterm-insert command))
     (vterm-send-return)))
 
 (defun ide-vterm-visible-window ()

@@ -31,6 +31,7 @@
 (require 'idee-vars)
 (require 'idee-visitors)
 (require 'idee-views)
+(require 'idee-vterm)
 
 (require 'idee-yml)
 
@@ -50,6 +51,8 @@
   (ide-header-setup)
   (ide-visitor-setup)
   (idee-views-setup)
+
+  (ide-vterm-enable)
 
   ;; Common staff
   (ide-yml-setup))

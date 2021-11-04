@@ -253,5 +253,16 @@
   "Return the visible shell window."
   (funcall  (alist-get 'idee-shell-open-in-project-function idee-function-alist)))
 
+(defmacro ide-shell-in-project (&rest body)
+  "Load a SETTINGS-FILE as local OPTIONS and evaluate BODY."
+  (declare (indent 1) (debug t))
+  `(let ()
+  (with-temp-buffer
+      ,@body
+      (let* ((begin (point-min))
+             (end (point-max))
+             (content (buffer-substring-no-properties begin end)))
+        (mapc (lambda (l) (when (not (idee-string-blank l)) (ide-shell-command-execute-in-project l))) (split-string content "\n"))))))
+
 (provide 'idee-actions)
 ;;; idee-actions.el ends here
