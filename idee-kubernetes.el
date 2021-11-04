@@ -41,7 +41,7 @@
   "Pass the current to kubectl/oc create."
   (interactive)
   (let ((file-name buffer-file-name))
-    (ide-eshell-inin-project
+    (ide-eshell-in-project
         (let* ((path default-directory)
                (relative-path (file-relative-name file-name path)))
           
@@ -58,7 +58,7 @@
   "Pass the current to kubectl/oc delete."
   (interactive)
   (let ((file-name buffer-file-name))
-    (ide-eshell-inin-project
+    (ide-eshell-in-project
         (let* ((path default-directory)
                (relative-path (file-relative-name file-name path)))
           (ide-shell-command-execute-in-project (format "%s delete -f %s" idee-kubernetes-kubectl-binary  relative-path))))))
@@ -80,7 +80,7 @@
   "Pass the current buffer to kubectl/oc create."
   (interactive)
   (let ((file-name buffer-file-name))
-    (ide-eshell-inin-project
+    (ide-eshell-in-project
         (let* ((path default-directory)
                (relative-path (file-relative-name file-name path)))
           (ide-shell-command-execute-in-project (format "%s replace -f %s" idee-kubernetes-kubectl-binary  relative-path))))))

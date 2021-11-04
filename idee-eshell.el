@@ -76,8 +76,8 @@
       (when cmd (ide-shell-command-execute-in-project cmd)))
     should-ignore))
 
-;;;###autoload (autoload 'ide-eshell-inin-project "idee-eshell")
-(defmacro ide-eshell-inin-project (&rest body)
+;;;###autoload (autoload 'ide-eshell-in-project "idee-eshell")
+(defmacro ide-eshell-in-project (&rest body)
   "Load a SETTINGS-FILE as local OPTIONS and evaluate BODY."
   (declare (indent 1) (debug t))
   `(let ()
