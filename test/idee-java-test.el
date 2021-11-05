@@ -1,4 +1,4 @@
-;;; idee-java-test.el --- IDEE java test
+;; idee-java-test.el --- IDE java test
 
 ;; Copyright (C) 2018 Ioannis Canellos
 ;;     
@@ -28,20 +28,20 @@
 ;;; Code:
 (require 'test-helper)
 
-(idee-java-enable)
+(idee/java-enable)
 
 (ert-deftest java/comment-java ()
   "Should properly comment java."
-    (should (equal (ide-comment "bingo" "java") "/**\n * bingo\n**/\n")))
+    (should (equal (idee/comment "bingo" "java") "/**\n * bingo\n**/\n")))
 
 (ert-deftest java/set-tab-width ()
   "Should set tab width."
-  (idee-java-set-tab-width 2)
-  (should (equal idee-tab-width 2))
+  (idee/java-set-tab-width 2)
+  (should (equal idee/tab-width 2))
 
 
-  (idee-java-set-tab-width 4)
-  (should (equal idee-tab-width 4)))
+  (idee/java-set-tab-width 4)
+  (should (equal idee/tab-width 4)))
 
 (provide 'idee-java-test)
-;;; idee-java-test.el ends here
+;; idee-java-test.el ends here

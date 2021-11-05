@@ -1,5 +1,4 @@
-;;; idee-arch-test.el --- IDEE arch test
-
+;; idee-arch-test.el --- IDE arch test -*- lexical-binding: t -*-
 ;; Copyright (C) 2018 Ioannis Canellos 
 ;;     
 ;; 
@@ -28,20 +27,26 @@
 
 (ert-deftest arch/test-expand-path()
   "Should successfully extract exposes ports from Dockerfile"
+  (defvar package nil)
+  (defvar class nil)
   (should (equal "src/main/java/org/acme/HelloWorld.java" (let ((package "org/acme")
                                                                 (class "HelloWorld"))
-                                                            (idee-expand-path "src/main/java/__package__/__class__.java")))))
+                                                            (idee/archetype-expand-path "src/main/java/__package__/__class__.java")))))
 
 (ert-deftest arch/test-expand-path-with-dashes()
   "Should successfully extract exposes ports from Dockerfile"
+  (defvar package-path nil)
+  (defvar class-name nil)
   (should (equal "src/main/java/org/acme/HelloWorld.java" (let ((package-path "org/acme")
                                                                 (class-name "HelloWorld"))
-                                                            (idee-expand-path "src/main/java/__package-path__/__class-name__.java")))))
+                                                            (idee/archetype-expand-path "src/main/java/__package-path__/__class-name__.java")))))
 (ert-deftest arch/test-expand-path-in-let()
+  (defvar package-path nil)
+  (defvar class-name nil)
   "Should successfully extract exposes ports from Dockerfile"
   (should (equal "src/main/java/org/acme/HelloWorld.java" (let* ((package-path "org/acme")
                                                                  (class-name "HelloWorld")
-                                                                 (expanded-path (idee-expand-path "src/main/java/__package-path__/__class-name__.java")))
+                                                                 (expanded-path (idee/archetype-expand-path "src/main/java/__package-path__/__class-name__.java")))
                                                             expanded-path))))
 (provide 'idee-arch-test)
-;;; idee-arch-test.el ends here
+;; idee-arch-test.el ends here

@@ -2,4 +2,4 @@
 # name: hdr
 # key: hdr
 # --
-`(ide-header-of-buffer)`
+`(idee/header-of-buffer)`

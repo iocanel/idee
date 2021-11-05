@@ -1,4 +1,4 @@
-;;; idee-projects-test.el --- IDEE projects test
+;; idee-projects-test.el --- IDE projects test
 
 ;; Copyright (C) 2018 Ioannis Canellos 
 ;;     
@@ -33,13 +33,13 @@
   "Should use `default-directory' when no argument."
   (with-sandbox
    (f-mkdir ".git")
-   (should (equal (ide-project-root-dir root-sandbox-path) (f-full root-sandbox-path)))))
+   (should (equal (idee/project-root-dir root-sandbox-path) (f-full root-sandbox-path)))))
 
 (ert-deftest project-root-dir-test/from-root-with-projectile ()
   "Should use `default-directory' when no argument."
   (with-sandbox
    (f-mkdir ".projectile")
-   (should (equal (ide-project-root-dir root-sandbox-path) (f-full root-sandbox-path)))))
+   (should (equal (idee/project-root-dir root-sandbox-path) (f-full root-sandbox-path)))))
 
 (ert-deftest project-root-dir-test/from-module ()
   "Should use `default-directory' when no argument."
@@ -48,7 +48,7 @@
    (f-mkdir "module")
    (f-mkdir "module/src")
    (let ((current-dir (concat (file-name-as-directory root-sandbox-path) "module/src")))
-   (should (equal (ide-project-root-dir current-dir) (f-full root-sandbox-path))))))
+   (should (equal (idee/project-root-dir current-dir) (f-full root-sandbox-path))))))
 
 (ert-deftest project-state-test/intial-name ()
   "Should use `default-directory' when no argument."
@@ -56,7 +56,7 @@
    (f-mkdir "test-project")
    (let ((default-directory (f-join default-directory "test-project")))
      (f-mkdir ".git")
-     (should (equal "test-project" (ide-project-name-get))))))
+     (should (equal "test-project" (idee/project-name-get))))))
 
 (ert-deftest project-state-test/intial-path ()
   "Should use `default-directory' when no argument."
@@ -64,7 +64,7 @@
    (f-mkdir "test-project")
    (let ((default-directory (f-join default-directory "test-project")))
      (f-mkdir ".git")
-     (should (equal (projectile-project-root) (ide-project-info-path (ide-project-init)))))))
+     (should (equal (projectile-project-root) (idee/project-info-path (idee/project-create)))))))
 
 (ert-deftest project-state-test/set-version ()
   "Should use `default-directory' when no argument."
@@ -72,8 +72,8 @@
    (f-mkdir "test-project")
    (let ((default-directory (f-join default-directory "test-project")))
      (f-mkdir ".git")
-     (ide-project-version-set "1.0")
-     (should (equal (ide-project-version-get) "1.0")))))
+     (idee/project-version-set "1.0")
+     (should (equal (idee/project-version-get) "1.0")))))
 
 (ert-deftest project-state-test/set-property ()
   "Should successfully set a property on the project."
@@ -81,8 +81,8 @@
    (f-mkdir "test-project")
    (let ((default-directory (f-join default-directory "test-project")))
      (f-mkdir ".git")
-     (ide-project-property-set "foo" "bar")
-     (should (equal (ide-project-property-get "foo") "bar")))))
+     (idee/project-property-set "foo" "bar")
+     (should (equal (idee/project-property-get "foo") "bar")))))
 
 (provide 'idee-projects-test)
-;;; idee-projects-test.el ends here
+;; idee-projects-test.el ends here

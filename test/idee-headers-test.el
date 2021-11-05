@@ -1,4 +1,4 @@
-;;; idee-headers-test.el --- IDEE headers test
+;; idee-headers-test.el --- IDE headers test
 
 ;; Copyright (C) 2018 Ioannis Canellos 
 ;;     
@@ -33,7 +33,7 @@
   (with-sandbox
    (f-mkdir ".git")
    (append-to-file "bingo" nil "header.txt")
-   (let ((header (ide-header-of-project)))
+   (let ((header (idee/header-of-project)))
          (should header)
          (should (equal header "bingo")))))
 
@@ -43,9 +43,9 @@
    (f-mkdir ".git")
    (append-to-file "bingo `var`" nil "header.txt")
    (let* ((var "123")
-          (header (ide-header-of-project)))
+          (header (idee/header-of-project)))
          (should header)
          (should (equal header "bingo 123")))))
 
 (provide 'idee-headers-test)
-;;; idee-headers-test.el ends here
+;; idee-headers-test.el ends here

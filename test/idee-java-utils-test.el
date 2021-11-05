@@ -1,4 +1,4 @@
-;;; idee-java-utils-test.el --- IDEE java test -*- lexical-binding: t -*-
+;; idee-java-utils-test.el --- IDE java test -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018 Ioannis Canellos
 ;;     
@@ -30,12 +30,12 @@
 
 (ert-deftest java/package-of-fqcn ()
   "Should properly comment java."
-    (should (equal (idee-java-package-of-fqcn "org.acme.HelloWorld") "org.acme")))
+    (should (equal (idee/java-package-of-fqcn "org.acme.HelloWorld") "org.acme")))
 
 (defmacro with-sandbox-java-project (&rest body)
   `(with-sandbox
-    (let* ((idee-dir (f-join root-sandbox-path ".idee"))
-           (templates-dir (f-join idee-dir "templates"))
+    (let* ((idee/dir (f-join root-sandbox-path ".ide"))
+           (templates-dir (f-join idee/dir "templates"))
            (java-templates-dir (f-join templates-dir "java-mode"))
            (relative-dir "src/main/java/org/acme")
            (simple-class "SimpleClass.java")
@@ -52,21 +52,21 @@
 (ert-deftest java/class-name-of ()
   "Should extract the class name from the file name."
   (with-sandbox-java-project
-   (should (equal "SimpleClass" (idee-java-class-name-of absolute-simple-class)))))
+   (should (equal "SimpleClass" (idee/java-class-name-of absolute-simple-class)))))
 
 (ert-deftest java/package-of ()
   "Should extract the class name from the file name."
   (with-sandbox-java-project
-   (should (equal "org.acme" (idee-java-package-of absolute-simple-class)))))
+   (should (equal "org.acme" (idee/java-package-of absolute-simple-class)))))
 
 (ert-deftest java/create-snippet ()
   "Should extract the class name from the file name."
   (with-sandbox-java-project
-     (idee-java-create-snippet absolute-simple-class "Hello World" "hello")
+     (idee/java-create-snippet absolute-simple-class "Hello World" "hello")
      (let ((template (f-join java-templates-dir "hello")))
        (should (file-exists-p template))
-       (should (string-match (regexp-quote "`idee-java-package-line`") (idee-read-file template))))))
+       (should (string-match (regexp-quote "`idee/java-package-line`") (idee/read-file template))))))
              
 
 (provide 'idee-java-utils-test)
-;;; idee-java-utils-test.el ends here
+;; idee-java-utils-test.el ends here

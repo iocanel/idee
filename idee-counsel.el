@@ -1,4 +1,4 @@
-;;; idee-counsel.el --- Counsel Utilities -*- lexical-binding: t -*-
+;; idee-counsel.el --- Counsel Utilities -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2021 Ioannis Canellos 
 ;;     
@@ -29,7 +29,7 @@
 
 (require 'counsel)                     
 
-(defun idee-error-filter (list)
+(defun idee/error-filter (list)
   "Stip dublicates from the list.
    Credits: https://stackoverflow.com/questions/3815467/stripping-duplicate-elements-in-a-list-of-strings-in-elisp."
   (let ((new-list nil))
@@ -42,14 +42,14 @@
         (setq list (cdr list)))
     (nreverse new-list)))
 
-(defun idee-shell-show-errors ()
+(defun idee/shell-show-errors ()
   (interactive)
   "Show the compilation errors as they appear on the shell."
   (when (require 'counsel nil t)
-    (ide-eshell-in-project
+    (idee/eshell-in-project
         (counsel-compilation-errors))))
 
-(when (require 'counsel nil t) (advice-add 'counsel-compilation-errors-cands :filter-return #'idee-error-filter))
+(when (require 'counsel nil t) (advice-add 'counsel-compilation-errors-cands :filter-return #'idee/error-filter))
 
 (provide 'idee-counsel)
-;;; idee-counsel.el ends here
+;; idee-counsel.el ends here

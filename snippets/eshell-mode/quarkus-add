@@ -2,4 +2,4 @@
 # name: Quarkus add extension
 # key: quarkus-add
 # --
-mvn quarkus:add-extension -Dextensions="io.quarkus:quarkus-${1:$$(yas-choose-value idee-quarkus-extensions-list)}"
+mvn quarkus:add-extension -Dextensions="io.quarkus:quarkus-${1:$$(yas-choose-value idee/quarkus-extensions-list)}"

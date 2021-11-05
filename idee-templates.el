@@ -1,4 +1,4 @@
-;;; idee-templates.el --- Emacs IDE - File templates.
+;; idee-templates.el --- Emacs IDE - File templates.
 
 ;; Copyright (C) 2018 Ioannis Canellos
 
@@ -21,92 +21,92 @@
 (require 'yasnippet)
 (require 'warnings)
 
-(defconst idee-emacs-templates-dir (concat (file-name-as-directory idee-resources-dir) "templates") "The directory where template files are stored.")
-(defconst idee-emacs-snippets-dir (concat (file-name-as-directory idee-resources-dir) "snippets") "The directory where snippet files are stored.")
+(defconst idee/emacs-templates-dir (concat (file-name-as-directory idee/resources-dir) "templates") "The directory where template files are stored.")
+(defconst idee/emacs-snippets-dir (concat (file-name-as-directory idee/resources-dir) "snippets") "The directory where snippet files are stored.")
 
 ;;
 ;; Template factories
 ;;
-(cl-defstruct ide-template-factory
+(cl-defstruct idee/template-factory
   mode
   description
   func)
 
-(defvar ide-template-factory-list nil "A list of all the available template factories.")
+(defvar idee/template-factory-list nil "A list of all the available template factories.")
 
 ;;;###autoload 
-(defun ide-template-factory-register (template-factory)
+(defun idee/template-factory-register (template-factory)
   "Register a TEMPLATE_FACTORY."
-  (setq ide-template-factory-list (delq template-factory ide-template-factory-list))
-  (setq ide-template-factory-list (add-to-list  'ide-template-factory-list template-factory)))
+  (setq idee/template-factory-list (delq template-factory idee/template-factory-list))
+  (setq idee/template-factory-list (add-to-list  'idee/template-factory-list template-factory)))
 
 ;;;###autoload 
-(defun ide-template-factory-get (mode)
+(defun idee/template-factory-get (mode)
   "Find the matching template factory for the specified MODE."
-  (car (seq-filter (lambda (f) (equal mode (ide-template-factory-mode f))) ide-template-factory-list)))
+  (car (seq-filter (lambda (f) (equal mode (idee/template-factory-mode f))) idee/template-factory-list)))
 
-(defun ide-template-create-from-buffer (&optional buffer-or-name name key)
+(defun idee/template-create-from-buffer (&optional buffer-or-name name key)
   (let* ((buffer (if buffer-or-name (or (get-buffer buffer-or-name) (current-buffer)) (current-buffer)))
          (file-name (buffer-file-name buffer))
          (mode (buffer-local-value 'major-mode buffer))
-         (template-factory (ide-template-factory-get mode))
-         (func (if template-factory (ide-template-factory-func template-factory) nil)))
+         (template-factory (idee/template-factory-get mode))
+         (func (if template-factory (idee/template-factory-func template-factory) nil)))
 
     (if (not func)
         (message "No template factory found for mode: %s of file: %s" mode file-name) 
       (funcall func file-name name key))))
 
 
-(defun ide-template-create()
+(defun idee/template-create()
   "Create a template from the current buffer."
   (interactive)
   (let* ((name (read-string "Template name: "))
          (key (read-string "Template key: ")))
-  (ide-template-create-from-buffer (current-buffer) name key)))
+  (idee/template-create-from-buffer (current-buffer) name key)))
 
 ;;
 ;; Utils
 ;;
 
-(defun ide-template-source-dir ()
+(defun idee/template-source-dir ()
   "Find the templates source directory."
-  (concat (file-name-as-directory (ide-source-dir)) "templates"))
+  (concat (file-name-as-directory (idee/source-dir)) "templates"))
 
 ; (KEY TEMPLATE NAME CONDITION GROUP VARS LOAD-FILE KEYBINDING UUID)
-(defun ide-template-parse-from-file (f)
+(defun idee/template-parse-from-file (f)
   "Parse template from file F."
   (with-temp-buffer
     (insert-file-contents f)
               (yas--parse-template f)))
 
-(defun ide-snippet-source-dir ()
+(defun idee/snippet-source-dir ()
   "Find the snippets source directory."
-  (concat (file-name-as-directory (ide-source-dir)) "snippets"))
+  (concat (file-name-as-directory (idee/source-dir)) "snippets"))
 
-(defun ide-snippet-name (definition)
+(defun idee/snippet-name (definition)
   "Name of the snippet found in DEFINITION."
   (car (cdr (cdr definition))))
 
-(defun ide-snippet-key (definition)
+(defun idee/snippet-key (definition)
   "Key of the snippet found in DEFINITION."
   (car definition))
 
 ;;
 ;; Commands
 ;;
-(defun idee-file-new()
+(defun idee/file-new()
   "Create an empty buffer."
   (interactive)
   (let* ((path (ido-find-file))
          (extension (file-name-extension (buffer-file-name path)))
-         (mode (cdr (assoc extension idee-type-modes-alist)))
-         (mode-path (file-name-as-directory (concat (file-name-as-directory idee-emacs-templates-dir) mode)))
+         (mode (cdr (assoc extension idee/type-modes-alist)))
+         (mode-path (file-name-as-directory (concat (file-name-as-directory idee/emacs-templates-dir) mode)))
          (filetypes (seq-filter (lambda (f) (not (string-prefix-p "." f))) (directory-files mode-path)))
-         (definitions (mapcar (lambda (f) (ide-template-parse-from-file (concat mode-path f))) filetypes))
-         (names (mapcar (lambda (d) (ide-snippet-name d)) definitions))
+         (definitions (mapcar (lambda (f) (idee/template-parse-from-file (concat mode-path f))) filetypes))
+         (names (mapcar (lambda (d) (idee/snippet-name d)) definitions))
          (name (projectile-completing-read "Select type:" names))
-         (matches (seq-filter (lambda (d) (equal name (ide-snippet-name d))) definitions))
-         (key (car (mapcar 'ide-snippet-key matches))))
+         (matches (seq-filter (lambda (d) (equal name (idee/snippet-name d))) definitions))
+         (key (car (mapcar 'idee/snippet-key matches))))
 
     (with-silent-modifications (write-file (buffer-file-name path)))
     (switch-to-buffer path)
@@ -120,47 +120,47 @@
 ;;
 
 ;;;###autoload
-(defun ide-template-load-from-project ()
+(defun idee/template-load-from-project ()
   "Load project templates."
   (interactive)
-  (let* ((root-dir (ide-project-root-dir (buffer-file-name)))
-         (conf-dir (concat (file-name-as-directory root-dir) ide-project-conf-dir))
+  (let* ((root-dir (idee/project-root-dir (buffer-file-name)))
+         (conf-dir (concat (file-name-as-directory root-dir) idee/project-conf-dir))
          (template-dir (concat (file-name-as-directory conf-dir) "templates")))
     (when (file-exists-p template-dir)
       (yas-load-directory template-dir)
       (yas-compile-directory template-dir))))
 
 ;;;###autoload
-(defun ide-template-setup ()
-  "Initialize idee templates."
-  (add-hook 'projectile-after-switch-project-hook 'ide-template-load-from-project)
+(defun idee/template-init ()
+  "Initialize ide templates."
+  (add-hook 'projectile-after-switch-project-hook 'idee/template-load-from-project)
 
   (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
-  (when (not (file-exists-p idee-resources-dir)) (mkdir idee-resources-dir t))
+  (when (not (file-exists-p idee/resources-dir)) (mkdir idee/resources-dir t))
 
   (run-with-idle-timer 1 nil (lambda ()
-                               (if (not (file-exists-p idee-emacs-templates-dir))
+                               (if (not (file-exists-p idee/emacs-templates-dir))
                                  (progn
-                                   (copy-directory (ide-template-source-dir) idee-emacs-templates-dir)
+                                   (copy-directory (idee/template-source-dir) idee/emacs-templates-dir)
                                    (run-with-idle-timer 1 nil (lambda () (progn
-                                                                           (yas-compile-directory idee-emacs-templates-dir)
-                                                                           (yas-load-directory idee-emacs-templates-dir)))))
-                                 (yas-load-directory idee-emacs-templates-dir))))
+                                                                           (yas-compile-directory idee/emacs-templates-dir)
+                                                                           (yas-load-directory idee/emacs-templates-dir)))))
+                                 (yas-load-directory idee/emacs-templates-dir))))
 
   (run-with-idle-timer 1 nil (lambda ()
-                               (when (not (file-exists-p idee-emacs-snippets-dir))
+                               (when (not (file-exists-p idee/emacs-snippets-dir))
                                  (progn
-                                   (copy-directory (ide-snippet-source-dir) idee-emacs-snippets-dir)
+                                   (copy-directory (idee/snippet-source-dir) idee/emacs-snippets-dir)
                                    (run-with-idle-timer 1 nil (lambda () (progn
-                                                                           (yas-compile-directory idee-emacs-snippets-dir)
-                                                                           (yas-load-directory idee-emacs-snippets-dir)))))
-                                 (yas-load-directory idee-emacs-templates-dir))))
+                                                                           (yas-compile-directory idee/emacs-snippets-dir)
+                                                                           (yas-load-directory idee/emacs-snippets-dir)))))
+                                 (yas-load-directory idee/emacs-templates-dir))))
 
   (run-with-idle-timer 1 nil (lambda ()
-                               (when (not (file-exists-p idee-emacs-headers-dir)) (copy-directory (ide-header-source-dir) idee-emacs-headers-dir))))
+                               (when (not (file-exists-p idee/emacs-headers-dir)) (copy-directory (idee/header-source-dir) idee/emacs-headers-dir))))
 
-  (add-to-list 'yas-snippet-dirs idee-emacs-templates-dir)
-  (add-to-list 'yas-snippet-dirs idee-emacs-snippets-dir))
+  (add-to-list 'yas-snippet-dirs idee/emacs-templates-dir)
+  (add-to-list 'yas-snippet-dirs idee/emacs-snippets-dir))
 
 (provide 'idee-templates)
-;;; idee-templates.el ends here
+;; idee-templates.el ends here

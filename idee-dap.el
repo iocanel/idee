@@ -1,4 +1,4 @@
-;;; idee-dap.el --- Dap integration.  -*- lexical-binding: t -*-
+;; idee-dap.el --- Dap integration.  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018 Ioannis Canellos
 ;;     
@@ -24,7 +24,7 @@
 
 ;;; Code:
 (require 'dap-mode)
-(require 'idee-eshell)
+(require 'idee-actions)
 
 (eval-after-load "dap-mode"
 
@@ -50,7 +50,7 @@ before starting the debug process."
     (plist-put launch-args :name session-name)
 
 
-    (when program-to-start (ide-shell-in-project
+    (when program-to-start (idee/shell-in-project
                                (mapc (-lambda ((env . value)) (setenv env value)) environment-variables)
                              (when cwd (insert (format "cd %s\n" cwd)))
                              (insert program-to-start)))
@@ -93,12 +93,12 @@ before starting the debug process."
         (push (cons session-name launch-args) dap--debug-configuration)
         (run-hook-with-args 'dap-session-created-hook debug-session))))))
 
-(defadvice dap--go-to-stack-frame (after idee-refresh-on-stack-frame
+(defadvice dap--go-to-stack-frame (after idee/refresh-on-stack-frame
                                       (&optional debug-session stack-frame))
   "Refresh IDE after a breakpoint has been hit."
-  (idee-jump-to-non-ide-window)
+  (idee/jump-to-non-idee/window)
   (recenter-top-bottom)
-  (when (not (idee-hydra-visible-p)) (dap-hydra))
+  (when (not (idee/hydra-visible-p)) (dap-hydra))
   (when (not (get-buffer-window "*dap-ui-locals*")) (dap-ui-locals))
   (dap-ui-expressions))
 
@@ -106,4 +106,4 @@ before starting the debug process."
 (ad-activate 'dap--go-to-stack-frame)
 
 (provide 'idee-dap)
-;;; idee-dap.el ends here
+;; idee-dap.el ends here

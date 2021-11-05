@@ -1,4 +1,4 @@
-;;; idee-golang.el --- GoLang IDE
+;; idee-golang.el --- GoLang IDE
 
 ;; Copyright (C) 2018 Ioannis Canellos
 
@@ -29,64 +29,64 @@
 (require 'go-mode)
 
 (defconst go-mod "go.mod")
-(defconst glide-yml "glide.yml")
+(defconst glidee/yml "glide.yml")
 (defconst gopkg-toml "Gopkg.toml")
 
-(defun idee-golang-enable()
+(defun idee/golang-enable()
   "Enabled golang bindings."
   (interactive)
   (go-set-project)
-  (idee-golang-hook))
+  (idee/golang-hook))
 
-(defun idee-golang-hook ()
+(defun idee/golang-hook ()
   "Golang hook."
-  (setq idee-function-alist (delq (assoc 'idee-refernces-function idee-function-alist) idee-function-alist))
-  (setq idee-function-alist (delq (assoc 'idee-declaration-function idee-function-alist) idee-function-alist))
-  (setq idee-function-alist (delq (assoc 'idee-optimize-imports-function idee-function-alist) idee-function-alist))
-  (setq idee-function-alist (delq (assoc 'idee-indent-function idee-function-alist) idee-function-alist))
-  (setq idee-function-alist (delq (assoc 'idee-mode-hydra-function idee-function-alist) idee-function-alist))
+  (setq idee/function-alist (delq (assoc 'idee/refernces-function idee/function-alist) idee/function-alist))
+  (setq idee/function-alist (delq (assoc 'idee/declaration-function idee/function-alist) idee/function-alist))
+  (setq idee/function-alist (delq (assoc 'idee/optimize-imports-function idee/function-alist) idee/function-alist))
+  (setq idee/function-alist (delq (assoc 'idee/indent-function idee/function-alist) idee/function-alist))
+  (setq idee/function-alist (delq (assoc 'idee/mode-hydra-function idee/function-alist) idee/function-alist))
 
-  (add-to-list 'idee-function-alist '(idee-references-function . go-guru-callers))
-  (add-to-list 'idee-function-alist '(idee-declaration-function . go-guru-definition))
-  (add-to-list 'idee-function-alist '(idee-optimize-imports-function . goimports))
-  (add-to-list 'idee-function-alist '(idee-indent-function . gofmt))
-  (add-to-list 'idee-function-alist '(idee-mode-hydra-function . go-hydra/body)))
+  (add-to-list 'idee/function-alist '(idee/references-function . go-guru-callers))
+  (add-to-list 'idee/function-alist '(idee/declaration-function . go-guru-definition))
+  (add-to-list 'idee/function-alist '(idee/optimize-imports-function . goimports))
+  (add-to-list 'idee/function-alist '(idee/indent-function . gofmt))
+  (add-to-list 'idee/function-alist '(idee/mode-hydra-function . go-hydra/body)))
 
 ;;; Project Factory
-(defun idee-new-golang-module (&optional create-function)
+(defun idee/new-golang-module (&optional create-function)
   "Create a new golang module.
-The command supports accepting an external CREATE-FUNCTION or defaults to ide-project-create-with-shell."
+The command supports accepting an external CREATE-FUNCTION or defaults to idee/project-create-with-shell."
   (interactive)
   (let* ((module-name (read-string "Module:" "example.com/m"))
-         (target-dir (ide-project-dir-select))
+         (target-dir (idee/project-dir-select))
          (generate-command (format "go mod init %s" module-name)))
-    (funcall (or create-function 'ide-project-create-with-shell) target-dir generate-command)))
+    (funcall (or create-function 'idee/project-create-with-shell) target-dir generate-command)))
 
-(defconst idee-golang-module-factory
-  (make-ide-project-factory
+(defconst idee/golang-module-factory
+  (make-idee/project-factory
    :name "Go\ module"
    :description "A project factory that creates a new golang module."
-   :func 'idee-new-golang-module))
+   :func 'idee/new-golang-module))
 
 
 ;;; Visitor
-(defun ide-visitor-golang (root)
+(defun idee/golang-visitor (root)
   "Check if a golang project is available under the specified ROOT."
   (when (seq-filter (lambda (x)
                       (or (equal go-mod x)
-                          (equal glide-yml x)
+                          (equal glidee/yml x)
                           (equal gopkg-toml x)))
                       (directory-files root))
-                    (idee-golang-enable)))
+                    (idee/golang-enable)))
 
 ;;; Init
-(defun idee-golang-init ()
-  "Initialize IDEE golang."
+(defun idee/golang-init ()
+  "Initialize IDE golang."
   (interactive)
-  (ide-visitor-register 'ide-visitor-golang)
-  (ide-project-factory-register idee-golang-module-factory)
+  (idee/visitor-register 'idee/golang-visitor)
+  (idee/project-factory-register idee/golang-module-factory)
   ;; Hooks
-  (add-hook 'go-mode-hook 'idee-golang-hook))
+  (add-hook 'go-mode-hook 'idee/golang-hook))
 
 (provide 'idee-golang)
-;;; idee-golang.el ends here
+;; idee-golang.el ends here

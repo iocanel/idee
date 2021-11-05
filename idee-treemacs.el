@@ -1,4 +1,4 @@
-;;; idee-treemacs.el --- Treemacs integration
+;; idee-treemacs.el --- Treemacs integration
 
 
 ;; Copyright (C) 2018 Ioannis Canellos
@@ -32,7 +32,7 @@
 (require 'hydra)
 (require 'idee-views)
 
-(defun idee-treemacs-collapse-dir-toggle ()
+(defun idee/treemacs-collapse-dir-toggle ()
   "Toggle value of treemacs-collapse-dir between 3 0."
   (interactive)
   (if (= treemacs-collapse-dirs 0)
@@ -41,11 +41,11 @@
   (treemacs-refresh))
 
 ;;;###autoload
-(defun idee-treemacs-create-and-switch-to-workspace ()
+(defun idee/treemacs-create-and-switch-to-workspace ()
   "Create and switch to a new treemacs workspace."
   (interactive)
-  (idee-workspace-close)
-  (when (and idee-tree-enabled (not (equal (treemacs-current-visibility) 'visible))) (treemacs))
+  (idee/workspace-close)
+  (when (and idee/tree-enabled (not (equal (treemacs-current-visibility) 'visible))) (treemacs))
   (let* ((response (treemacs-do-create-workspace))
          (workspace (car (cdr response))))
     (setf (treemacs-current-workspace) workspace)
@@ -71,14 +71,14 @@
     (treemacs-pulse-on-success "Selected workspace %s."
       (propertize (treemacs-workspace->name workspace)))
     ;; END
-    (idee-treemacs-open-project-workspace workspace)))
+    (idee/treemacs-open-project-workspace workspace)))
 
 ;;;###autoload
-(defun idee-treemacs-switch-to-project-workspace ()
+(defun idee/treemacs-switch-to-project-workspace ()
     "Select a different workspace for treemacs."
     (interactive)
-    (idee-workspace-close)
-    (when (and idee-tree-enabled (not (equal (treemacs-current-visibility) 'visible))) (treemacs))
+    (idee/workspace-close)
+    (when (and idee/tree-enabled (not (equal (treemacs-current-visibility) 'visible))) (treemacs))
     (pcase (treemacs-do-switch-workspace)
       ('only-one-workspace
        (treemacs-pulse-on-failure "There are no other workspaces to select."))
@@ -103,9 +103,9 @@
            (bury-buffer)))
        (treemacs-pulse-on-success "Selected workspace %s."
          (propertize (treemacs-workspace->name workspace))
-         (idee-treemacs-open-project-workspace workspace)))))
+         (idee/treemacs-open-project-workspace workspace)))))
 
-(defun idee-treemacs-open-project-workspace (workspace)
+(defun idee/treemacs-open-project-workspace (workspace)
   "Open the first project of the WORKSPACE."
   (when (and workspace (treemacs-project->path workspace))
       (let* ((name (treemacs-project->name workspace))
@@ -113,36 +113,36 @@
              (path (treemacs-project->path (car project))))
         (when path
           (projectile-switch-project-by-name path)
-          (idee-reset-view)
-          (idee-jump-to-non-ide-window)))))
+          (idee/reset-view)
+          (idee/jump-to-non-idee/window)))))
 
 
 ;;;###autoload
-(defun idee-workspace-close ()
+(defun idee/workspace-close ()
   (interactive)
-  (idee-view-reset)
+  (idee/view-reset)
   (when (treemacs-current-workspace)
   (let* ((projects (treemacs-workspace->projects (treemacs-current-workspace))))
       (dolist (project projects)
-        (ide-project-close-buffers (treemacs-project->path project))))))
+        (idee/project-close-buffers (treemacs-project->path project))))))
 
-(defun idee-treemacs--enabled-flag ()
+(defun idee/treemacs--enabled-flag ()
   "Visual represntation of the offline flag."
   (if (eq 'visible (treemacs-current-visibility)) [*] [_]))
-(defun idee-treemacs--show-hidden-files-flag ()
+(defun idee/treemacs--show-hidden-files-flag ()
   "Visual represntation of the offline flag."
   (if treemacs-show-hidden-files [*] [_]))
-(defun idee-treemacs--workspace-name ()
+(defun idee/treemacs--workspace-name ()
   "Visual represntation of the workspace name."
   (intern (treemacs-workspace->name (treemacs-current-workspace))))
 
-;;;###autoload (autoload 'idee-treemacs-hydra/body "idee-treemacs")
-(defhydra idee-treemacs-hydra (:hint none :exit t)
+;;;###autoload (autoload 'idee/treemacs-hydra/body "idee-treemacs")
+(defhydra idee/treemacs-hydra (:hint none :exit t)
   ;; The '_' character is not displayed. This affects columns alignment.
   ;; Remove s many spaces as needed to make up for the '_' deficit.
   "
     ^Workspaces               ^Windows^                     ^Navigation^       ^Toggles^                
-    [%(idee-treemacs--workspace-name)]
+    [%(idee/treemacs--workspace-name)]
     ^^^^^^----------------------------------------------------------------------------------------------   
     _N_: new workspace         _s_: select window            _b_: bookmark      _t_: ?t? tree view toggle
     _S_: switch workspace      _d_: delete other windows     _f_: find file     _h_: ?h? show hidden files
@@ -153,14 +153,14 @@
    [_q_]: quit
    "
   ; Toggles
-  ("N" idee-treemacs-create-and-switch-to-workspace)
+  ("N" idee/treemacs-create-and-switch-to-workspace)
   ("R" treemacs-remove-workspace)
-  ("S" idee-treemacs-switch-to-project-workspace)
+  ("S" idee/treemacs-switch-to-project-workspace)
   ("E" treemacs-edit-workspaces)
   ("F" treemacs-finish-edit)
   ("t" treemacs (if (eq (treemacs-current-visibility) 'visible) "[*]" "[ ]") :exit nil)
   ("h" treemacs-toggle-show-dotfiles (if treemacs-show-hidden-files "[*]" "[ ]") :exit nil)
-  ("c" idee-treemacs-collapse-dir-toggle :exit nil)
+  ("c" idee/treemacs-collapse-dir-toggle :exit nil)
   ("g" magit-status)
                                         ; Windows
   ("s" treemacs-select-window)
@@ -172,4 +172,4 @@
   ("q" nil "quit"))
 
 (provide 'idee-treemacs)
-;;; idee-treemacs.el ends here.
+;; idee-treemacs.el ends here.

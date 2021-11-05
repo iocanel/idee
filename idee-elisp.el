@@ -1,4 +1,4 @@
-;;; idee-elisp.el --- Emacs Lisp IDE
+;; idee-elisp.el --- Emacs Lisp IDE
 
 ;; Copyright (C) 2018 Ioannis Canellos
 
@@ -20,18 +20,18 @@
 
 ;;; Code:
 
-(defun idee-elisp-hook()
+(defun idee/elisp-hook()
   "Elisp hook."
   (interactive)
-  (setq idee-function-alist (delq (assoc 'idee-refernces-function idee-function-alist) idee-function-alist))
-  (setq idee-function-alist (delq (assoc 'idee-declaration-function idee-function-alist) idee-function-alist))
-  (setq idee-function-alist (delq (assoc 'idee-optimize-imports-function idee-function-alist) idee-function-alist))
-  (setq idee-function-alist (delq (assoc 'idee-indent-function idee-function-alist) idee-function-alist))
-  (setq idee-function-alist (delq (assoc 'idee-mode-hydra-function idee-function-alist) idee-function-alist))
+  (setq idee/function-alist (delq (assoc 'idee/refernces-function idee/function-alist) idee/function-alist))
+  (setq idee/function-alist (delq (assoc 'idee/declaration-function idee/function-alist) idee/function-alist))
+  (setq idee/function-alist (delq (assoc 'idee/optimize-imports-function idee/function-alist) idee/function-alist))
+  (setq idee/function-alist (delq (assoc 'idee/indent-function idee/function-alist) idee/function-alist))
+  (setq idee/function-alist (delq (assoc 'idee/mode-hydra-function idee/function-alist) idee/function-alist))
 
-  (add-to-list 'idee-function-alist '(idee-mode-hydra-function . elisp-hydra/body))) 
+  (add-to-list 'idee/function-alist '(idee/mode-hydra-function . elisp-hydra/body))) 
 
-(add-hook 'emacs-lisp-mode-hook 'idee-javascript-hook)
+(add-hook 'emacs-lisp-mode-hook 'idee/javascript-hook)
 
 (provide 'idee-elisp)
-;;; idee-elisp.el ends here
+;; idee-elisp.el ends here

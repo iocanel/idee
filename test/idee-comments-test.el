@@ -1,4 +1,4 @@
-;;; idee-comments-test.el --- IDEE comments test
+;; idee-comments-test.el --- IDE comments test
 
 ;; Copyright (C) 2018 Ioannis Canellos 
 ;;     
@@ -28,17 +28,17 @@
 ;;; Code:
 (require 'test-helper)
 
-(ert-deftest ide-comments/comment-sh ()
+(ert-deftest idee/comments/comment-sh ()
   "Should properly comment shell."
-    (should (equal (ide-comment "bingo" "sh") "# bingo\n")))
+    (should (equal (idee/comment "bingo" "sh") "# bingo\n")))
 
-(ert-deftest ide-comments/comment-el ()
+(ert-deftest idee/comments/comment-el ()
   "Should properly comment elisp."
-    (should (equal (ide-comment "bingo" "el") ";; bingo\n")))
+    (should (equal (idee/comment "bingo" "el") ";; bingo\n")))
 
-(ert-deftest ide-comments/comment-xml ()
+(ert-deftest idee/comments/comment-xml ()
   "Should properly comment xml."
-    (should (equal (ide-comment "bingo" "xml") "<!--\nbingo\n-->\n")))
+    (should (equal (idee/comment "bingo" "xml") "<!--\nbingo\n-->\n")))
 
 (provide 'idee-comments-test)
-;;; idee-comments-test.el ends here
+;; idee-comments-test.el ends here

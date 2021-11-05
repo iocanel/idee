@@ -2,8 +2,8 @@
 # name: Spring Rest Controller
 # key: restcontroller
 # --
-`(ide-header-of-buffer)`
-`(idee-java-package-line)`
+`(idee/header-of-buffer)`
+`(idee/java-package-line)`
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

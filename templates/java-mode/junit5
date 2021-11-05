@@ -2,8 +2,8 @@
 # name: Junit5 Test
 # key: junit5
 # --
-`(ide-header-of-buffer)`
-`(idee-java-package-line)`
+`(idee/header-of-buffer)`
+`(idee/java-package-line)`
 
 import org.junit.jupiter.api.Test;
 

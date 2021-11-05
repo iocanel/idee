@@ -19,31 +19,31 @@
 
 (require 'test-helper)
 
-(ert-deftest idee-java-lsp-project-root/maven-test ()
+(ert-deftest idee/java-lsp-project-root/maven-test ()
   "Should recognize maven project."
   (with-sandbox
    (f-mkdir ".git")
    (f-touch "pom.xml")
-   (should (idee-lsp-java-project-p (f-full root-sandbox-path)))))
+   (should (idee/lsp-java-project-p (f-full root-sandbox-path)))))
 
-(ert-deftest idee-java-lsp-project-root/gradle-test ()
+(ert-deftest idee/java-lsp-project-root/gradle-test ()
   "Should recognize gradle project."
   (with-sandbox
    (f-mkdir ".git")
    (f-touch "build.gradle")
-   (should (idee-lsp-java-project-p (f-full root-sandbox-path)))))
+   (should (idee/lsp-java-project-p (f-full root-sandbox-path)))))
 
-(ert-deftest idee-java-lsp-project-root/eclipse-test ()
+(ert-deftest idee/java-lsp-project-root/eclipse-test ()
   "Should recognize eclipse project."
   (with-sandbox
    (f-mkdir ".git")
    (f-touch ".project")
-   (should (idee-lsp-java-project-p (f-full root-sandbox-path)))))
+   (should (idee/lsp-java-project-p (f-full root-sandbox-path)))))
 
-(ert-deftest idee-java-lsp-project-root/other-test ()
+(ert-deftest idee/java-lsp-project-root/other-test ()
   "Should recognize other project."
   (with-sandbox
    (f-mkdir ".git")
-   (should (not (idee-lsp-java-project-p (f-full root-sandbox-path))))))
+   (should (not (idee/lsp-java-project-p (f-full root-sandbox-path))))))
 (provide 'idee-projects-test)
-;;; idee-projects-test.el ends here
+;; idee-projects-test.el ends here

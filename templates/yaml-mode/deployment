@@ -6,7 +6,7 @@ kind: "Deployment"
 metadata:
   labels:
     app: ${1:`(projectile-project-name)`}
-    version: "${2:`(ide-project-version-get)`}"
+    version: "${2:`(idee/project-version-get)`}"
   name: "$1"
 spec:
   replicas: 1
@@ -21,7 +21,7 @@ spec:
         version: "$2"
     spec:
       containers:
-        image: "${3:`(idee-docker-get-image-name)`"
+        image: "${3:`(idee/docker-get-image-name)`"
         name: "$1"
         ports:
         - containerPort: ${4:8080}

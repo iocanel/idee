@@ -33,14 +33,15 @@
 (require 'projectile)
 (require 'idee-vars)
 
-(cl-defstruct idee-archetype
+(cl-defstruct idee/archetype
   name
   description
   func)
 
-(defvar idee-archetype-list nil "A list of all the available archetypes.")
+(defvar idee/archetype-list nil "A list of all the available archetypes.")
 
-(defun idee-expand-path (path)
+(defun idee/archetype-expand-path (path)
+  "Expand the specified PATH"
   (with-temp-buffer
     (insert path)
     (goto-char (point-min))
@@ -55,29 +56,28 @@
     (buffer-substring-no-properties (point-min) (point-max))))
 
 ;;;###autoload 
-(defun idee-register-archetype (archetype)
+(defun idee/archetype-register (archetype)
   "Register a ARCHETYPE."
-  (setq idee-archetype-list (delq archetype idee-archetype-list))
-  (setq idee-archetype-list (add-to-list  'idee-archetype-list archetype)))
+  (setq idee/archetype-list (delq archetype idee/archetype-list))
+  (setq idee/archetype-list (add-to-list  'idee/archetype-list archetype)))
 
-(defun idee--select-archetype()
+(defun idee/archetype-select()
   "Select an archetype from the list of registered archetype."
   (let ((archetype (projectile-completing-read "Select archetype:"
-                                             (mapcar 'idee--archetype-entry idee-archetype-list))))
+                                             (mapcar 'idee/archetype-entry idee/archetype-list))))
     (car (seq-filter
           (lambda (a)
-            (equal archetype (idee--archetype-entry a))) idee-archetype-list))))
+            (equal archetype (idee/-archetype-entry a))) idee/archetype-list))))
 
-(defun idee--archetype-entry (f)
+(defun idee/archetype-entry (f)
   "Create an entry for the specified project factory F."
-  (concat (idee-archetype-name f) " - " (idee-archetype-description f)))
+  (concat (idee/archetype-name f) " - " (idee/archetype-description f)))
 
-(defun idee-run-archetype()
+(defun idee/archetype-run()
   (interactive)
-  (let* ((archetype (idee--select-archetype))
-         (func (idee-archetype-func archetype)))
+  (let* ((archetype (idee/-select-archetype))
+         (func (idee/archetype-func archetype)))
     (when archetype (funcall func))))
-
 
 (provide 'idee-arch)
 ;;; idee-arch.el ends here

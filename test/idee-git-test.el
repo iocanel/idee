@@ -1,4 +1,4 @@
-;;; idee-git-test.el --- IDEE git test
+;; idee-git-test.el --- IDE git test
 
 ;; Copyright (C) 2018 Ioannis Canellos 
 ;;     
@@ -28,15 +28,15 @@
 
 (ert-deftest git/test-git-log-entry-sha()
   "Should successfully extract exposes ports from Dockerfile"
- (should (equal "12345" (idee-git-log-entry-sha "commit 12345\nAuthor: Ioannis Canellos <iocanel@gmail.com>\nDate:"))))
+ (should (equal "12345" (idee/git-log-entry-sha "commit 12345\nAuthor: Ioannis Canellos <iocanel@gmail.com>\nDate:"))))
 
 (ert-deftest git/test-git-log-entry-author()
   "Should successfully extract exposes ports from Dockerfile"
- (should (equal "Ioannis Canellos" (idee-git-log-entry-author  "commit 12345\nAuthor: Ioannis Canellos <iocanel@gmail.com>\nDate:"))))
+ (should (equal "Ioannis Canellos" (idee/git-log-entry-author  "commit 12345\nAuthor: Ioannis Canellos <iocanel@gmail.com>\nDate:"))))
 
 (ert-deftest git/test-git-log-entry-message()
   "Should successfully extract exposes ports from Dockerfile"
- (should (equal "feat: this is a test." (idee-git-log-entry-message "commit 12345\nAuthor: Ioannis Canellos <iocanel@gmail.com>\nDate: Tue\n    feat: this is a test."))))
+ (should (equal "feat: this is a test." (idee/git-log-entry-message "commit 12345\nAuthor: Ioannis Canellos <iocanel@gmail.com>\nDate: Tue\n    feat: this is a test."))))
  
 (provide 'idee-git-test)
-;;; idee-git-test.el ends here
+;; idee-git-test.el ends here

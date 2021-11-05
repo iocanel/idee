@@ -4,7 +4,7 @@
 # --
 ;;; `(file-name-nondirectory (buffer-file-name))` --- ${1:Description} -*- lexical-binding: t -*-
 
-`(ide-header-of-buffer)`
+`(idee/header-of-buffer)`
 
 ;; Author: `(user-full-name)`
 

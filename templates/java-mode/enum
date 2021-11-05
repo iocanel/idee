@@ -2,8 +2,8 @@
 # name: Java Enum
 # key: enum
 # --
-`(ide-header-of-buffer)`
-`(idee-java-package-line)`
+`(idee/header-of-buffer)`
+`(idee/java-package-line)`
 
 import java.util.Map;
 import java.util.HashMap;

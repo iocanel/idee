@@ -1,4 +1,4 @@
-;;; idee.el --- A unified way to perform IDE-like tasks across mutiple languages and frameworks.
+;;; idee.el --- A unified way to perform IDEE/like tasks across mutiple languages and frameworks.
 
 ;; Copyright (C) 2018 Ioannis Canellos
 
@@ -35,27 +35,27 @@
 
 (require 'idee-yml)
 
-(defcustom idee-repo-url "git@github.com:iocanel/idee.git" "The repository url of the idee project." :group 'idee :type 'string)
+(defcustom idee/repo-url "git@github.com:iocanel/idee.git" "The repository url of the ide project." :group 'ide :type 'string)
 
-(defun idee-resources-install ()
+(defun idee/resources-install ()
   (interactive)
-  "Initialize idee resources."
-  (idee-git-checkout idee-repo-url idee-resources-dir '("headers" "templates" "snippets")))
+  "Initialize ide resources."
+  (idee/git-checkout idee/repo-url idee/resources-dir '("headers" "templates" "snippets")))
 
 ;;;###autoload
-(defun idee-init ()
+(defun idee/setup ()
   (interactive)
-  "Initialize idee"
-  (ide-project-setup)
-  (ide-template-setup)
-  (ide-header-setup)
-  (ide-visitor-setup)
-  (idee-views-setup)
+  "Initialize ide"
+  (idee/project-init)
+  (idee/template-init)
+  (idee/header-init)
+  (idee/init-visitor)
+  (idee/views-init)
 
-  (ide-vterm-enable)
+  (idee/vterm-enable)
 
   ;; Common staff
-  (ide-yml-setup))
+  (idee/yml-init))
 
 (provide 'idee)
 ;;; idee.el ends here

@@ -1,4 +1,4 @@
-;;; idee-maven-test.el --- IDEE maven test
+;; idee-maven-test.el --- IDE maven test
 
 
 ;; Author: Ioannis Canellos
@@ -17,7 +17,7 @@
 
 (ert-deftest maven/should-return-mvn-clean-install ()
   "Should properly comment java."
-    (should (equal (idee-maven-cmd :goals "clean install") "mvn clean install")))
+    (should (equal (idee/maven-cmd :goals "clean install") "mvn clean install")))
 
 (provide 'idee-maven-test)
-;;; idee-maven-test.el ends here.
+;; idee-maven-test.el ends here.

@@ -3,7 +3,7 @@
 # key: <dependency
 # --
 <dependency>
-  <groupId>${1:$$(yas-choose-value (idee-maven-local-group-ids))}</groupId>
-  <artifactId>${2:$$(yas-choose-value (idee-maven-local-artifact-ids (yas-field-value 1)))}</artifactId>
-  <version>${3:$$(yas-choose-value (idee-maven-local-versions (yas-field-value 1) (yas-field-value 2)))}</version>
+  <groupId>${1:$$(yas-choose-value (idee/maven-local-group-ids))}</groupId>
+  <artifactId>${2:$$(yas-choose-value (idee/maven-local-artifact-ids (yas-field-value 1)))}</artifactId>
+  <version>${3:$$(yas-choose-value (idee/maven-local-versions (yas-field-value 1) (yas-field-value 2)))}</version>
 </dependency>

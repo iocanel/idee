@@ -2,8 +2,8 @@
 # name: Application Scoped 
 # key: application-scoped
 # --
-`(ide-header-of-buffer)`
-`(idee-java-package-line)`
+`(idee/header-of-buffer)`
+`(idee/java-package-line)`
 
 import javax.enterprise.context.ApplicationScoped;
 

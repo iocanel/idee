@@ -1,4 +1,4 @@
-;;; idee-docker-test.el --- IDEE docker test
+;; idee-docker-test.el --- IDE docker test
 
 ;; Copyright (C) 2018 Ioannis Canellos 
 ;;     
@@ -39,9 +39,9 @@
           (dockerfile-single-port (f-join root-test-assets-path "Dockerfile.single-port"))
           (dockerfile-multiple-ports (f-join root-test-assets-path "Dockerfile.multiple-ports")))
 
-     (should-not (idee-docker-get-exposed-ports dockerfile-no-ports))
-     (should (equal "8080" (car (idee-docker-get-exposed-ports dockerfile-single-port))))
-     (should (equal (list "8080" "9090") (idee-docker-get-exposed-ports dockerfile-multiple-ports))))))
+     (should-not (idee/docker-get-exposed-ports dockerfile-no-ports))
+     (should (equal "8080" (car (idee/docker-get-exposed-ports dockerfile-single-port))))
+     (should (equal (list "8080" "9090") (idee/docker-get-exposed-ports dockerfile-multiple-ports))))))
 
 (provide 'idee-docker-test)
-;;; idee-projects-test.el ends here
+;; idee-projects-test.el ends here

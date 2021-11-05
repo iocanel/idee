@@ -1,4 +1,4 @@
-;;; idee-clojure.el --- Clojure IDE settings  -*- lexical-binding: t -*-
+;; idee-clojure.el --- Clojure IDE settings  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018 Ioannis Canellos
 
@@ -32,53 +32,53 @@
 (require 'idee-views)
 (require 'idee-visitors)
 
-(defconst clojure-comment-style (make-ide-comment-style :line-prefix ";;"))
+(defconst clojure-comment-style (make-idee/comment-style :line-prefix ";;"))
 
-(defun idee-clojure-enable()
+(defun idee/clojure-enable()
   "Enable clojure bindings."
   (interactive)
   ;; Clear functions
-  (setq idee-function-alist (delq (assoc 'idee-mode-tab-width-function idee-function-alist) idee-function-alist))
-  (setq idee-function-alist (delq (assoc 'ide-repl-view-function idee-function-alist) idee-function-alist))
+  (setq idee/function-alist (delq (assoc 'idee/mode-tab-width-function idee/function-alist) idee/function-alist))
+  (setq idee/function-alist (delq (assoc 'idee/repl-view-function idee/function-alist) idee/function-alist))
   ;; Set functions
-  (add-to-list 'idee-function-alist '(idee-mode-tab-width-function . idee-java-set-tab-width))
-  (add-to-list 'idee-function-alist '(ide-repl-view-function . idee-clojure-repl))
-  (setq idee-function-alist (delq (assoc 'idee-run-or-eval-function idee-function-alist) idee-function-alist))
-  (add-to-list 'idee-function-alist '(idee-run-or-eval-function . idee-clojure-run-project))
-  (setq ide-repl-buffer-prefix "*cider-repl")
-  (add-to-list 'idee-type-modes-alist '("clj" . "clojure-mode"))
-  (add-to-list 'idee-type-comment-styles-alist `("clj" . ,clojure-comment-style)))
+  (add-to-list 'idee/function-alist '(idee/mode-tab-width-function . idee/java-set-tab-width))
+  (add-to-list 'idee/function-alist '(idee/repl-view-function . idee/clojure-repl))
+  (setq idee/function-alist (delq (assoc 'idee/run-or-eval-function idee/function-alist) idee/function-alist))
+  (add-to-list 'idee/function-alist '(idee/run-or-eval-function . idee/clojure-run-project))
+  (setq idee/repl-buffer-prefix "*cider-repl")
+  (add-to-list 'idee/type-modes-alist '("clj" . "clojure-mode"))
+  (add-to-list 'idee/type-comment-styles-alist `("clj" . ,clojure-comment-style)))
 
-(defun idee-clojure-repl ()
+(defun idee/clojure-repl ()
   "Start the clojure repl."
   (interactive)
   (let ((repl-buffer (get-buffer (format "*cider-repl %s*" (projectile-project-name)))))
     (if repl-buffer
         (switch-to-buffer repl-buffer)
-      (idee-clojure-jack-in-and-switch))))
+      (idee/clojure-jack-in-and-switch))))
 
-(defun idee-clojure-jack-in-and-switch ()
+(defun idee/clojure-jack-in-and-switch ()
   "Jack in cider REPL and switch to the current projects REPL buffer."
   (interactive)
-  (add-hook 'cider-connected-hook 'idee-clojure--cider-on-connected)
+  (add-hook 'cider-connected-hook 'idee/clojure-cider-on-connected)
   (cider-jack-in nil))
 
-(defun idee-clojure--cider-on-connected()
-  (remove-hook 'cider-connected-hook 'idee-cider-on-connected)
+(defun idee/clojure-cider-on-connected()
+  (remove-hook 'cider-connected-hook 'idee/cider-on-connected)
   (switch-to-buffer (get-buffer (format "*cider-repl %s*" (projectile-project-name))))
   (mapcar (lambda (a) (eval a))
-          (alist-get 'on-repl-connected idee-on-event-command-alist)))
+          (alist-get 'on-repl-connected idee/on-event-command-alist)))
 
-(defun idee-clojure-run-project ()
+(defun idee/clojure-run-project ()
   (async-shell-command "lein run"))
 
-(defun ide-visitor-clojure (root)
+(defun idee/clojure-visitor (root)
   (when (seq-filter (lambda (x) (equal "project.clj" x)) (directory-files root))
-    (idee-clojure-enable))) 
+    (idee/clojure-enable))) 
 
-(defun idee--clojure-init ()
-  (add-hook 'clojure-mode-hook 'idee-clojure-enable)
-  (ide-visitor-register 'ide-visitor-clojure))
+(defun idee/clojure-init ()
+  (add-hook 'clojure-mode-hook 'idee/clojure-enable)
+  (idee/visitor-register 'idee/clojure-visitor))
 
 (provide 'idee-clojure)
-;;; idee-clojure.el ends here
+;; idee-clojure.el ends here

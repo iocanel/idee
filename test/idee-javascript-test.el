@@ -19,17 +19,17 @@
 
 (require 'test-helper)
 
-(ert-deftest idee-javascript-project-root/npm-test ()
+(ert-deftest idee/javascript-project-root/npm-test ()
   "Should recognize npm project."
   (with-sandbox
    (f-mkdir ".git")
    (f-touch "package.json")
-   (should (idee-javascript-project-p (f-full root-sandbox-path)))))
+   (should (idee/javascript-project-p (f-full root-sandbox-path)))))
 
-(ert-deftest idee-javascript-project-root/other-test ()
+(ert-deftest idee/javascript-project-root/other-test ()
   "Should recognize other project."
   (with-sandbox
    (f-mkdir ".git")
-   (should (not (idee-javascript-project-p (f-full root-sandbox-path))))))
+   (should (not (idee/javascript-project-p (f-full root-sandbox-path))))))
 (provide 'idee-projects-test)
-;;; idee-projects-test.el ends here
+;; idee-projects-test.el ends here

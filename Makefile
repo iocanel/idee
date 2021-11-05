@@ -19,7 +19,7 @@ PYTHON_PACKAGE_FILE = idee-python.el
 COUNSEL_PACKAGE_FILE = idee-counsel.el
 
 VERSION := $(shell EMACS=${EMACS} ${CASK} version)
-TAR     := dist/idee-$(VERSION).tar
+TAR     := dist/idee/$(VERSION).tar
 
 
 
@@ -71,7 +71,7 @@ clean :
 
 
 clean-all: clean
-	rm -rf $(CASKDIR) "~/.emacs.d/elpa/idee-$(VERSION)"
+	rm -rf $(CASKDIR) "~/.emacs.d/elpa/idee/$(VERSION)"
 
 
 release : assert-clean-worktree assert-on-master clean test set-package-version dist git-release github-browse-release

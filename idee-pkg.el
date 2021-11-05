@@ -1,4 +1,4 @@
-(define-package "idee" "0.0.1" "A unified way to perform IDE-like tasks across mutiple languages and frameworks."
+(define-package "idee" "0.0.1" "A unified way to perform IDE/like tasks across mutiple languages and frameworks."
   '((dap-mode "0.3")
     (lsp-ui "6.0")
     (lsp-mode "6.2")

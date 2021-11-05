@@ -1,4 +1,4 @@
-;;; idee-utils-test.el --- Utilities tests  -*- lexical-binding: t -*-
+;; idee-utils-test.el --- Utilities tests  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2019 Ioannis Canellos 
 ;;     
@@ -30,10 +30,10 @@
 (require 'test-helper)
 
 (ert-deftest util/should-convert-camel-case-to-kebab ()
-  (should (equal nil (idee-string-camelcase-to-kebabcase nil)))
-  (should (equal "my" (idee-string-camelcase-to-kebabcase "My")))
-  (should (equal "my-class" (idee-string-camelcase-to-kebabcase "MyClass")))
-  (should (equal "my-a-class" (idee-string-camelcase-to-kebabcase "MyAClass")))
+  (should (equal nil (idee/string-camelcase-to-kebabcase nil)))
+  (should (equal "my" (idee/string-camelcase-to-kebabcase "My")))
+  (should (equal "my-class" (idee/string-camelcase-to-kebabcase "MyClass")))
+  (should (equal "my-a-class" (idee/string-camelcase-to-kebabcase "MyAClass")))
 )
 
 (ert-deftest util/should-find-projectile-project-root ()
@@ -53,13 +53,13 @@
    (f-mkdir ".git")
    (f-mkdir ".idee")
    (f-touch ".idee/settings.el")
-   (should (equal (concat root-sandbox-path "/.idee/settings.el") (ide-project-settings "settings.el")))))
+   (should (equal (concat root-sandbox-path "/.idee/settings.el") (idee/project-settings "settings.el")))))
 
 (ert-deftest util/should-not-find-project-settings ()
   "Should find not project settings."
   (with-sandbox
    (f-mkdir ".git")
-   (should-not (file-exists-p (ide-project-settings "settings.el")))))
+   (should-not (file-exists-p (idee/project-settings "settings.el")))))
 
 (ert-deftest util/should-load-project-settings ()
   "Should load project settings."
@@ -69,7 +69,7 @@
    (f-mkdir ".idee")
    (f-touch ".idee/settings.el")
    (f-write-text "(setq test-var 'foo-bar-baz)" 'utf-8 (f-expand ".idee/settings.el" root-sandbox-path))
-   (idee-with-project-settings "settings.el"
+   (idee/with-project-settings "settings.el"
      (should (equal test-var 'foo-bar-baz)))))
 
 (ert-deftest util/should-try-to-load-missing-project-settings ()
@@ -77,28 +77,28 @@
   (setq test-var nil)
   (with-sandbox
    (f-mkdir ".git")
-   (idee-with-project-settings "settings.el"
+   (idee/with-project-settings "settings.el"
      (should-not test-var))))
 
 (ert-deftest util/should-try-to-load-settings-from-missing-project ()
   "Should try to load project settings, without error (when project is missing.)."
   (setq test-var nil)
   (with-sandbox
-   (idee-with-project-settings "settings.el"
+   (idee/with-project-settings "settings.el"
      (should-not test-var)))) 
 
 (ert-deftest util/test-contains-string ()
   "Should try to load project settings, without error (when project is missing.)."
-  (should (idee-contains-string "clean install" "clean"))
-  (should (idee-contains-string '("clean" "install") "clean"))
+  (should (idee/contains-string "clean install" "clean"))
+  (should (idee/contains-string '("clean" "install") "clean"))
 
-  (should (not (idee-contains-string "clean install" "package")))
+  (should (not (idee/contains-string "clean install" "package")))
 
   (with-temp-buffer
     (insert "I need to clean up")
-    (should (idee-contains-string (current-buffer) "clean"))
-    (should (not (idee-contains-string (current-buffer) "notfound")))))
+    (should (idee/contains-string (current-buffer) "clean"))
+    (should (not (idee/contains-string (current-buffer) "notfound")))))
 
 
 (provide 'idee-utils-test)
-;;; idee-utils-test.el ends here.
+;; idee-utils-test.el ends here.

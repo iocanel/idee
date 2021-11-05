@@ -2,8 +2,8 @@
 # name: Abstract Factory
 # key: abstract-factory
 # --
-`(ide-header-of-buffer)`
-`(idee-java-package-line)`
+`(idee/header-of-buffer)`
+`(idee/java-package-line)`
 
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;

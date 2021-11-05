@@ -1,4 +1,4 @@
-;;; idee-jshell.el --- Jshell support -*- lexical-binding: t -*-
+;; idee-jshell.el --- Jshell support -*- lexical-binding: t -*-
 ;; Copyright (C) 2021 Ioannis Canellos 
 ;;     
 ;; Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,24 +25,24 @@
 (require 'polymode-core)
 (require 'polymode-methods)
 
-(define-hostmode idee-term-hostmode :mode 'term-mode)
+(define-hostmode idee/term-hostmode :mode 'term-mode)
 
-(define-innermode idee-java-innermode
+(define-innermode idee/java-innermode
   :mode 'java-mode
   :head-matcher "jshell>"
   :tail-matcher ";$"
   :head-mode 'host
   :tail-mode 'host)
 
-(define-polymode idee-term-java-mode
-  :hostmode 'idee-term-hostmode
-  :innermodes '(idee-java-innermode))
+(define-polymode idee/term-java-mode
+  :hostmode 'idee/term-hostmode
+  :innermodes '(idee/java-innermode))
 
-(defun idee-poly-test ()
+(defun idee/poly-test ()
   "Test stuff"
   (interactive)
   (let* ((buffer (pm-get-buffer-of-mode 'java-mode))
-         (file-name (concat (concat (ide-project-root-dir) ".idee") ".jshell")))
+         (file-name (concat (concat (idee/project-root-dir) ".ide") ".jshell")))
     (with-current-buffer buffer
       (message "Enable lsp on %s using %s" buffer file-name)
       (setq-local buffer-file-name file-name) 
@@ -50,4 +50,4 @@
       (lsp))))
     
 (provide 'idee-jshell)
-;;; idee-jshell.el ends here
+;; idee-jshell.el ends here

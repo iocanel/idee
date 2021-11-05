@@ -1,4 +1,4 @@
-;;; idee-yml.el --- YML -*- lexical-binding: t -*-
+;; idee-yml.el --- YML -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2021 Ioannis Canellos 
 ;;     
@@ -27,20 +27,20 @@
 
 ;;; Code:
 
-(defcustom ide-comment-yml-custom-block-beginning nil "Custom block comment beginning to use when commenting yml code." :group 'idee-yml :type 'string)
-(defcustom ide-comment-yml-custom-block-ending nil "Custom block comment ending to use when commenting yml code." :group 'idee-yml :type 'string)
-(defcustom ide-comment-yml-custom-line-prefix "# " "Custom line prefix to use when commenting yml code." :group 'idee-yml :type 'string)
+(defcustom idee/comment-yml-custom-block-beginning nil "Custom block comment beginning to use when commenting yml code." :group 'idee/yml :type 'string)
+(defcustom idee/comment-yml-custom-block-ending nil "Custom block comment ending to use when commenting yml code." :group 'idee/yml :type 'string)
+(defcustom idee/comment-yml-custom-line-prefix "# " "Custom line prefix to use when commenting yml code." :group 'idee/yml :type 'string)
 
-(defconst yml-comment-style (make-ide-comment-style :line-prefix " #"
-                                                      :custom-block-beginning ide-comment-yml-custom-block-beginning :custom-line-prefix ide-comment-yml-custom-line-prefix :custom-block-ending ide-comment-yml-custom-block-ending))
+(defconst yml-comment-style (make-idee/comment-style :line-prefix " #"
+                                                      :custom-block-beginning idee/comment-yml-custom-block-beginning :custom-line-prefix idee/comment-yml-custom-line-prefix :custom-block-ending idee/comment-yml-custom-block-ending))
 
 
 ;;;###autoload
-(defun ide-yml-setup ()
+(defun idee/yml-init ()
   (interactive)
   "Initialize yml settings"
-  (add-to-list 'idee-type-comment-styles-alist `("yml" . ,yml-comment-style))
-  (add-to-list 'idee-type-comment-styles-alist `("yaml" . ,yml-comment-style)))
+  (add-to-list 'idee/type-comment-styles-alist `("yml" . ,yml-comment-style))
+  (add-to-list 'idee/type-comment-styles-alist `("yaml" . ,yml-comment-style)))
 
 (provide 'idee-yml)
-;;; idee-yml.el ends here
+;; idee-yml.el ends here

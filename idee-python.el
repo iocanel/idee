@@ -1,4 +1,4 @@
-;;; idee-python.el --- Python IDE
+;; idee-python.el --- Python IDE
 
 ;; Copyright (C) 2018 Ioannis Canellos
 
@@ -31,14 +31,14 @@
 (defun python-ide()
   "Enable python bindings."
   (interactive)
-  (setq idee-function-alist (delq (assoc 'idee-refernces-function idee-function-alist) idee-function-alist))
-  (setq idee-function-alist (delq (assoc 'idee-declaration-function idee-function-alist) idee-function-alist))
-  (setq idee-function-alist (delq (assoc 'idee-optimize-imports-function idee-function-alist) idee-function-alist))
-  (setq idee-function-alist (delq (assoc 'idee-indent-function idee-function-alist) idee-function-alist))
+  (setq idee/function-alist (delq (assoc 'idee/refernces-function idee/function-alist) idee/function-alist))
+  (setq idee/function-alist (delq (assoc 'idee/declaration-function idee/function-alist) idee/function-alist))
+  (setq idee/function-alist (delq (assoc 'idee/optimize-imports-function idee/function-alist) idee/function-alist))
+  (setq idee/function-alist (delq (assoc 'idee/indent-function idee/function-alist) idee/function-alist))
 
-  (add-to-list 'idee-function-alist '(idee-references-function . anaconda-mode-find-references))
-  (add-to-list 'idee-function-alist '(idee-declaration-function . anaconda-mode-find-definitions))
-  (add-to-list 'idee-function-alist '(idee-indent-function . python-indent)))
+  (add-to-list 'idee/function-alist '(idee/references-function . anaconda-mode-find-references))
+  (add-to-list 'idee/function-alist '(idee/declaration-function . anaconda-mode-find-definitions))
+  (add-to-list 'idee/function-alist '(idee/indent-function . python-indent)))
 
 (provide 'idee-python)
-;;; idee-python.el ends here
+;; idee-python.el ends here

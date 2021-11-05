@@ -1,4 +1,4 @@
-;;; idee-visitors.el --- Visitors -*- lexical-binding: t -*-
+;; idee-visitors.el --- Visitors -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018 Ioannis Canellos
 
@@ -23,20 +23,20 @@
 (require 'projectile)
 (require 'idee-vars)
 
-;;;###autoload (autoload 'ide-visitor-register "idee-visitors")
-(defmacro ide-visitor-register (visitor)
+;;;###autoload (autoload 'idee/visitor-register "idee-visitors")
+(defmacro idee/visitor-register (visitor)
   "Register a VISITOR."
-  (list 'push  visitor 'ide-visitor-list))
+  (list 'push  visitor 'idee/list-visitor))
 
 ;;;###autoload
-(defun ide-visitor-apply()
+(defun idee/apply-visitor()
   "Call all registered visitors."
-  (dolist (v ide-visitor-list)
+  (dolist (v idee/list-visitor)
     (funcall v default-directory)))
 
 ;;;###autoload
-(defun ide-visitor-setup ()
-  (add-to-list 'projectile-after-switch-project-hook 'ide-visitor-apply))
+(defun idee/init-visitor ()
+  (add-to-list 'projectile-after-switch-project-hook 'idee/apply-visitor))
 
 (provide 'idee-visitors)
 ;;;  idee-visitors.el ends here

@@ -1,4 +1,4 @@
-;;;; idee-projects.el --- Project Factories
+;;; idee-projects.el --- Project Factories
 
 ;; Copyright (C) 2018 Ioannis Canellos
 ;;     
@@ -28,23 +28,23 @@
 (require 'idee-vars)
 (require 'idee-views)
 
-(defun ide-project-new()
+(defun idee/project-new()
   "Create a new project."
   (interactive)
-  (let ((factory (ide-project-factory-select)))
-    (funcall (ide-project-factory-func factory))
+  (let ((factory (idee/project-factory-select)))
+    (funcall (idee/project-factory-func factory))
     ;; Make sure we are pointing to a non ide buffer.
-    (idee-jump-to-non-ide-window)))
+    (idee/jump-to-non-idee/window)))
 
-(defun ide-module-new()
+(defun idee/module-new()
   "Create a new module."
   (interactive)
-  (let ((factory (ide-project-factory-select)))
-    (funcall (ide-project-factory-func factory) 'ide-module-create-with-shell)
+  (let ((factory (idee/project-factory-select)))
+    (funcall (idee/project-factory-func factory) 'idee/module-create-with-shell)
     ;; Make sure we are pointing to a non ide buffer.
-    (idee-jump-to-non-ide-window)))
+    (idee/jump-to-non-idee/window)))
 
-(defun ide-project-grep()
+(defun idee/project-grep()
   "Grep."
   (interactive)
   (when (require 'helm-ag nil t)
@@ -57,67 +57,67 @@
         (other-window 1)))))
 
 
-;;;###autoload (autoload 'ide-project-factory-register "idee-projects")
-(defmacro ide-project-factory-register (project-factory)
+;;;###autoload (autoload 'idee/project-factory-register "idee-projects")
+(defmacro idee/project-factory-register (project-factory)
   "Register a PROJECT-FACTORY."
-  (list 'push project-factory 'ide-project-factories-list))
+  (list 'push project-factory 'idee/project-factories-list))
 
-(defun ide-project-root-dir (&optional f)
+(defun idee/project-root-dir (&optional f)
   "Find the directory of the module that owns the source file F."
   (let ((current-dir (f-full (if f f default-directory))))
-    (while (not (ide-project-root-dir-p current-dir))
-      (setq current-dir (idee-parent-dir current-dir)))
+    (while (not (idee/project-root-dir-p current-dir))
+      (setq current-dir (idee/parent-dir current-dir)))
     current-dir))
 
-(defun ide-project-root-dir-p (f)
+(defun idee/project-root-dir-p (f)
   "Return non-nil if F is a module directory."
   (cond
-   ((seq-filter 'file-exists-p (seq-map (lambda (p) (concat f p)) ide-project-root-markers)) t)
-   ((and (ide-module-root-dir-p f) (not (ide-module-root-dir-p (idee-parent-dir f)))) t)
+   ((seq-filter 'file-exists-p (seq-map (lambda (p) (concat f p)) idee/project-root-markers)) t)
+   ((and (idee/module-root-dir-p f) (not (idee/module-root-dir-p (idee/parent-dir f)))) t)
    (t nil)))
 
 
-(defun ide-module-root-dir (&optional f)
+(defun idee/module-root-dir (&optional f)
   "Find the directory of the module that owns the source file F."
   (let ((current-dir (f-full (if f f default-directory))))
-    (while (not (ide-module-root-dir-p current-dir))
-      (setq current-dir (idee-parent-dir current-dir)))
+    (while (not (idee/module-root-dir-p current-dir))
+      (setq current-dir (idee/parent-dir current-dir)))
     current-dir))
 
-(defun ide-module-root-dir-p (f)
+(defun idee/module-root-dir-p (f)
   "Return non-nil if F is a module directory."
-  (if (seq-filter 'file-exists-p (seq-map (lambda (p) (concat f p)) ide-module-root-markers))
+  (if (seq-filter 'file-exists-p (seq-map (lambda (p) (concat f p)) idee/module-root-markers))
       t
     nil))
 
-(defun ide-project-dir-select()
+(defun idee/project-dir-select()
  "Select a new project directory."
   (interactive)
   (let ((project-dir (car (find-file-read-args "Select project directory:" nil))))
     (make-directory project-dir t)
     project-dir))
 
-(defun ide-project-factory-select()
+(defun idee/project-factory-select()
   "Select a project factory from the list of registered factories."
   (let ((factory (projectile-completing-read "Select project type:"
-                                             (mapcar 'ide-project-factory-entry ide-project-factories-list))))
+                                             (mapcar 'idee/project-factory-entry idee/project-factories-list))))
 
     (car (seq-filter
           (lambda (f)
-            (equal (ide-project-factory-name f) (car (split-string factory " ")))) ide-project-factories-list))))
+            (equal (idee/project-factory-name f) (car (split-string factory " ")))) idee/project-factories-list))))
 
-(defun ide-project-factory-entry (f)
+(defun idee/project-factory-entry (f)
   "Create an entry for the specified project factory F."
-  (concat (ide-project-factory-name f) " - " (ide-project-factory-description f)))
+  (concat (idee/project-factory-name f) " - " (idee/project-factory-description f)))
 
-(defun ide-project-create-with-shell (path &rest commands)
+(defun idee/project-create-with-shell (path &rest commands)
   "Create a new project with in the specified PATH and the specified COMMANDS."
   (let ((dired-auto-revert-buffer t))
     (make-directory path t)
     (setq default-directory path)
     (shell-command "git init")
     (shell-command "touch .projectile")
-    (idee-jump-to-non-ide-window)
+    (idee/jump-to-non-idee/window)
     (projectile-add-known-project path)
     (setq projectile-project-root path)
     (projectile-switch-project-by-name path)
@@ -125,26 +125,26 @@
     (dired path)
     (auto-revert-mode 1)
     (dolist (c commands)
-      (ide-shell-command-execute-in-project c))
-    (idee-jump-to-non-ide-window)))
+      (idee/shell-command-execute-in-project c))
+    (idee/jump-to-non-idee/window)))
 
-(defun ide-module-create-with-shell (path &rest commands)
+(defun idee/module-create-with-shell (path &rest commands)
   "Create a new module with in the specified PATH and the specified COMMANDS."
   (let* ((project-path (projectile-project-root path))
         (relative-path (file-relative-name path project-path))
         (dired-auto-revert-buffer t))
-    (ide-shell-command-execute-in-project (format "cd %s" relative-path))
+    (idee/shell-command-execute-in-project (format "cd %s" relative-path))
     (make-directory path t)
     (setq default-directory path)
-    (idee-jump-to-non-ide-window)
+    (idee/jump-to-non-idee/window)
     (dired path)
     (auto-revert-mode 1)
-    (idee-switch-cli-on)
+    (idee/switch-cli-on)
     (dolist (c commands)
-      (ide-shell-command-execute-in-project c))
-    (idee-jump-to-non-ide-window)))
+      (idee/shell-command-execute-in-project c))
+    (idee/jump-to-non-idee/window)))
 
-(defun idee-buffers-revert-visible-dired ()
+(defun idee/buffers-revert-visible-dired ()
   "Revert all visible dired buffers."
   (interactive)
   (dolist (buffer (buffer-list))
@@ -156,7 +156,7 @@
             (when (derived-mode-p 'dired-mode) (revert-buffer)))))))
 
 ;;;###autoload
-(defun ide-project-close-buffers (&optional project-dir)
+(defun idee/project-close-buffers (&optional project-dir)
   (interactive)
   (let* ((project-dir (or project-dir (projectile-project-root)))
          (project (projectile-ensure-project (or project-dir (projectile-project-root))))
@@ -180,7 +180,7 @@
             ((cl-search "*helm-ag*" name) (kill-buffer name))
             ((cl-search "*grep*" name) (kill-buffer name)))))))
 
-(defun ide-project-close-other-buffers (&optional project-dir)
+(defun idee/project-close-other-buffers (&optional project-dir)
   (interactive)
   (let* ((project-dir (or project-dir (projectile-project-root)))
          (project (projectile-ensure-project (or project-dir (projectile-project-root))))
@@ -195,80 +195,80 @@
                  (message "Killing buffer: %s that does not belong to project: %s." name project-dir)
                  (kill-buffer name))))))))
 
-(defun ide-project-init (&optional path)
+(defun idee/project-create (&optional path)
   (interactive)
   "Initialize project."
   (let* ((path (or path (or (projectile-project-root) default-directory)))
          (name (or (projectile-project-name)  (file-name-nondirectory (directory-file-name path))))
-         (info (alist-get (intern name) ide-project-info-alist)))
+         (info (alist-get (intern name) idee/project-info-alist)))
 
     (when (not info)
-      (setq info (make-ide-project-info
+      (setq info (make-idee/project-info
                    :name name
                    :path path))
-      (add-to-list 'ide-project-info-alist `(,(intern name) . ,info)))
+      (add-to-list 'idee/project-info-alist `(,(intern name) . ,info)))
     info))
 
-(defun ide-project-version-get ()
+(defun idee/project-version-get ()
   "Return the project version variable."
-  (let ((info (ide-project-init)))
-    (if info (ide-project-info-version info) nil)))
+  (let ((info (idee/project-create)))
+    (if info (idee/project-info-version info) nil)))
 
-(defun ide-project-version-set (version)
+(defun idee/project-version-set (version)
   "Set the project VERSION."
-  (let ((name (ide-project-name-get))
-        (info (ide-project-init)))
+  (let ((name (idee/project-name-get))
+        (info (idee/project-create)))
     (when info
-      (setf (ide-project-info-version info) version)
-      (setq ide-project-info-alist (delq (assoc (intern name) ide-project-info-alist) ide-project-info-alist))
-      (add-to-list 'ide-project-info-alist `(,(intern name). ,info)))))
+      (setf (idee/project-info-version info) version)
+      (setq idee/project-info-alist (delq (assoc (intern name) idee/project-info-alist) idee/project-info-alist))
+      (add-to-list 'idee/project-info-alist `(,(intern name). ,info)))))
 
-(defun ide-project-name-get ()
+(defun idee/project-name-get ()
   "Return the project name variable."
-  (let ((info (ide-project-init)))
-    (if info (ide-project-info-name info) nil)))
+  (let ((info (idee/project-create)))
+    (if info (idee/project-info-name info) nil)))
 
-(defun ide-project-name-set (name)
+(defun idee/project-name-set (name)
   "Set the project NAME."
-  (let ((info (ide-project-init)))
-    (when info (setf (ide-project-info-name info) name))))
+  (let ((info (idee/project-create)))
+    (when info (setf (idee/project-info-name info) name))))
 
-(defun ide-project-property-get (key)
+(defun idee/project-property-get (key)
   "Return the project name property with KEY."
-  (let ((info (ide-project-init)))
+  (let ((info (idee/project-create)))
     (if info
-        (alist-get (intern key) (ide-project-info-properties info))
+        (alist-get (intern key) (idee/project-info-properties info))
       nil)))
 
-(defun ide-project-property-set (key value)
+(defun idee/project-property-set (key value)
   "Set the project VALUE for KEY."
-  (let* ((name (ide-project-name-get))
-        (info (ide-project-init))
-        (props (ide-project-info-properties info)))
+  (let* ((name (idee/project-name-get))
+        (info (idee/project-create))
+        (props (idee/project-info-properties info)))
     (when info
       (setq props (delq (assoc key props) props))
       (add-to-list 'props `(,(intern key) . ,value))
-      (setf (ide-project-info-properties info) props)
-      (setq ide-project-info-alist (delq (assoc (intern name) ide-project-info-alist) ide-project-info-alist))
-      (add-to-list 'ide-project-info-alist `(,(intern name) . ,info)))))
+      (setf (idee/project-info-properties info) props)
+      (setq idee/project-info-alist (delq (assoc (intern name) idee/project-info-alist) idee/project-info-alist))
+      (add-to-list 'idee/project-info-alist `(,(intern name) . ,info)))))
 
 ;;
 ;; Initialization
 ;;
-(defun ide-project-initialize ()
-  "Initialize idee project.
+(defun idee/project-initialize ()
+  "Initialize ide project.
    When called this function will look at the project root for an elisp script called .idee/init.el and will load it if present."
   (interactive)
-  (let* ((root-dir (ide-project-root-dir (buffer-file-name)))
-         (conf-dir (concat (file-name-as-directory root-dir) ide-project-conf-dir))
+  (let* ((root-dir (idee/project-root-dir (buffer-file-name)))
+         (conf-dir (concat (file-name-as-directory root-dir) idee/project-conf-dir))
          (init-el (concat (file-name-as-directory conf-dir) "init.el")))
     (when (file-exists-p init-el) (load-file init-el))))
 
 ;;;###autoload
-(defun ide-project-setup ()
-  "Initialize idee projects."
-  (add-hook 'projectile-after-switch-project-hook 'ide-project-initialize))
+(defun idee/project-init ()
+  "Initialize ide projects."
+  (add-hook 'projectile-after-switch-project-hook 'idee/project-initialize))
 
 
 (provide 'idee-projects)
-;;; idee-projects.el ends here
+;; idee-projects.el ends here

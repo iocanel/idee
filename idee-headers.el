@@ -1,4 +1,4 @@
-;;; idee-headers.el --- Emacs IDE Header support.
+;; idee-headers.el --- Emacs IDE Header support.
 
 ;; Copyright (C) 2018 Ioannis Canellos
 
@@ -28,71 +28,71 @@
 ;;
 ;; Customization
 ;;
-(defconst idee-emacs-headers-dir (concat (file-name-as-directory idee-resources-dir) "headers") "The directory where header files are stored.")
+(defconst idee/emacs-headers-dir (concat (file-name-as-directory idee/resources-dir) "headers") "The directory where header files are stored.")
 
-(defvar idee-header-selected-kind nil "The kind of header currently selcted.")
+(defvar idee/header-selected-kind nil "The kind of header currently selcted.")
 
 ;;
 ;; Functions
 ;; 
-(defun idee-header-detect ()
-  "Detect and set the value of ide-header-current, if exists."
-  (let ((h (ide-header-of-project)))
+(defun idee/header-detect ()
+  "Detect and set the value of idee/header-current, if exists."
+  (let ((h (idee/header-of-project)))
     (if h
-        (setq ide-header-current h))))
+        (setq idee/header-current h))))
 
-(defun ide-header-of-project ()
+(defun idee/header-of-project ()
   "Read the header from header.txt."
-  (let ((root-dir-header (concat (ide-project-root-dir (buffer-file-name)) "header.txt"))
-        (idee-dir-header (concat (ide-project-root-dir (buffer-file-name)) (file-name-as-directory ide-project-conf-dir) "header.txt")))
+  (let ((root-dir-header (concat (idee/project-root-dir (buffer-file-name)) "header.txt"))
+        (idee/dir-header (concat (idee/project-root-dir (buffer-file-name)) (file-name-as-directory idee/project-conf-dir) "header.txt")))
 
-       (cond ((file-exists-p root-dir-header) (idee-read-and-eval-template root-dir-header))
-             ((file-exists-p idee-dir-header) (idee-read-and-eval-template idee-dir-header))
+       (cond ((file-exists-p root-dir-header) (idee/read-and-eval-template root-dir-header))
+             ((file-exists-p idee/dir-header) (idee/read-and-eval-template idee/dir-header))
              (t nil))))
 
-(defun ide-header-of-buffer ()
+(defun idee/header-of-buffer ()
   "Return the header commented for the current buffer style."
-    (ide-header-detect)
-    (ide-comment ide-header-current (file-name-extension (buffer-file-name (current-buffer)))))
+    (idee/header-detect)
+    (idee/comment idee/header-current (file-name-extension (buffer-file-name (current-buffer)))))
 
 ;;;###autoload
-(defun ide-header-select ()
+(defun idee/header-select ()
   "Select a header for the project from the existing selection of headers."
   (interactive)
-  (let* ((headers (directory-files idee-emacs-headers-dir))
+  (let* ((headers (directory-files idee/emacs-headers-dir))
         (kind (projectile-completing-read "Select header:" headers)))
-    (setq ide-header-current (idee-read-and-eval-template (concat (file-name-as-directory idee-emacs-headers-dir) kind)))))
+    (setq idee/header-current (idee/read-and-eval-template (concat (file-name-as-directory idee/emacs-headers-dir) kind)))))
 
 ;;;###autoload
-(defun ide-header-apply-to-buffer ()
+(defun idee/header-apply-to-buffer ()
   "Apply the selected header to the current buffer."
   (interactive)
   (save-excursion
     (goto-char (point-min))
-    (ide-comment-remove-at-point)
-    (insert (ide-header-of-buffer))))
+    (idee/comment-remove-at-point)
+    (insert (idee/header-of-buffer))))
 
 ;;;###autoload
-(defun ide-header-apply-to-project ()
+(defun idee/header-apply-to-project ()
   "Recursively visit all project files nad apply the selected header."
   (interactive)
-  (idee-visit-project-files 'ide-header-apply-to-file))
+  (idee/visit-project-files 'idee/header-apply-to-file))
 
 ;;;###autoload
-(defun ide-header-apply-to-file (f)
+(defun idee/header-apply-to-file (f)
   "Apply the selected header to the specified file F."
   (find-file f)
-  (ide-header-apply-to-buffer)
+  (idee/header-apply-to-buffer)
   (write-file f))
 
-(defun ide-header-source-dir ()
+(defun idee/header-source-dir ()
   "Find the headers source directory."
-  (concat (file-name-as-directory (ide-source-dir)) "headers"))
+  (concat (file-name-as-directory (idee/source-dir)) "headers"))
 
 ;;;###autoload
-(defun ide-header-setup ()
-  "Initialize idee headers."
-  (advice-add 'projectile-switch-project :after 'idee-header-detect))
+(defun idee/header-init ()
+  "Initialize ide headers."
+  (advice-add 'projectile-switch-project :after 'idee/header-detect))
 
 (provide 'idee-headers)
-;;; idee-headers.el ends here
+;; idee-headers.el ends here

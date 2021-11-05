@@ -1,4 +1,4 @@
-;;; idee-navigation.el --- Navigation Utilities
+;; idee-navigation.el --- Navigation Utilities
 
 ;; Copyright (C) 2018 Ioannis Canellos
 
@@ -26,86 +26,86 @@
 ;; State
 ;;
 
-(cl-defstruct idee-buffer-point
+(cl-defstruct idee/buffer-point
   buffer
   line
   column)
 
-(defvar idee-back-stack ())
-(defvar idee-forward-stack ())
+(defvar idee/back-stack ())
+(defvar idee/forward-stack ())
 (defvar ignore-current-buffer nil)
 
 ;;
 ;; Functions
 ;;
 ;;;###autoload
-(defun idee-back-push()
+(defun idee/back-push()
   "Push the current point to the back stack."
   (interactive)
   (if ignore-current-buffer
       (setq ignore-current-buffer nil)
-    (setq idee-back-stack (cons (make-idee-buffer-point :buffer (current-buffer) :line (line-number-at-pos (point)) :column (current-column)) idee-back-stack))))
+    (setq idee/back-stack (cons (make-idee/buffer-point :buffer (current-buffer) :line (line-number-at-pos (point)) :column (current-column)) idee/back-stack))))
 
 ;;;###autoload
-(defun idee-back-pop()
+(defun idee/back-pop()
   "Pop the back stack."
   (interactive)
-  (let ((p (car idee-back-stack)))
-    (setq idee-back-stack (cdr idee-back-stack))
+  (let ((p (car idee/back-stack)))
+    (setq idee/back-stack (cdr idee/back-stack))
     p))
 
 ;;;###autoload
-(defun idee-forward-push()
+(defun idee/forward-push()
   "Push the current point to the forward stack."
   (interactive)
   (if ignore-current-buffer
       (setq ignore-current-buffer nil)
-    (setq idee-forward-stack (cons (make-idee-buffer-point :buffer (current-buffer) :line (line-number-at-pos (point)) :column (current-column)) idee-back-stack))))
+    (setq idee/forward-stack (cons (make-idee/buffer-point :buffer (current-buffer) :line (line-number-at-pos (point)) :column (current-column)) idee/back-stack))))
 
 ;;;###autoload
-(defun idee-forward-pop()
+(defun idee/forward-pop()
   "Pop the forward stack."
   (interactive)
-  (let ((p (car idee-forward-stack)))
-    (setq idee-forward-stack (cdr idee-forward-stack))
+  (let ((p (car idee/forward-stack)))
+    (setq idee/forward-stack (cdr idee/forward-stack))
     p))
 
 ;;;###autoload
-(defun idee-forget-current-buffer()
+(defun idee/forget-current-buffer()
   "Remove references to the current buffer from all navigation stacks."
   (interactive)
-  (let ((c (current-buffer)) (b (car idee-back-stack)) (f (car idee-forward-stack)))
-    (if (and b (equal c (idee-buffer-point-buffer b))) (idee-back-pop))
-    (if (and f (equal c (idee-buffer-point-buffer f))) (idee-forward-pop))
+  (let ((c (current-buffer)) (b (car idee/back-stack)) (f (car idee/forward-stack)))
+    (if (and b (equal c (idee/buffer-point-buffer b))) (idee/back-pop))
+    (if (and f (equal c (idee/buffer-point-buffer f))) (idee/forward-pop))
     )
   (setq ignore-current-buffer t))
 
 
 ;;;###autoload
-(defun idee-jump-back()
+(defun idee/jump-back()
   "Jump back."
   (interactive)
-  (let ((p (idee-back-pop)))
+  (let ((p (idee/back-pop)))
     (if p (progn
-            (idee-forward-push)
-            (switch-to-buffer (idee-buffer-point-buffer p))
+            (idee/forward-push)
+            (switch-to-buffer (idee/buffer-point-buffer p))
             (goto-char (point-min))
-            (forward-line (- (idee-buffer-point-line p) 1))
-            (move-to-column (idee-buffer-point-column p))
+            (forward-line (- (idee/buffer-point-line p) 1))
+            (move-to-column (idee/buffer-point-column p))
             (point)))))
 
 ;;;###autoload
-(defun idee-jump-forward()
+(defun idee/jump-forward()
   "Jump forward."
   (interactive)
-  (let ((p (idee-forward-pop)))
+  (let ((p (idee/forward-pop)))
     (if p (progn
-            (idee-back-push)
-            (switch-to-buffer (idee-buffer-point-buffer p))
+            (idee/back-push)
+            (switch-to-buffer (idee/buffer-point-buffer p))
             (goto-char (point-min))
-            (forward-line (- (idee-buffer-point-line p) 1))
-            (move-to-column (idee-buffer-point-column p))
+            (forward-line (- (idee/buffer-point-line p) 1))
+            (move-to-column (idee/buffer-point-column p))
             (point)))))
 
 (provide 'idee-navigation)
-;;; idee-navigation.el ends here
+;; idee-navigation.el ends here

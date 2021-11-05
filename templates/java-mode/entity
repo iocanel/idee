@@ -2,8 +2,8 @@
 # name: JPA Entity
 # key: entity
 # --
-`(ide-header-of-buffer)`
-`(idee-java-package-line)`
+`(idee/header-of-buffer)`
+`(idee/java-package-line)`
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
