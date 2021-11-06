@@ -19,8 +19,8 @@
 ;;; Commentary:
 
 ;;; Code:
-(defcustom idee/resources-dir (locate-user-emacs-file "ide") "The directory where ide files are stored." :group 'ide :type 'string)
-(defcustom idee/project-conf-dir ".ide" "The directory where ide configuration files are stored." :group 'ide :type 'string)
+(defcustom idee/resources-dir (locate-user-emacs-file "idee") "The directory where ide files are stored." :group 'ide :type 'string)
+(defcustom idee/project-conf-dir ".idee" "The directory where ide configuration files are stored." :group 'ide :type 'string)
 
 (defvar idee/source-dir nil "The source directory of the ide project.")
 
