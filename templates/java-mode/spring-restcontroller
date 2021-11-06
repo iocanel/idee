@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {
+public class `(idee/java-class)` {
 
   private static final String HELLO = "hello world!";
 

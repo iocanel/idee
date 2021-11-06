@@ -8,6 +8,6 @@
 import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {
+public class `(idee/java-class)` {
   $0
 }

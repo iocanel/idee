@@ -16,7 +16,7 @@ import io.reactivex.Flowable;
 import org.reactivestreams.Publisher;
 
 @Path("/${1:hello}")
-public class `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {
+public class `(idee/java-class)` {
 
     @GET
     @Path("/stream")

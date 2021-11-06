@@ -9,7 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-public class `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {
+public class `(idee/java-class)` {
 
     @Id
     private Long id;

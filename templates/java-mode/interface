@@ -5,6 +5,6 @@
 `(idee/header-of-buffer)`
 `(idee/java-package-line)`
 
-public interface `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {
+public interface `(idee/java-class)` {
   $0
 }

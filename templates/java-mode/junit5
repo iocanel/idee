@@ -7,10 +7,10 @@
 
 import org.junit.jupiter.api.Test;
 
-class `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {
+class `(idee/java-class)` {
 
   @Test
-  public void test`(capitalize (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))`() throws Exception {
+  public void test`(capitalize (idee/java-class))`() throws Exception {
     $0
   }
 }

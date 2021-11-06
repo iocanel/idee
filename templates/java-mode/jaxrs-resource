@@ -11,7 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 @Path("/${1:hello}")
-public class `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {
+public class `(idee/java-class)` {
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)

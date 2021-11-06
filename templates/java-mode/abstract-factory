@@ -19,7 +19,7 @@ import java.util.ServiceLoader;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public abstract class `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`<T, C> {
+public abstract class `(idee/java-class)`<T, C> {
 
   T create(C context);
 
@@ -28,22 +28,22 @@ public abstract class `(file-name-nondirectory (file-name-sans-extension (buffer
    * @return the resource type the factory handles.
    */
   default Class<T> getType() {
-    return (Class) getTypeArguments(`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`.class, getClass()).get(0);
+    return (Class) getTypeArguments(`(idee/java-class)`.class, getClass()).get(0);
   }
 
-  public static <T,C> Optional<`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`<T,C>> create(C context, Class<T> type) {
+  public static <T,C> Optional<`(idee/java-class)`<T,C>> create(C context, Class<T> type) {
     return find(type).map(f -> f.create(context));
   }
 
-  public static <T,C> Optional<`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`<T,C>> find(Class<T> type) {
+  public static <T,C> Optional<`(idee/java-class)`<T,C>> find(Class<T> type) {
     return stream()
       .filter(f -> f.getType().isAssignableFrom(type))
-      .map(f -> ( `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`<T,C>) f)
+      .map(f -> ( `(idee/java-class)`<T,C>) f)
       .findFirst();
 
 
-  private static Stream<`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`> stream() {
-    return StreamSupport.stream(ServiceLoader.load(DiagnosticsFactory.class,  `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`.class.getClassLoader()).spliterator(), false);
+  private static Stream<`(idee/java-class)`> stream() {
+    return StreamSupport.stream(ServiceLoader.load(DiagnosticsFactory.class,  `(idee/java-class)`.class.getClassLoader()).spliterator(), false);
   }
 
   /**

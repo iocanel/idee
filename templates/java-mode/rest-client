@@ -13,7 +13,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @Path("/")
 @RegisterRestClient
-public interface `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` {
+public interface `(idee/java-class)` {
 
     @GET
     @Path("/${1:path}")
