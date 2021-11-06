@@ -74,7 +74,7 @@
 (defun idee/java-package-line()
   "Return the full package line for the current directory."
   (let ((pkg (idee/java-package-of default-directory)))
-    (if pkg
+    (when (and pkg (not (idee/string-blank pkg)))
         (concat "package " pkg ";"))))
 
 (defun idee/java-class()
