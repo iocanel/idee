@@ -34,7 +34,7 @@
 
 (defmacro with-sandbox-java-project (&rest body)
   `(with-sandbox
-    (let* ((idee/dir (f-join root-sandbox-path ".ide"))
+    (let* ((idee/dir (f-join root-sandbox-path ".idee"))
            (templates-dir (f-join idee/dir "templates"))
            (java-templates-dir (f-join templates-dir "java-mode"))
            (relative-dir "src/main/java/org/acme")
@@ -59,10 +59,10 @@
   (with-sandbox-java-project
    (should (equal "org.acme" (idee/java-package-of absolute-simple-class)))))
 
-(ert-deftest java/create-snippet ()
+(ert-deftest java/create-template ()
   "Should extract the class name from the file name."
   (with-sandbox-java-project
-     (idee/java-create-snippet absolute-simple-class "Hello World" "hello")
+     (idee/java-create-template absolute-simple-class "Hello World" "hello")
      (let ((template (f-join java-templates-dir "hello")))
        (should (file-exists-p template))
        (should (string-match (regexp-quote "`idee/java-package-line`") (idee/read-file template))))))

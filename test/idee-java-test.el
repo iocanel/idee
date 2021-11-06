@@ -43,5 +43,26 @@
   (idee/java-set-tab-width 4)
   (should (equal idee/tab-width 4)))
 
+(ert-deftest java/create-template-from-file ()
+  "Should create template from file."
+  (idee/java-init)
+  (let ((root-sandbox-path "/tmp/idee/"))
+    (with-sandbox-java-project
+     (with-temp-buffer
+       (write-file "src/main/java/org/acme/Template.java")
+       (insert "package org.acme;") (newline)
+       (insert "public class Template {") (newline)
+       (insert "  public Template () {") (newline)
+       (insert "  }") (newline)
+       (insert "  public static void main (String[] args) {") (newline)
+       (insert "    System.out.println(\"Hello from Template\");") (newline)
+       (insert "  }") (newline)
+       (insert "}") (newline)
+       (java-mode)
+       (write-file "Template.java")
+     (idee/template-create-from-buffer (current-buffer) "Test template" "template"))
+
+   (should (file-exists-p ".idee/templates/java-mode/template")))))
+
 (provide 'idee-java-test)
 ;; idee-java-test.el ends here
