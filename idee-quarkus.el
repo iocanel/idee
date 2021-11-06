@@ -218,7 +218,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
       (idee/quarkus-init-maven-project-settings))))
 
 ;;;###autoload
-(defun idee/-quarkus-init ()
+(defun idee/quarkus-init ()
   (idee/visitor-register 'idee/quarkus-visitor) 
   (idee/project-factory-register idee/quarkus-rest-project-factory))
 

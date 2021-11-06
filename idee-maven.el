@@ -484,7 +484,7 @@
                                      (enclosuing-module-pom (concat enclosuing-module-dir pom-xml))
                                      (artifact-id (idee/maven-pom-artifact-id module-pom))
                                      (enclosing-artifact-id (idee/maven-pom-artifact-id enclosuing-module-pom))
-                                     (profiles-opt (idee/-maven-profiles-option))
+                                     (profiles-opt (idee/maven-profiles-option))
                                      (mvn-cmd-builder nil))
 
                                 (when goto-project-root (push (format "cd %s && " (idee/project-root-dir)) mvn-cmd-builder))
@@ -589,7 +589,7 @@
     (cdr (cdr (mapcar 'file-name-nondirectory (seq-filter 'file-directory-p (directory-files artifact-path t)))))))
 
 ;;; Utilities
-(defun idee/-maven-profiles-option ()
+(defun idee/maven-profiles-option ()
   "Create the profiles option to be appended to any maven command.
 Returns something like: -Pprofile1,profile2 if profiles are enabled, 
 or empty string other wise."
@@ -748,7 +748,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
       (idee/project-name-set (idee/maven-pom-artifact-id project-pom)))))
 
 ;;;###autoload
-(defun idee/-maven-init ()
+(defun idee/maven-init ()
   (idee/project-factory-register idee/maven-project-factory)
   (idee/visitor-register 'idee/maven-visitor))
 

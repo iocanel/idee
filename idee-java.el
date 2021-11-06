@@ -204,10 +204,10 @@ The target module will be the current, unless BASE-PATH has been specified, in w
   (interactive)
   "Initialize java."
   ;; Dependencies
-  (idee/-lsp-java-init)
-  (idee/-maven-init)
-  (idee/-quarkus-init)
-  (idee/-spring-init)
+  (idee/lsp-java-init)
+  (idee/maven-init)
+  (idee/quarkus-init)
+  (idee/spring-init)
 
   (idee/visitor-register 'idee/java-visitor)
 

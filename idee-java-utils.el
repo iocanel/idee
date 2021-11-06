@@ -44,7 +44,7 @@
 
 (defconst idee/java-project-file-list `(,pom-xml ,build-gradle))
 
-(defvar idee/-java-symbols)
+(defvar idee/java-symbols)
 
 ;;
 ;; Formatting
@@ -167,7 +167,7 @@
   (let ((test-dir (idee/java-find-test-dir f)))
     (and test-dir (string-prefix-p test-dir f))))
 
-(defun idee/-java-in-method-p()
+(defun idee/java-in-method-p()
   "Return non-nil if point is inside a method."
   (interactive)
   (let ((thing (thing-at-point 'defun)))
@@ -221,13 +221,13 @@ Finally it returns the last word before '('."
 ;;
 ;; Other utils
 ;;
-(defun idee/-java-fqcn-matches-p (c)
-  "Predicate that matches c against idee/-java-symbols."
-  (let* ((matches (seq-filter (lambda (i) (idee/-java-fqcn-matches c i)) idee/-java-symbols)))
+(defun idee/java-fqcn-matches-p (c)
+  "Predicate that matches c against idee/java-symbols."
+  (let* ((matches (seq-filter (lambda (i) (idee/java-fqcn-matches c i)) idee/java-symbols)))
     (message (format "%s -> %s" c matches))
     matches))
 
-(defun idee/-java-fqcn-matches (c f)
+(defun idee/java-fqcn-matches (c f)
   "Match a candidate C to the fully qualified class name F.
 - Example accepted matches for java.util.List:
    - Li
@@ -246,10 +246,10 @@ Finally it returns the last word before '('."
          (fqcn-package (reverse (cdr reverse-fqcn-list))))
 
     (and
-     (cl-every (lambda (x y) (s-prefix-p x y)) (idee/-java-camelcase-split canidate-class-name) (idee/-java-camelcase-split fqcn-class-name))
+     (cl-every (lambda (x y) (s-prefix-p x y)) (idee/java-camelcase-split canidate-class-name) (idee/java-camelcase-split fqcn-class-name))
      (cl-every (lambda (x y) (s-prefix-p x y)) candidate-package fqcn-package))))
 
-(defun idee/-java-camelcase-split (s)
+(defun idee/java-camelcase-split (s)
   "Splits a camel case S into a list of strings."
   (let ((case-fold-search nil))
     (seq-filter

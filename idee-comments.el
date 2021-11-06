@@ -88,8 +88,8 @@
     (let* ((style (idee/comment-style-of-buffer))
            (prefix (idee/comment-style-line-prefix style))
            ;;(line (thing-at-point 'line t))
-           (begin (idee/-point-beginning-of-line))
-           (end (idee/-point-end-of-line))
+           (begin (idee/point-beginning-of-line))
+           (end (idee/point-end-of-line))
            (line (buffer-substring begin end)))
       (string-match (format "^[[:space:]]*%s" prefix) line)))
 

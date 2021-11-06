@@ -170,7 +170,7 @@
                                              ((bufferp pred) (equal (buffer-name pred) (buffer-name b)))
                                              (t nil)))) (buffer-list))))
 
-(defun idee/-item-to-kind (item)
+(defun idee/item-to-kind (item)
   "Convert an ITEM to its kind."
   (cond
    ((listp item) "list")
@@ -189,14 +189,14 @@
     (url-retrieve url callback)))
 
 ;;;###autoload
-(defun idee/-point-beginning-of-line()
+(defun idee/point-beginning-of-line()
   "Return the point of the beginning of the current line."
   (save-excursion
     (beginning-of-line)
     (point)))
 
 ;;;###autoload
-(defun idee/-point-end-of-line()
+(defun idee/point-end-of-line()
   "Return the point of the end of the current line."
   (save-excursion
     (end-of-line)

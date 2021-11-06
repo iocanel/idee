@@ -93,7 +93,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
   (dired idee/spring-extract-dir)))
 
 ;;;###autoload
-(defun idee/-spring-init ()
+(defun idee/spring-init ()
   (idee/project-factory-register idee/spring-starter-project-factory))
 
 (provide 'idee-spring)
