@@ -55,7 +55,6 @@
        (replace-region-contents  start end (lambda () (format "%s" value)))))
     (buffer-substring-no-properties (point-min) (point-max))))
 
-;;;###autoload 
 (defun idee/archetype-register (archetype)
   "Register a ARCHETYPE."
   (setq idee/archetype-list (delq archetype idee/archetype-list))
@@ -67,15 +66,16 @@
                                              (mapcar 'idee/archetype-entry idee/archetype-list))))
     (car (seq-filter
           (lambda (a)
-            (equal archetype (idee/-archetype-entry a))) idee/archetype-list))))
+            (equal archetype (idee/archetype-entry a))) idee/archetype-list))))
 
 (defun idee/archetype-entry (f)
   "Create an entry for the specified project factory F."
   (concat (idee/archetype-name f) " - " (idee/archetype-description f)))
 
+;;;###autoload 
 (defun idee/archetype-run()
   (interactive)
-  (let* ((archetype (idee/-select-archetype))
+  (let* ((archetype (idee/archetype-select))
          (func (idee/archetype-func archetype)))
     (when archetype (funcall func))))
 

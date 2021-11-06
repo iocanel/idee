@@ -29,19 +29,51 @@ Unified way to perform IDEE/like tasks across multiple languages and frameworks 
      - projectile-grep
      - helm-ag
 
+** Experimental features       
+   - Archetypes
+
 ** Installation
 
 This project is not available on any emacs package repository so you will either have to install it manually, or using something like [[https://github.com/raxod502/straight.el][straight-use-package]]:
+
 #+begin_src emacs-lisp
   (use-package idee :straight (idee :host github :repo "iocanel/idee") :config (idee/init))
+#+end_src
 
-#+end_src
-    Using `use-package` you can enable additional modules, for example:
+This will load all `el` files included in the project. Alternatively, you can trim down the list of `el` files to load. For example:
+
 #+begin_src emacs-lisp
-  (use-package idee/java :straight (idee :host github :repo "iocanel/idee") :config (idee/java-init))
-  (use-package idee/javascript :straight (idee :host github :repo "iocanel/idee") :config (idee/javascript-init))
-  (use-package idee/golang :straight (idee :host github :repo "iocanel/idee") :config (idee/golang-init))
+(use-package idee
+  :defer t
+  :straight (idee :host github :repo "iocanel/idee" :files ("idee.el"
+                                                            "idee-utils.el"
+                                                            "idee-vars.el"
+                                                            "idee-actions.el"
+                                                            "idee-comments.el"
+                                                            "idee-headers.el"
+                                                            "idee-navigation.el"
+                                                            "idee-views.el"
+                                                            "idee-hydra.el"
+                                                            "idee-treemacs.el"
+                                                            "idee-projects.el"
+                                                            "idee-templates.el"
+                                                            "idee-eshell.el"
+                                                            "idee-vterm.el"
+                                                            "idee-visitors.el"
+                                                            "idee-arch.el"
+                                                            "idee-yml.el"))
 #+end_src
+
+    Using `use-package` you can enable additional modules in a similar mannner, for example:
+
+#+begin_src emacs-lisp
+  (use-package idee-java :straight (idee-java :host github :repo "iocanel/idee" :files ("idee-java.el" "idee-java-utils.el" "idee-lsp-java.el" "idee-jshell.el" "idee-maven.el" "idee-spring.el" "idee-quarkus.el"))
+  (use-package idee/javascript :straight (idee :host github :repo "iocanel/idee" :files ("idee-javascript.el") :config (idee/javascript-init))
+  (use-package idee/golang :straight (idee :host github :repo "iocanel/idee": files ("idee-golang.el") :config (idee/golang-init))
+#+end_src
+
+It's up to the user to decide how to slice and dice.
+Feel free to check my [[https://github.com/iocanel/emacs.d/blob/master/+ide.el][emacs ide settings]] for inspiration.
 
 *** Installing required resources
 The first time idee gets installed it needs to install
@@ -187,3 +219,41 @@ Being able to easily repeat any previously executed maven command is even cooler
 
 The maven hydra can be called via `idee/maven-hydra/body`.
 
+
+* Experimental features
+  
+** Archetypes
+
+   An archetype is a bundle of multiple templates + orchestration code for the purpose of code generation, that can help you boost your productivity. It's inspired by JBuilder's archeology feature, which was pretty similar to maven archetypes but on steroids.
+   In this implementation, an archtype is an elisp command, which may or may not prompt for user input and controls code generation, which is of course based on templates.
+
+*** An archetype for Java annotation processors
+
+    Imagine that we want to create an archetype for creating a java annotation and its processors. A processor requires a class file and an entry inside `src/main/resources/META-INF/services/javax.annotation.processing.Processor`.
+    So, the archetype needs to create two files (the annotation and the processor) and update another (to register the processor).
+   
+    #+begin_src emacs-lisp
+      (defun create-java-annotation-and-processor ()
+        "A simple java annotation and annotation processor archetype."
+        (interactive)
+        (let* ((current-fqcn (idee/java-fqcn-of (buffer-file-name)))
+               (current-pkg (idee/java-package-of (buffer-file-name)))
+               (fqcn (read-string "Annotation processor fully qualified class name:" current-pkg)))
+          (idee/java-archetype-create-class fqcn "annotation")
+          (idee/java-archetype-create-class (concat fqcn "Processor") "apt")
+          (idee/java-register-spi "javax.annotation.processing.Processor" fqcn)))
+    #+end_src
+
+    *Note*: both [[./templates/java-mode/annotation][annotation]] and [[./templates/java-mode/apt][apt]] templates are provided.
+
+    The archtype function can be called directly via `(create-java-annotation-and-processor)` or you can register it to the archetype catalog using:
+
+    #+begin_src emacs-lisp
+      (idee-archetype-register
+       (make-idee-archetype
+        :name "Java Annotation and Processor"
+        :description "A java annotation and a java annotation processor"
+        :func 'create-java-annotation-and-processor))
+    #+end_src
+
+    

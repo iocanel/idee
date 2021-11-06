@@ -146,6 +146,16 @@ The target module will be the current, unless BASE-PATH has been specified, in w
   (let ((fqcn (read-string "Fully qualified class name:")))
     (idee/java-archetype-create-class fqcn "abstract-factory")))
 
+(defun idee/java-archetype-annotation-processor ()
+       "A simple java annotation and annotation processor archetype."
+       (interactive)
+       (let* ((current-fqcn (idee/java-fqcn-of (buffer-file-name)))
+              (current-pkg (idee/java-package-of (buffer-file-name)))
+              (fqcn (read-string "Annotation processor qualified class name:" current-pkg)))
+         (idee/java-archetype-create-class fqcn "annotation")
+         (idee/java-archetype-create-class (concat fqcn "Processor") "apt")
+         (idee/java-register-spi "javax.annotation.processing.Processor" fqcn)))
+
 ;;
 ;; Snippets
 ;;
@@ -220,6 +230,12 @@ The target module will be the current, unless BASE-PATH has been specified, in w
     :name "Java Abstract Factory"
     :description "A simple java abstract factory"
     :func 'idee/java-archetype-abstract-factory))
+
+ (idee/archetype-register
+  (make-idee/archetype
+   :name "Java Annotation and Processor"
+   :description "A java annotation and a java annotation processor"
+   :func 'idee/java-archetype-annotation-processor))
 
   ;;; Hook
   (add-hook 'java-mode-hook 'idee/java-enable)
