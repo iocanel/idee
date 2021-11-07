@@ -64,18 +64,19 @@
 
 (defun idee/project-root-dir (&optional f)
   "Find the directory of the module that owns the source file F."
-  (let ((current-dir (f-full (if f f default-directory))))
-    (while (not (idee/project-root-dir-p current-dir))
-      (setq current-dir (idee/parent-dir current-dir)))
-    current-dir))
-
+  (let* ((current-dir (f-full (if f f default-directory)))
+        (parent-dir (idee/parent-dir current-dir)))
+    (cond ((equal "/" current-dir) nil)
+          ((not parent-dir) nil)
+          ((idee/project-root-dir-p current-dir) current-dir)
+          (:default (idee/project-root-dir parent-dir)))))
+           
 (defun idee/project-root-dir-p (f)
   "Return non-nil if F is a module directory."
   (cond
    ((seq-filter 'file-exists-p (seq-map (lambda (p) (concat f p)) idee/project-root-markers)) t)
    ((and (idee/module-root-dir-p f) (not (idee/module-root-dir-p (idee/parent-dir f)))) t)
    (t nil)))
-
 
 (defun idee/module-root-dir (&optional f)
   "Find the directory of the module that owns the source file F."
@@ -116,7 +117,7 @@
     (make-directory path t)
     (setq default-directory path)
     (shell-command "git init")
-    (shell-command "touch .projectile")
+    ;;(shell-command "touch .projectile")
     (idee/jump-to-non-idee/window)
     (projectile-add-known-project path)
     (setq projectile-project-root path)
@@ -124,6 +125,8 @@
     (delete-other-windows-internal)
     (dired path)
     (auto-revert-mode 1)
+    ;; So tools don't work great when files exist in the repo (e.g. npm)
+    ;; To work around this, let's delete .projectile and recreate it afterwards.
     (dolist (c commands)
       (idee/shell-command-execute-in-project c))
     (idee/jump-to-non-idee/window)))
@@ -196,8 +199,8 @@
                  (kill-buffer name))))))))
 
 (defun idee/project-create (&optional path)
-  (interactive)
   "Initialize project."
+  (interactive)
   (let* ((path (or path (or (projectile-project-root) default-directory)))
          (name (or (projectile-project-name)  (file-name-nondirectory (directory-file-name path))))
          (info (alist-get (intern name) idee/project-info-alist)))
@@ -257,7 +260,7 @@
 ;;
 (defun idee/project-initialize ()
   "Initialize ide project.
-   When called this function will look at the project root for an elisp script called .idee/init.el and will load it if present."
+When called this function will look at the project root for an elisp script called .idee/init.el and will load it if present."
   (interactive)
   (let* ((root-dir (idee/project-root-dir (buffer-file-name)))
          (conf-dir (concat (file-name-as-directory root-dir) idee/project-conf-dir))
