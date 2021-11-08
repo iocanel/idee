@@ -753,4 +753,4 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
   (idee/visitor-register 'idee/maven-visitor))
 
 (provide 'idee-maven)
-;; idee-maven.el ends here
+;;; idee-maven.el ends here

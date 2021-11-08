@@ -114,4 +114,4 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
   (add-hook 'typescirpt-mode-hook 'idee/javascript-hook))
 
 (provide 'idee-javascript)
-;; idee-javascript.el ends here
+;;; idee-javascript.el ends here

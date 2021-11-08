@@ -52,4 +52,4 @@
 (when (require 'counsel nil t) (advice-add 'counsel-compilation-errors-cands :filter-return #'idee/error-filter))
 
 (provide 'idee-counsel)
-;; idee-counsel.el ends here
+;;; idee-counsel.el ends here

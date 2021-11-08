@@ -106,4 +106,4 @@ before starting the debug process."
 (ad-activate 'dap--go-to-stack-frame)
 
 (provide 'idee-dap)
-;; idee-dap.el ends here
+;;; idee-dap.el ends here

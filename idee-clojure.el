@@ -81,4 +81,4 @@
   (idee/visitor-register 'idee/clojure-visitor))
 
 (provide 'idee-clojure)
-;; idee-clojure.el ends here
+;;; idee-clojure.el ends here

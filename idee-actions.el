@@ -265,4 +265,4 @@
         (mapc (lambda (l) (when (not (idee/string-blank l)) (idee/shell-command-execute-in-project l))) (split-string content "\n"))))))
 
 (provide 'idee-actions)
-;; idee-actions.el ends here
+;;; idee-actions.el ends here

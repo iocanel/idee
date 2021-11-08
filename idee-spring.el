@@ -97,4 +97,4 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
   (idee/project-factory-register idee/spring-starter-project-factory))
 
 (provide 'idee-spring)
-;; idee-spring.el ends here
+;;; idee-spring.el ends here
