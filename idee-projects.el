@@ -57,10 +57,12 @@
         (other-window 1)))))
 
 
-;;;###autoload (autoload 'idee/project-factory-register "idee-projects")
-(defmacro idee/project-factory-register (project-factory)
+;;;###autoload
+(defun idee/project-factory-register (project-factory)
   "Register a PROJECT-FACTORY."
-  (list 'push project-factory 'idee/project-factories-list))
+  (when (not (member (idee/project-factory-name project-factory) (mapcar 'idee/project-factory-name idee/project-factories-list)))
+    (setq idee/function-alist (delq (assoc 'idee/mode-tab-width-function idee/function-alist) idee/function-alist))
+    (add-to-list 'idee/project-factories-list project-factory)))
 
 (defun idee/project-root-dir (&optional f)
   "Find the directory of the module that owns the source file F."
