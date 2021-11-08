@@ -453,7 +453,7 @@
 (defun idee/maven-exec-from-history ()
   "Prompt the user to execute previous maven build from history."
   (interactive)
-  (let ((maven-command (completing-read "Maven command:" idee/maven-exec-history)))
+  (let ((maven-command (completing-read "Maven command:" (delete-dups idee/maven-exec-history))))
     (idee/shell-command-execute-in-project maven-command t)))
 
 
@@ -530,7 +530,8 @@
   "Build the current maven module."
   (interactive)
   (let ((cmd (idee/maven-cmd :goals goals :debug debug :surefire-debug surefire-debug :failsafe-debug failsafe-debug :build-scope build-scope :also-make also-make)))
-    (push cmd idee/maven-exec-history)
+    (when (not (member cmd idee/maven-exec-history))
+      (push cmd idee/maven-exec-history))
     (idee/shell-command-execute-in-project cmd t)))
 
 ;;; Toggles
