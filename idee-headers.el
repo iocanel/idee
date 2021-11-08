@@ -61,6 +61,7 @@
   (interactive)
   (let* ((headers (directory-files idee/emacs-headers-dir))
         (kind (projectile-completing-read "Select header:" headers)))
+    (setq idee/header-selected-kind kind)
     (setq idee/header-current (idee/read-and-eval-template (concat (file-name-as-directory idee/emacs-headers-dir) kind)))))
 
 ;;;###autoload
