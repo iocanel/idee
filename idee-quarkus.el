@@ -136,7 +136,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
 (defun idee/quarkus-init-maven-project-settings ()
   "Initialize project with project settings."
   (interactive)
-  (let* ((settings-dir (f-join default-directory ".ide"))
+  (let* ((settings-dir (f-join default-directory ".idee"))
          (maven-settings-file (f-join settings-dir "maven.el")))
     (if (not (file-exists-p settings-dir))
         (mkdir settings-dir))
