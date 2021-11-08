@@ -136,13 +136,13 @@ This is functionality already provided by existing plugins, so this plugin was m
 
 *** How it works?
 
-    When a new file is created, the plugin checks the file extension and detects the corresponding major mode that is going to be used.
+    When a new file is created `(via (idee/new-file)`, the plugin checks the file extension and detects the corresponding major mode that is going to be used.
     Then it searches for the target major mode, all available file templates that are found under <template dir>/<major mode>.
     A list of all available templates is provided to the user and after the user selected a new file based on the template is created.
 
-    For example for java files, the list of available templates can be: ("class", "annotation", "enum", "interface").
+    For example for java files, the list of available templates can be: ("class", "annotation", "enum", "interface", "junit5" etc).
 
-   [[./doc/images/idee-file-templates.png]] 
+   [[./doc/images/idee-file-templates-junit.gif]] 
     
 ** File header management
 
@@ -151,7 +151,7 @@ This is functionality already provided by existing plugins, so this plugin was m
 
    This project introduces the idea of `global license header repository` that its a folder that users can store multiple different header profiles, which can then be selected per project.
 
-   [[./doc/images/idee-select-header.png]]
+   [[./doc/images/idee-header-select-and-apply.gif]]
    
    Regardless, of how you specify the header of choice, you can add a call to `idee/header` in your file template, so that all new files create contain the header. 
   
@@ -176,7 +176,7 @@ This is functionality already provided by existing plugins, so this plugin was m
 
     A simple project factory that uses https://start.spring.io to scaffold a new project.
     
-    [[./doc/images/idee-spring-project-factory-1.png]]
+    [[./doc/images/idee-create-project-spring.gif]]
     
     The factory prompts the user to select from a list of:
 
@@ -211,11 +211,11 @@ These profiles will be automatically used for all maven operations triggered thr
 Being able to execute the last maven command, using a short cut is cool.
 Being able to easily repeat any previously executed maven command is even cooler.
 
-[[./doc/images-maven-history.png]]
+[[./doc/images-maven-from-history.gif]]
 
 *** Maven hydra
 
-[[./doc/images/maven-hydra.png]]
+[[./doc/images/idee-maven-hydra.gif]]
 
 The maven hydra can be called via `idee/maven-hydra/body`.
 
