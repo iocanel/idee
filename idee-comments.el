@@ -69,7 +69,6 @@
             (goto-char (- current (length block-ending)))
             (setq end (search-forward block-ending nil t))
             (setq begin (search-backward block-beginning nil t))
-            (message (format "detecting region %s %s." begin end))
             (if end
                 (progn
                   (goto-char end)
@@ -114,4 +113,4 @@
         (idee/line-commented-or-empty-p)))))
 
 (provide 'idee-comments)
-;; idee-comments.el ends here
+;;; idee-comments.el ends here
