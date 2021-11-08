@@ -38,14 +38,14 @@
 (defcustom idee/repo-url "git@github.com:iocanel/idee.git" "The repository url of the ide project." :group 'ide :type 'string)
 
 (defun idee/resources-install ()
-  (interactive)
   "Initialize ide resources."
+  (interactive)
   (idee/git-checkout idee/repo-url idee/resources-dir '("headers" "templates" "snippets")))
 
 ;;;###autoload
-(defun idee/setup ()
+(defun idee/init ()
+  "Initialize idee."
   (interactive)
-  "Initialize ide"
   (idee/project-init)
   (idee/template-init)
   (idee/header-init)

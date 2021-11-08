@@ -23,7 +23,7 @@
 (require 'projectile)
 (require 'idee-vars)
 
-;;;###autoload (autoload 'idee/visitor-register "idee-visitors")
+;;;###autoload
 (defmacro idee/visitor-register (visitor)
   "Register a VISITOR."
   (list 'push  visitor 'idee/list-visitor))

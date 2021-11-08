@@ -39,7 +39,7 @@
 
 (defcustom idee/focus-center-buffer t "Flag to specify that the focus buffer needs to be centered." :group 'idee/view :type 'boolean) 
 (defcustom idee/focus-center-buffer-columns 160 "The number of columns of the centered buffer." :group 'idee/view :type 'int) 
-(defcustom idee/display-buffer-enabled nil "Enabled management of display-buffer-alist." :group 'idee/view :type 'boolean) 
+(defcustom idee/display-buffer-setup-enabled nil "Enabled management of display-buffer-alist." :group 'idee/view :type 'boolean) 
 (defcustom idee/popper-enabled nil "Enabled popper." :group 'idee/view :type 'boolean) 
 
 (defvar idee/tree-enabled idee/tree-enabled-default)
@@ -495,8 +495,8 @@ PIVOT indicates how many windows should be switched at the end of the operation.
   (seq-filter (lambda (s) (and (stringp s) (idee/contains-string s str))) (mapcar (lambda (e) (car e)) display-buffer-alist)))
 
 (defun idee/views-init ()
-  "Setup views"
-  (when idee/display-buffer-enabled
+  "Setup `display-buffer-alist`."
+  (when idee/display-buffer-setup-enabled
     (when (and idee/popper-enabled (boundp  'popper-display-control-p))
       (setq display-buffer-alist (add-to-list 'display-buffer-alist `(popper-display-control-p (`popper-display-function)))))
 
@@ -528,7 +528,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
       (setq display-buffer-alist (add-to-list 'display-buffer-alist 
                                               `("\\*\\(Async [s\\|S]hell [c\\|C]ommand.*\\|eshell.*\\|shell.*\\|vterm.*\\|helm-ag\\|helm-ag-edit\\|xref\\|.*compilation\\)\\*"
                                                 (display-buffer-in-side-window)
-                                                (window-height . 0.20)
+                                                (window-height . 0.30)
                                                 (side . bottom)
                                                 (slot . 0)))))
 
@@ -565,4 +565,4 @@ PIVOT indicates how many windows should be switched at the end of the operation.
                                                 (slot . 2)))))))
 
 (provide 'idee-views)
-;; idee-views.el ends here
+;;; idee-views.el ends here
