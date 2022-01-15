@@ -33,10 +33,17 @@
   (interactive)
 
   ;; Clear functions
+  (setq idee/function-alist (delq (assoc 'idee/refernces-function idee/function-alist) idee/function-alist))
+  (setq idee/function-alist (delq (assoc 'idee/declaration-function idee/function-alist) idee/function-alist))
+  (setq idee/function-alist (delq (assoc 'idee/implementation-function idee/function-alist) idee/function-alist))
   (setq idee/function-alist (delq (assoc 'idee/execute-code-actions-function idee/function-alist) idee/function-alist))
 
   ;; Set functions
   (add-to-list 'idee/function-alist '(idee/execute-code-actions-function . idee/lsp-execute-code-actions)))
+  (add-to-list 'idee/function-alist '(idee/references-function . lsp-find-references))
+  (add-to-list 'idee/function-alist '(idee/declaration-function . lsp-find-definition))
+  (add-to-list 'idee/function-alist '(idee/implementation-function . lsp-find-implementation))
+ 
 (defun idee/lsp-execute-code-actions ()
 
   "Execute code actions."
