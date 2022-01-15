@@ -26,6 +26,8 @@
 (require 'json)
 (require 'tide)
 (require 'flycheck)
+(require 'idee-projects)
+(require 'idee-visitors)
 
 (defconst package-json "package.json")
 (defconst jsconfig-json "jsconfig.json")
