@@ -498,7 +498,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
   "Setup `display-buffer-alist`."
   (when idee/display-buffer-setup-enabled
     (when (and idee/popper-enabled (boundp  'popper-display-control-p))
-      (setq display-buffer-alist (add-to-list 'display-buffer-alist `(popper-display-control-p (`popper-display-function)))))
+      (setq display-buffer-alist (add-to-list 'display-buffer-alist `(popper-display-control-p (`popper-display-function))))
 
     (when (not (idee/display-buffer-alist-contains "*undo-tree"))
       (setq display-buffer-alist (add-to-list 'display-buffer-alist 
@@ -528,7 +528,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
       (setq display-buffer-alist (add-to-list 'display-buffer-alist 
                                               `("\\*\\(Async [s\\|S]hell [c\\|C]ommand.*\\|eshell.*\\|shell.*\\|vterm.*\\|helm-ag\\|helm-ag-edit\\|xref\\|.*compilation\\)\\*"
                                                 (display-buffer-in-side-window)
-                                                (window-height . 0.30)
+                                                (window-height . 0.40)
                                                 (side . bottom)
                                                 (slot . 0)))))
 
@@ -562,7 +562,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
                                                 (display-buffer-in-side-window)
                                                 (window-height . 0.20)
                                                 (side . bottom)
-                                                (slot . 2)))))))
+                                                (slot . 2))))))))
 
 (provide 'idee-views)
 ;;; idee-views.el ends here
