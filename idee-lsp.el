@@ -63,11 +63,12 @@
     (when workspace-dir
       (make-directory workspace-dir t)
       (message (format "Using LSP workspace: %s." workspace-dir))
+      (setq lsp-session-file (f-join workspace-dir ".lsp-session-v1"))
+      (message "Setting lsp session file: %s" lsp-session-file)
       (dolist (element idee/lsp-before-workspace-restart-hook)
         (funcall element workspace-dir)))
 
     (when workspace
-      (setq lsp-session-file (f-join workspace ".lsp-session-v1"))
       (when (lsp-workspaces) (lsp-workspace-restart workspace)))))
 
 (defun idee/lsp-get-current-workspace ()
