@@ -32,6 +32,8 @@
 
 (defvar idee/header-selected-kind nil "The kind of header currently selcted.")
 
+(defvar idee/header "" "The header to add to files.")
+
 ;;
 ;; Functions
 ;; 
