@@ -1,0 +1,20 @@
+# name: React custom datasource hook
+# key: rcrhook
+# --
+`idee/header`
+import { useState, useEffect } from 'react';
+
+export use${1:DataSource} = get{2:$(idee/capitalize-first yas-text)}Func => {
+    const [${2:resource}, set${2:$(idee/capitalize-first yas-text)}] = useState(null);
+
+    useEffect(() => {
+        (async () => {
+               const response = await get{2:$(idee/capitalize-first yas-text)}Func()
+               set${2:$(idee/capitalize-first yas-text)}(response.data);
+        })();
+    }, [get{2:$(idee/capitalize-first yas-text)}Func]);
+
+   return $2;
+
+}
+$0

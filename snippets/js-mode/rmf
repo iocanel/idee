@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: Remove Factory
+# key: rmf
+# --
+
+export const remove${1:$(idee/capitalize-first yas-text)}By${2:$(idee/capitalize-first yas-text)}Factory = ([state, func]) => {
+    return (${2:id}) => {
+        return func(state.filter(${1:item}.$2 !== $2));
+    }
+}

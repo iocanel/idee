@@ -65,4 +65,4 @@
    (should (file-exists-p ".idee/templates/java-mode/template")))))
 
 (provide 'idee-java-test)
-;; idee-java-test.el ends here
+;;; idee-java-test.el ends here

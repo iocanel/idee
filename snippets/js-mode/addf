@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: Add Factory
+# key: addf
+# --
+
+export const add${1:$$(idee/capitalize-first yas-text)}Factory = ([state, func]) => {
+    return (new$1) => {
+        return func([...state, new$1]);
+    }
+}

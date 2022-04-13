@@ -26,6 +26,10 @@
 ;; File funtcionts
 ;;
 
+(defun idee/filename (&optional F)
+  "Return the filename for the F or the current file (strips path and extension)."
+  (file-name-nondirectory (file-name-sans-extension (or f (buffer-file-name)))))
+
 ;;;###autoload
 (defun idee/read-file (f)
   "Read the content of file F."

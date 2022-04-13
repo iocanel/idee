@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: Recoil atom
+# key: ratom
+# --
+
+export const ${1:items}State = atom({
+  key: '$1', 
+  default: [], 
+});

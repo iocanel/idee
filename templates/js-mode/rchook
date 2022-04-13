@@ -1,0 +1,22 @@
+# name: React custom hook
+# key: rchook
+# --
+`idee/header`
+import { useState, useEffect } from 'react';
+
+//Custom hook for ${1:resource}
+export use${1:$(idee/capitalize-first yas-text)} = ${2:$1Id} => {
+    const [$1, set${1:$(idee/capitalize-first yas-text)}] = useState(null);
+
+    useEffect(() => {
+        (async () => {
+          fetch('/${3:$1/$2}')
+              .then(response => response.json())
+              .then(data =>set${1:$(idee/capitalize-first yas-text)}(data))
+        })();
+    }, [$1Id]);
+
+   return $1;
+
+}
+$0

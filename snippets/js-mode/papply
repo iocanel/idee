@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: Partially apply
+# key: papply
+# --
+export const ${1:partiallyApply} = (Component, ${2:partialProps}) => {
+    return props => {
+           <Component {...$2} {...props} />
+    }
+}

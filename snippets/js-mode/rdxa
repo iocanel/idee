@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: redux action
+# key: rdxa 
+# --
+export const ${1:$(upcase (replace-regexp-in-string "[^a-zA-z0-9]+" "_" yas-text))} = "${1:$$(upcase (replace-regexp-in-string "[^a-zA-z0-9]+" "_" yas-text))}";
+export const ${1:$(replace-regexp-in-string "[^a-zA-Z0-9]" "" (replace-regexp-in-string "[^a-zA-Z0-9][a-zA-Z0-9]" #'upcase (downcase yas-text)))} = ${2:text} => ({
+       type: ${1:$(upcase (replace-regexp-in-string "[^a-zA-z0-9]+" "_" yas-text))},
+       payload: { $2 },
+       $0 
+})

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: constant
+# key: cons 
+# --
+export const ${1:$(upcase (replace-regexp-in-string "[^a-zA-z0-9]+" "_" yas-text))} = "${1:constant}";
+$0

@@ -32,4 +32,4 @@
    (f-mkdir ".git")
    (should (not (idee/javascript-project-p (f-full root-sandbox-path))))))
 (provide 'idee-projects-test)
-;; idee-projects-test.el ends here
+;;; idee-projects-test.el ends here

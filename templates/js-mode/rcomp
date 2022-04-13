@@ -6,8 +6,6 @@ import './`(idee/filename)`.css';
 import React from 'react';
 
 
-function `(idee/filename)`({ greeting }) {
+export const `(idee/filename)` = ({ greeting }) => {
     return <h1>{greeting} World</h1>
 }
-
-export default `(idee/filename)`;

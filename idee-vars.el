@@ -35,7 +35,7 @@
                                 ("md" . "markdown-mode")
                                 ("java" . "java-mode")
                                 ("json" . "json-mode")
-                                ("js" . "js2-mode")
+                                ("js" . "js-mode")
                                 ("ts" . "typescript-mode")
                                 ("py" . "python-mode")
                                 ("go" . "go-mode")
