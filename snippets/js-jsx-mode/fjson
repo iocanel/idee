@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Fetch JSON 
+# key: fjson
+# --
+fetch('${1:./data.json}')
+    .then(response => response.json())
+    .then(data => set${2:Data)(data)$0

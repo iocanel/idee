@@ -207,8 +207,10 @@
 ;;;###autoload
 (defun idee/set-tab-width ()
   "Set the tab width."
-  (funcall  (alist-get 'idee/mode-tab-width-function idee/function-alist) idee/tab-width)
-  (message (format "Indentation spaces: %s" idee/tab-width)))
+  (let ((f (alist-get 'idee/mode-tab-width-function idee/function-alist)))
+    (if f
+        (funcall f idee/tab-width)
+      (idee/global-set-tab-width-function idee/tab-width))))
 
 ;;;###autoload
 (defun idee/global-set-tab-width-function (width)

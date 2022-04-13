@@ -1,0 +1,13 @@
+# name: React component
+# key: rcomp
+# --
+`idee/header`
+import './`(idee/filename)`.css';
+import React from 'react';
+
+
+function `(idee/filename)`({ greeting }) {
+    return <h1>{greeting} World</h1>
+}
+
+export default `(idee/filename)`;
