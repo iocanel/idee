@@ -82,10 +82,13 @@
 
 (defun idee/module-root-dir (&optional f)
   "Find the directory of the module that owns the source file F."
-  (let ((current-dir (f-full (if f f default-directory))))
-    (while (not (idee/module-root-dir-p current-dir))
-      (setq current-dir (idee/parent-dir current-dir)))
-    current-dir))
+  (let* ((current-dir (f-full (if f f default-directory)))
+        (parent-dir (idee/parent-dir current-dir)))
+    (cond ((equal "/" current-dir) nil)
+          ((not parent-dir) nil)
+          ((idee/module-root-dir-p current-dir) current-dir)
+          ((idee/project-root-dir-p current-dir) current-dir)
+          (:default (idee/module-root-dir parent-dir)))))
 
 (defun idee/module-root-dir-p (f)
   "Return non-nil if F is a module directory."
@@ -115,11 +118,10 @@
 
 (defun idee/project-create-with-shell (path &rest commands)
   "Create a new project with in the specified PATH and the specified COMMANDS."
-  (let ((dired-auto-revert-buffer t))
+  (let ((dired-auto-revert-buffer t)
+        (default-directory path))
     (make-directory path t)
-    (setq default-directory path)
     (shell-command "git init")
-    ;;(shell-command "touch .projectile")
     (idee/jump-to-non-idee/window)
     (projectile-add-known-project path)
     (setq projectile-project-root path)

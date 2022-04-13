@@ -163,4 +163,4 @@
   (add-to-list 'yas-snippet-dirs idee/emacs-snippets-dir))
 
 (provide 'idee-templates)
-;; idee-templates.el ends here
+;;; idee-templates.el ends here

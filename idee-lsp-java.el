@@ -63,7 +63,7 @@
   (add-to-list 'idee/function-alist '(idee/implementation-function . lsp-find-implementation))
   (add-to-list 'idee/function-alist '(idee/optimize-imports-function . lsp-java-organize-imports)))
 
-(defun idee/lsp-java-on-save-buffer()
+(defun idee/lsp-java-on-save-buffer(&rest args)
   "Save buffer handler."
   (when (and (buffer-file-name) (equal "pom.xml" (file-name-nondirectory (buffer-file-name))))
     (ignore-errors
@@ -100,4 +100,4 @@
   (add-hook 'idee/lsp-before-workspace-restart-hook 'idee/lsp-java-switch-workspace))
 
 (provide 'idee-lsp-java)
-;; idee-lsp-java.el ends here
+;;; idee-lsp-java.el ends here

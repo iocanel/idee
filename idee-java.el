@@ -85,7 +85,7 @@
           (comint-send-string new-jshell-process-name "jshell\n"))))))
 
 (defun idee/java-visit-file(&optional f)
-  "Enable java bindings."
+  "Enable java bindings for file F."
   (when (idee/java-source-p (or f (buffer-file-name)))
     (let* ((package (idee/java-package-of default-directory))
            (classname (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))))
@@ -196,6 +196,10 @@ The target module will be the current, unless BASE-PATH has been specified, in w
                                                                    (replace-regexp-in-string (regexp-quote class-name) idee/java-snippet-class-name content t) t))))
           updated))))
 
+(defun idee/filename ()
+  "Return the name for the current file."
+  (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))
+
 ;;; Visitor
 (defun idee/java-project-p (root)
   "Check if ROOT is the root path of a java project."
@@ -211,8 +215,8 @@ The target module will be the current, unless BASE-PATH has been specified, in w
 
 ;;;###autoload
 (defun idee/java-init ()
-  (interactive)
   "Initialize java."
+  (interactive)
   ;; Dependencies
   (idee/lsp-java-init)
   (idee/maven-init)
@@ -244,4 +248,4 @@ The target module will be the current, unless BASE-PATH has been specified, in w
   (advice-add 'projectile-switch-to-buffer :after #'idee/java-visit-file))
 
 (provide 'idee-java)
-;; idee-java.el ends here
+;;; idee-java.el ends here

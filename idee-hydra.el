@@ -91,9 +91,9 @@
   (let ((name (idee/project-name-get)))
     (if name (intern name) (intern "_"))))
 
-(defun idee/hydra--sidee/by-sidee/flag ()
+(defun idee/hydra--side-by-side-flag ()
   "Visual represntation of the side by side visibility."
-  (if (idee/sidee/by-sidee/visible-p) (intern "*") (intern "_")))
+  (if (idee/side-by-side-visible-p) (intern "*") (intern "_")))
 
 (defun idee/hydra--diagnostics-flag ()
   "Visual represntation of the diagnostics visibility."
@@ -111,15 +111,15 @@
   "Visual represntation of the eww visibility."
   (if (idee/eww-visible-p) (intern "*") (intern "_")))
 
-(defun idee/hydra--sidee/by-sidee/buffer ()
+(defun idee/hydra--side-by-side-buffer ()
   "Visual represntation of the side by side visibility."
-  (let* ((name idee/sidee/by-sidee/buffer)
+  (let* ((name idee/side-by-side-buffer)
          (stripped (if name (substring name 6 (- (length name) 1)) "*")))
     (intern stripped)))
 
 (defun idee/hydra--repl-kind ()
   "Visual represntation of the side by side visibility."
-    (if (and idee/repl-kind (idee/sidee/by-sidee/visible-p)) (intern idee/repl-kind) (intern " ")))
+    (if (and idee/repl-kind (idee/side-by-side-visible-p)) (intern idee/repl-kind) (intern " ")))
 
 (defun idee/hydra--selected-header-kind ()
   "Visual represntation of the side by side visibility."
@@ -156,7 +156,7 @@
    "
   ("HEADER" nil (idee/project-name-get))
   ("o" idee/open)
-  ("b" idee/open-sidee/by-side)
+  ("b" idee/open-side-by-side)
   ("p" idee/new-project)
   ("F" idee/new-file)
   ("R" idee/recent)
@@ -190,7 +190,7 @@
 
   ("0" idee/reset-view) 
   ("1" idee/terminal-view (if (idee/cli-visible-p) "[*]" "[ ]"))
-  ("2" idee/toggle-sidee/by-side (if (and idee/sidee/by-sidee/buffer (get-buffer idee/sidee/by-sidee/buffer)) (format "[*] side by side: (%s)" (idee/hydra--sidee/by-sidee/buffer)) "[ ] side by side"))
+  ("2" idee/toggle-side-by-side (if (and idee/side-by-side-buffer (get-buffer idee/side-by-side-buffer)) (format "[*] side by side: (%s)" (idee/hydra--side-by-side-buffer)) "[ ] side by side"))
   ("3" idee/toggle-repl (if (idee/repl-visible-p) "[*]" "[ ]"))
   ("t" idee/toggle-tree (if (eq (treemacs-current-visibility) 'visible) "[*]" "[ ]"))
   ("c" idee/toggle-cli (if (idee/cli-visible-p) "[*]" "[ ]"))

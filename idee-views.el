@@ -56,13 +56,13 @@
 (defvar idee/helm-ag-active nil)
 (defvar idee/eww-active nil)
 (defvar idee/xwidget-webkit-active nil)
-(defvar idee/sidee/by-sidee/active nil)
+(defvar idee/side-by-side-active nil)
 (defvar idee/bottom-buffer-command 'idee/projectile-run-eshell)
 
 
 (defvar idee/selected-window nil "The selected window. This should be selected after refresh.")
 (defvar idee/primary-buffer nil "Primary buffer")
-(defvar idee/sidee/by-sidee/buffer nil "Secondary buffer")
+(defvar idee/side-by-side-buffer nil "Secondary buffer")
 
 (defvar idee/repl-kind nil "The kind of the repl buffer. This is framework/lang specific.")
 (defvar idee/repl-buffer-prefix nil "The prefix of the repl buffer. This is framework/lang specific.")
@@ -118,8 +118,8 @@
 (defun idee/reset-view()
   "Reset the view by closing all buffers and keep the first non ide buffer available."
   (interactive)
-  (setq idee/sidee/by-sidee/buffer nil
-        idee/sidee/by-sidee/active nil)
+  (setq idee/side-by-side-buffer nil
+        idee/side-by-side-active nil)
   (idee/jump-to-non-idee/window ())
   ;; In some cases, it's better to swtich (e.g. when current bufer is a side buffer
   (when (and idee/primary-buffer (idee/idee/buffer-p (buffer-name (current-buffer)))
@@ -136,11 +136,11 @@
     (setq idee/primary-buffer (current-buffer))))
 
 
-(defun idee/open-sidee/by-side ()
+(defun idee/open-side-by-side ()
   (interactive)
   "Open a new file in the side buffer."
-  (setq idee/sidee/by-sidee/buffer nil)
-  (idee/switch-sidee/by-sidee/on))
+  (setq idee/side-by-side-buffer nil)
+  (idee/switch-side-by-side-on))
 
 ;;;###autoload
 (defun idee/terminal-view()
@@ -166,7 +166,7 @@
   "Returns non-nil when the current window display the current buffer."
   (let ((b (current-buffer))
         (w (frame-selected-window)))
-    (equal (get-buffer-window b) w)))
+    (equal (get-buffer-window b 'visible) w)))
 
 ;;;###autoload
 (defun idee/jump-to-non-idee/window(&optional visited)
@@ -301,13 +301,13 @@ VISITED is an optional list with windows already visited."
   "Return non-nil if xwidget-webkit is visible."
   (idee/xwidget-webkit-visible-window))
 
-(defun idee/sidee/by-sidee/visible-window ()
-  "Return the sidee/by-side window if visible."
-  (and idee/sidee/by-sidee/buffer (get-buffer-window idee/sidee/by-sidee/buffer 'visible)))
+(defun idee/side-by-side-visible-window ()
+  "Return the side-by-side window if visible."
+  (and idee/side-by-side-buffer (get-buffer-window idee/side-by-side-buffer 'visible)))
 
-(defun idee/sidee/by-sidee/visible-p ()
+(defun idee/side-by-side-visible-p ()
   "Return non-nil if eww is visible."
-  (idee/sidee/by-sidee/visible-window))
+  (idee/side-by-side-visible-window))
 
 ;;;###autoload
 (defun idee/region-copy-to-other-window (start end)
@@ -346,9 +346,9 @@ VISITED is an optional list with windows already visited."
 ;;
 (defun idee/ediff()
   (interactive)
-  (when (not idee/sidee/by-sidee/buffer) (idee/open-sidee/by-side))
+  (when (not idee/side-by-side-buffer) (idee/open-side-by-side))
   (let* ((left (buffer-file-name idee/primary-buffer))
-         (right (buffer-file-name (get-buffer idee/sidee/by-sidee/buffer))))
+         (right (buffer-file-name (get-buffer idee/side-by-side-buffer))))
     (ediff-files3 left right "/tmp/ediff-down")))
 
 ;; Macros
@@ -394,19 +394,19 @@ PIVOT indicates how many windows should be switched at the end of the operation.
        (if (not ,flag)
            (funcall (intern (format "idee/toggle-%s" ,name)))))))
 
-(defun idee/sidee/by-side ()
+(defun idee/side-by-side ()
   (interactive)
   "Display the side by side buffer."
-  (if (and idee/sidee/by-sidee/buffer (get-buffer idee/sidee/by-sidee/buffer))
-      (display-buffer idee/sidee/by-sidee/buffer)
+  (if (and idee/side-by-side-buffer (get-buffer idee/side-by-side-buffer))
+      (display-buffer idee/side-by-side-buffer)
     (progn
       (projectile--find-file-dwim nil 'find-file-other-window) 
       (let* ((name (buffer-name (current-buffer)))
              (actual-name (if (idee/starts-with "*side " name) (substring name 6 (- (length name)  7)) name))
-             (sidee/name (format "*side %s*" actual-name)))
-        (setq idee/sidee/by-sidee/buffer sidee/name
-              idee/sidee/by-sidee/active t)
-        (rename-buffer sidee/name)))))
+             (side-name (format "*side %s*" actual-name)))
+        (setq idee/side-by-side-buffer side-name
+              idee/side-by-side-active t)
+        (rename-buffer side-name)))))
 
 (defun idee/messages ()
   (interactive)
@@ -449,8 +449,8 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 (idee/create-view-component "eww" idee/eww idee/eww-visible-window idee/eww-active)
 ;;;###autoload (autoload 'idee/toggle-xwidget-webkit "idee-views")
 (idee/create-view-component "xwidget-webkit" idee/xwidget-webkit idee/xwidget-webkit-visible-window idee/xwidget-webkit-active)
-;;;###autoload (autoload 'idee/toggle-sidee/by-side "idee-views")
-(idee/create-view-component "sidee/by-side" idee/sidee/by-side  idee/sidee/by-sidee/visible-window idee/sidee/by-sidee/active)
+;;;###autoload (autoload 'idee/toggle-side-by-side "idee-views")
+(idee/create-view-component "side-by-side" idee/side-by-side  idee/side-by-side-visible-window idee/side-by-side-active)
 
 ;;
 ;; Repl
