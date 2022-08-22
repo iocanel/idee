@@ -1,4 +1,4 @@
-;;; idee-projects.el --- Project Factories -*- lexical-binding: t -*-
+;; idee-projects.el --- Project Factories -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018 Ioannis Canellos
 ;;     
@@ -279,4 +279,3 @@ When called this function will look at the project root for an elisp script call
 
 (provide 'idee-projects)
 ;;; idee-projects.el ends here
-
