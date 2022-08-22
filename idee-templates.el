@@ -1,4 +1,4 @@
-;; idee-templates.el --- Emacs IDE - File templates.
+;; idee-templates.el --- Emacs IDE - File templates. -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018 Ioannis Canellos
 

@@ -98,4 +98,4 @@
   (advice-add 'projectile-switch-project :after 'idee/header-detect))
 
 (provide 'idee-headers)
-;; idee-headers.el ends here
+;;; idee-headers.el ends here

@@ -334,4 +334,4 @@
   (call-process-shell-command "git checkout master"))
  
   (provide 'idee-utils)
-;; idee-utils.el ends here
+;;; idee-utils.el ends here

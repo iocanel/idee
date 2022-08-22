@@ -134,4 +134,4 @@ The criteria are the following:
   (add-hook 'dockerfile-mode-hook (lambda () (idee/project-property-set idee/last-visited-dockerfile (buffer-file-name)))))
 
 (provide 'idee-docker)
-;; idee-docker.el ends here
+;;; idee-docker.el ends here

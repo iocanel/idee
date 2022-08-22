@@ -41,7 +41,7 @@
 (defvar idee/archetype-list nil "A list of all the available archetypes.")
 
 (defun idee/archetype-expand-path (path)
-  "Expand the specified PATH"
+  "Expand the specified PATH."
   (with-temp-buffer
     (insert path)
     (goto-char (point-min))
@@ -74,6 +74,7 @@
 
 ;;;###autoload 
 (defun idee/archetype-run()
+  "Run archetype."
   (interactive)
   (let* ((archetype (idee/archetype-select))
          (func (idee/archetype-func archetype)))

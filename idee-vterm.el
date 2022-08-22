@@ -74,4 +74,4 @@
   (add-to-list 'idee/function-alist '(idee/shell-open-in-project-function . idee/vterm-open-in-project)))
 
 (provide 'idee-vterm)
-;; idee-vterm.el ends here
+;;; idee-vterm.el ends here
