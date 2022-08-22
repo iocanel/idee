@@ -25,20 +25,54 @@
 ;;; Code:
 (require 'idee-vars)
 (require 'projectile)
-(require 'anaconda-mode)
 (require 'python-mode)
 
-(defun python-ide()
+(defconst pyproject-toml "pyproject.toml")
+
+(defun idee/python-enable()
   "Enable python bindings."
   (interactive)
-  (setq idee/function-alist (delq (assoc 'idee/refernces-function idee/function-alist) idee/function-alist))
-  (setq idee/function-alist (delq (assoc 'idee/declaration-function idee/function-alist) idee/function-alist))
+  ;; (setq idee/function-alist (delq (assoc 'idee/refernces-function idee/function-alist) idee/function-alist))
+  ;; (setq idee/function-alist (delq (assoc 'idee/declaration-function idee/function-alist) idee/function-alist))
   (setq idee/function-alist (delq (assoc 'idee/optimize-imports-function idee/function-alist) idee/function-alist))
   (setq idee/function-alist (delq (assoc 'idee/indent-function idee/function-alist) idee/function-alist))
 
-  (add-to-list 'idee/function-alist '(idee/references-function . anaconda-mode-find-references))
-  (add-to-list 'idee/function-alist '(idee/declaration-function . anaconda-mode-find-definitions))
+  ;; (add-to-list 'idee/function-alist '(idee/references-function . anaconda-mode-find-references))
+  ;; (add-to-list 'idee/function-alist '(idee/declaration-function . anaconda-mode-find-definitions))
   (add-to-list 'idee/function-alist '(idee/indent-function . python-indent)))
+
+;;; Visitor
+(defun idee/pyton-project-p (root)
+  "Check if ROOT is the root path of a python project."
+  (seq-filter (lambda (x) (equal pyproject-toml x)) (directory-files root)))
+
+(defun idee/python-visitor (root)
+  "Check if a python project is available under the specified ROOT."
+  (when (idee/python-project-p root)
+    (idee/project-version-set (idee/python-pyproject-toml-version (concat root cargo-toml)))
+    (idee/python-enable)))
+
+
+(defun idee/python-pyproject-toml-version (c)
+  "Get the project version from C."
+  (with-temp-buffer
+    (insert-file c)
+    (goto-char (point-min))
+    (if (re-search-forward "version = \"\\(.*\\)\"" nil t)
+        (match-string 1)
+      nil)))
+
+;;; Init
+(defun idee/pyton-init ()
+  "Initialize IDE python."
+  (interactive)
+  (idee/only-once idee/python-initialized
+    (idee/project-factory-register idee/pyproject-project-factory)
+    (idee/visitor-register 'idee/python-visitor)
+    ;; Hooks
+    (add-hook 'python-mode-hook 'idee/python-enable)
+    (add-hook 'pythonic-mode-hook 'idee/python-enable)))
+
 
 (provide 'idee-python)
 ;;; idee-python.el ends here

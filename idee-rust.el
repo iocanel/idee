@@ -32,7 +32,8 @@
 
 (defun idee/rust-enable()
   "Enable rust, add hooks, visitors etc."
-  (interactive))
+  (interactive)
+  (idee/rust-hook))
 
 (defun idee/rust-disable()
   "Disable rust, Remove hooks, visitors etc."

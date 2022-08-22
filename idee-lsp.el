@@ -19,6 +19,8 @@
 
 ;; Package-Requires: ((lsp-mode "6.2"))
 
+;;; Commentary:
+
 ;;; Code:
 (require 'lsp-mode)
 
@@ -96,4 +98,4 @@
   (add-hook 'lsp-mode-hook 'idee/lsp-enable))
 
 (provide 'idee-lsp)
-;; idee-lsp.el ends here
+;;; idee-lsp.el ends here 

@@ -89,7 +89,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
       (idee/visitor-register 'idee/golang-visitor)
       (idee/project-factory-register idee/golang-module-factory)
       ;; Hooks
-      (add-hook 'go-mode-hook 'idee/golang-hook))
+      (add-hook 'go-mode-hook 'idee/golang-hook)))
 
 (provide 'idee-golang)
 ;;; idee-golang.el ends here

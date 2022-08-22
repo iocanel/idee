@@ -264,7 +264,7 @@ The target module will be the current, unless BASE-PATH has been specified, in w
     (add-hook 'java-mode-hook 'idee/java-enable)
     (add-hook 'java-mode-hook 'idee/java-visit-file)
 
-    (advice-add 'projectile-switch-to-buffer :after #'idee/java-visit-file))))
+    (advice-add 'projectile-switch-to-buffer :after #'idee/java-visit-file)))
 
 (provide 'idee-java)
 ;;; idee-java.el ends here

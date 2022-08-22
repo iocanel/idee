@@ -84,7 +84,7 @@
      ;; Register vterm functions
      (add-to-list 'idee/function-alist '(idee/shell-command-execute-in-project-function . idee/vterm-command-execute-in-project))
      (add-to-list 'idee/function-alist '(idee/shell-visible-window-function . idee/vterm-visible-window))
-     (add-to-list 'idee/function-alist '(idee/shell-open-in-project-function . idee/vterm-open-in-project))))
+     (add-to-list 'idee/function-alist '(idee/shell-open-in-project-function . idee/vterm-open-in-project)))))
 
   (provide 'idee)
 ;;; idee.el ends here
