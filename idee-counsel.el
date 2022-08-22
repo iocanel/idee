@@ -46,7 +46,7 @@
   (interactive)
   "Show the compilation errors as they appear on the shell."
   (when (require 'counsel nil t)
-    (idee/eshell-in-project
+    (idee/ehell-in-project
         (counsel-compilation-errors))))
 
 (when (require 'counsel nil t) (advice-add 'counsel-compilation-errors-cands :filter-return #'idee/error-filter))
