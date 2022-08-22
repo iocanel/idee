@@ -114,6 +114,10 @@
 (defcustom idee/comment-xml-custom-block-ending "-->\n" "Custom block comment ending to use when commenting xml code." :group 'idee/xml :type 'string)
 (defcustom idee/comment-xml-custom-line-prefix "~ " "Custom line prefix to use when commenting xml code." :group 'idee/xml :type 'string)
 
+;; YML
+(defcustom idee/comment-yml-custom-block-beginning nil "Custom block comment beginning to use when commenting yml code." :group 'idee/yml :type 'string)
+(defcustom idee/comment-yml-custom-block-ending nil "Custom block comment ending to use when commenting yml code." :group 'idee/yml :type 'string)
+(defcustom idee/comment-yml-custom-line-prefix "# " "Custom line prefix to use when commenting yml code." :group 'idee/yml :type 'string)
 (defconst elisp-comment-style (make-idee/comment-style :line-prefix ";" :custom-line-prefix idee/comment-elisp-custom-line-prefix))
 (defconst shell-comment-style (make-idee/comment-style :line-prefix "#" :custom-line-prefix idee/comment-shell-custom-line-prefix))
 (defconst xml-comment-style (make-idee/comment-style :block-beginning "<!-" :block-ending "-->"
@@ -123,7 +127,9 @@
                                          ("el" . ,elisp-comment-style)
                                          ("html" . ,shell-comment-style)
                                          ("sh" . ,shell-comment-style)
-                                         ("xml" . ,xml-comment-style)))
+                                         ("xml" . ,xml-comment-style)
+                                         ("yml" . ,yml-comment-style)
+                                         ("yaml" . ,yml-comment-style)))
 
 (defvar idee/current-comment-style elisp-comment-style)
 
