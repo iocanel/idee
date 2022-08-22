@@ -23,6 +23,7 @@
 (require 'lsp-mode)
 
 (defcustom idee/lsp-workspace-per-project-enabled t "Lsp Workspace per Project Feature Toggle" :group 'idee/lsp :type 'boolean)
+(defcustom idee/lsp-server-per-workspace-enabled t "Lsp Server per Workspace Feature Toggle" :group 'idee/lsp :type 'boolean)
 
 (defcustom idee/lsp-before-workspace-restart-hook nil "The hooks to run before restarting the workspace"
   :type 'hook
@@ -54,7 +55,8 @@
 (defun idee/lsp-close-workspace ()
   "Close the current workspace."
   (let ((workspace (idee/lsp-get-current-workspace)))
-    (when workspace (lsp-workspace-shutdown workspace))))
+    (when workspace
+      (lsp-workspace-shutdown workspace))))
 
 (defun idee/lsp-switch-workspace (&optional dir)
   "Switch to workspace directory DIR."
@@ -71,6 +73,7 @@
       (make-directory workspace-dir t)
       (message (format "Using LSP workspace: %s." workspace-dir))
       (setq lsp-session-file (f-join workspace-dir ".lsp-session-v1"))
+      (lsp--load-default-session)
       (message "Setting lsp session file: %s" lsp-session-file)
       (dolist (element idee/lsp-before-workspace-restart-hook)
         (funcall element workspace-dir)))
@@ -82,7 +85,7 @@
   (let ((project-root (projectile-project-root)))
     (car (seq-filter (lambda (w) (eq 
                                   (file-name-as-directory (file-truename project-root))
-                                  (file-name-as-directory (file-truename w)))) (lsp-workspaces)))))
+                                  (file-name-as-directory (file-truename w)))) (lsp-session-folders (lsp-session))))))
 
 (defun idee/lsp-init ()
   (interactive)

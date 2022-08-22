@@ -20,12 +20,13 @@
 
 ;;; Code:
 
-(require 'vterm)
 (require 'projectile)
 
+;;;###autoload
 (defun idee/vterm-open-in-project ()
   "Open vterm in project root."
   (interactive)
+  (require 'vterm)
   (let* ((name (format "*vterm %s*" (projectile-project-name)))
          (buf (get-buffer name))
          (window (if buf (get-buffer-window buf) nil))
@@ -42,7 +43,8 @@
 ;;;###autoload
 (defun idee/vterm-command-execute-in-project (command &optional new-shell)
   "Run a single COMMAND in the current project shell.
-   When NEW-SHELL is specified the old eshell project buffer is killed."
+When NEW-SHELL is specified the old eshell project buffer is killed."
+  (require 'vterm)
   (let* ((name (format "*vterm %s*" (projectile-project-name)))
          (buf (get-buffer name))
          (comint-scroll-to-bottom-on-output t))
@@ -56,11 +58,13 @@
       (vterm-insert command))
     (vterm-send-return)))
 
+;;;###autoload
 (defun idee/vterm-visible-window ()
   "Return the visible vterm window."
   (car (idee/windows-visible-get (lambda (b) (string-prefix-p "*vterm" (buffer-name b))))))
 
 
+;;;###autoload
 (defun idee/vterm-enable ()
   "Enable vterm."
   (interactive)

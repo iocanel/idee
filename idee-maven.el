@@ -577,6 +577,23 @@
                                    (directory-files-recursively repo-path idee/dot-pom-regex)
       (delq nil (delete-dups (mapcar 'idee/maven-pom-group-id metadata-list))))))
 
+;;;###autoload
+(defun idee/maven-add-known-group-ids (group-ids)
+  "Add GROUP-IDS to the list of know group ids."
+  (let (value)
+    (dolist (id group-ids value)
+            (idee/maven-add-known-group-id id))))
+
+;;;###autoload
+(defun idee/maven-add-known-group-id (group-id)
+  "Add GROUP-ID to the list of know group ids."
+  (add-to-list 'idee/maven-known-group-ids group-id))
+
+;;;###autoload
+(defun idee/maven-remove-known-group-id (group-id)
+  "Remove GROUP-ID to the list of know group ids."
+  (setq idee/maven-known-group-ids (remove group-id idee/maven-knwon-group-ids)))
+
 (defun idee/maven-local-artifact-ids  (group-id)
   "Retrieve all artifact ids found in the local maven repository, under GROUP-ID."
   (interactive)
@@ -727,13 +744,6 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
     (idee/project-name-set artifact-id)
     (idee/project-version-set version)))
 
-(defconst idee/maven-project-factory
-  (make-idee/project-factory
-   :name "Maven"
-   :description "New Maven project from archetype."
-   :func 'idee/new-maven-from-archetype-project))
-
-
 ;;; Project Visitor
 (defun idee/maven-project-p (root)
   "Check if ROOT is the root path of a java project."
@@ -741,17 +751,13 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
                 (or (equal pom-xml x)))
               (directory-files root)))
 
+;;;###autoload
 (defun idee/maven-visitor (root)
   "Check if a java project is available under the specified ROOT."
   (let ((project-pom (concat root pom-xml)))
     (when (file-exists-p project-pom)
       (idee/project-version-set (idee/maven-pom-version project-pom))
       (idee/project-name-set (idee/maven-pom-artifact-id project-pom)))))
-
-;;;###autoload
-(defun idee/maven-init ()
-  (idee/project-factory-register idee/maven-project-factory)
-  (idee/visitor-register 'idee/maven-visitor))
 
 (provide 'idee-maven)
 ;;; idee-maven.el ends here

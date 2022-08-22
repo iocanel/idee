@@ -60,8 +60,7 @@ This will load all `el` files included in the project. Alternatively, you can tr
                                                             "idee-eshell.el"
                                                             "idee-vterm.el"
                                                             "idee-visitors.el"
-                                                            "idee-arch.el"
-                                                            "idee-yml.el"))
+                                                            "idee-arch.el"))
 #+end_src
 
     Using `use-package` you can enable additional modules in a similar mannner, for example:

@@ -41,4 +41,4 @@
   (add-to-list 'idee/function-alist '(idee/indent-function . python-indent)))
 
 (provide 'idee-python)
-;; idee-python.el ends here
+;;; idee-python.el ends here

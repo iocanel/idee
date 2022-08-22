@@ -203,7 +203,7 @@
                  (kill-buffer name))))))))
 
 (defun idee/project-create (&optional path)
-  "Initialize project."
+  "Create project in the optionally specified PATH, existing project root or current directory."
   (interactive)
   (let* ((path (or path (or (projectile-project-root) default-directory)))
          (name (or (projectile-project-name)  (file-name-nondirectory (directory-file-name path))))
@@ -270,12 +270,6 @@ When called this function will look at the project root for an elisp script call
          (conf-dir (concat (file-name-as-directory root-dir) idee/project-conf-dir))
          (init-el (concat (file-name-as-directory conf-dir) "init.el")))
     (when (file-exists-p init-el) (load-file init-el))))
-
-;;;###autoload
-(defun idee/project-init ()
-  "Initialize ide projects."
-  (add-hook 'projectile-after-switch-project-hook 'idee/project-initialize))
-
 
 (provide 'idee-projects)
 ;;; idee-projects.el ends here

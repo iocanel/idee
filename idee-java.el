@@ -47,6 +47,7 @@
 (defconst java-comment-style (make-idee/comment-style :block-beginning "/*" :block-ending "*/"
                                                       :custom-block-beginning idee/comment-java-custom-block-beginning :custom-line-prefix idee/comment-java-custom-line-prefix :custom-block-ending idee/comment-java-custom-block-ending))
 (defvar idee/java-last-visited-class nil)
+(defvar idee/java-initialized nil)
 
 
 (defun idee/java-enable()
@@ -76,7 +77,7 @@
          (jshell-process-name (format "*jshell %s" (if module-dir module-dir (idee/project-root-dir))))
          (existing-buffer (car (seq-filter  (lambda (b) (idee/starts-with (buffer-name b) jshell-process-name)) (buffer-list)))))
     (if existing-buffer
-          (switch-to-buffer existing-buffer)
+        (switch-to-buffer existing-buffer)
       (let* ((new-jshell-process-name (format "*%s*" jshell-buffer-name)))
         (ansi-term "/bin/sh" jshell-buffer-name)
         (term-line-mode)
@@ -98,33 +99,33 @@
   "Create a new java class with FQCN from the specified ARCHETYPE.
 The new class will be created under SRC-PATH or `src/main/java` if the src path is ommitted.
 The target module will be the current, unless BASE-PATH has been specified, in which case it will be used."
-    (with-temp-buffer
-      (let* ((base-path (file-name-as-directory (or base-path (idee/module-root-dir))))
-             (src-path (file-name-as-directory (or src-path "src/main/java")))
-             (package (idee/java-package-of-fqcn fqcn))
-             (class-name (substring fqcn (+ 1 (length package))))
-             (package-path (replace-regexp-in-string (regexp-quote ".") "/" package))
-             (class (concat base-path (format "%s/%s/%s.java" src-path package-path class-name))))
-        (set-visited-file-name class)
-        (insert archetype)
-        (java-mode)
-        (yas-expand)
-        (write-file class))))
+  (with-temp-buffer
+    (let* ((base-path (file-name-as-directory (or base-path (idee/module-root-dir))))
+           (src-path (file-name-as-directory (or src-path "src/main/java")))
+           (package (idee/java-package-of-fqcn fqcn))
+           (class-name (substring fqcn (+ 1 (length package))))
+           (package-path (replace-regexp-in-string (regexp-quote ".") "/" package))
+           (class (concat base-path (format "%s/%s/%s.java" src-path package-path class-name))))
+      (set-visited-file-name class)
+      (insert archetype)
+      (java-mode)
+      (yas-expand)
+      (write-file class))))
 
 (defun idee/java-archetype-create-resource (name archetype &optional src-path base-path)
   "Create a new java class with FQCN in the current module from the specified ARCHETYPE."
-    (with-temp-buffer
-      (let* ((base-path (file-name-as-directory (or base-path (idee/module-root-dir))))
-             (src-path (file-name-as-directory (or src-path "src/main/resources")))
-             (resource (concat base-path (format "%s/%s" src-path name)))
-             (extension (file-name-extension resource))
-             (mode (cdr (assoc extension idee/type-modes-alist))))
-        (set-visited-file-name resource)
-        (when archetype
-          (insert archetype)
-          (when mode (funcall mode))
-          (yas-expand))
-        (write-file resource))))
+  (with-temp-buffer
+    (let* ((base-path (file-name-as-directory (or base-path (idee/module-root-dir))))
+           (src-path (file-name-as-directory (or src-path "src/main/resources")))
+           (resource (concat base-path (format "%s/%s" src-path name)))
+           (extension (file-name-extension resource))
+           (mode (cdr (assoc extension idee/type-modes-alist))))
+      (set-visited-file-name resource)
+      (when archetype
+        (insert archetype)
+        (when mode (funcall mode))
+        (yas-expand))
+      (write-file resource))))
 
 (defun idee/java-register-spi (interface impl)
   "Create a new java class with FQCN in the current module from the specified ARCHETYPE."
@@ -147,14 +148,14 @@ The target module will be the current, unless BASE-PATH has been specified, in w
     (idee/java-archetype-create-class fqcn "abstract-factory")))
 
 (defun idee/java-archetype-annotation-processor ()
-       "A simple java annotation and annotation processor archetype."
-       (interactive)
-       (let* ((current-fqcn (idee/java-fqcn-of (buffer-file-name)))
-              (current-pkg (idee/java-package-of (buffer-file-name)))
-              (fqcn (read-string "Annotation processor qualified class name:" current-pkg)))
-         (idee/java-archetype-create-class fqcn "annotation")
-         (idee/java-archetype-create-class (concat fqcn "Processor") "apt")
-         (idee/java-register-spi "javax.annotation.processing.Processor" fqcn)))
+  "A simple java annotation and annotation processor archetype."
+  (interactive)
+  (let* ((current-fqcn (idee/java-fqcn-of (buffer-file-name)))
+         (current-pkg (idee/java-package-of (buffer-file-name)))
+         (fqcn (read-string "Annotation processor qualified class name:" current-pkg)))
+    (idee/java-archetype-create-class fqcn "annotation")
+    (idee/java-archetype-create-class (concat fqcn "Processor") "apt")
+    (idee/java-register-spi "javax.annotation.processing.Processor" fqcn)))
 
 ;;
 ;; Snippets
@@ -162,39 +163,39 @@ The target module will be the current, unless BASE-PATH has been specified, in w
 
 (defun idee/java-create-template (source-file name key &optional templates-dir)
   "Create snippet from file."
-    (with-temp-buffer
-      (let* ((root-dir (idee/project-root-dir (buffer-file-name)))
-             (conf-dir (concat (file-name-as-directory root-dir) idee/project-conf-dir))
-             (project-templates-dir (concat (file-name-as-directory conf-dir) "templates"))
-             (templates-dir (or templates-dir project-templates-dir))
-             (body (idee/java-snippet-body-from source-file))
-             (target (concat (file-name-as-directory templates-dir) (format "java-mode/%s" key)))
-             (parent (file-name-directory target)))
-        (set-visited-file-name target)
-        (insert (format "# name: %s" name))
-        (newline)
-        (insert (format "# key: %s" key))
-        (newline)
-        (insert "# --")
-        (newline)
-        (insert body)
-        (write-file target)
-        (yas-load-directory parent)
-        (yas-compile-directory parent))))
+  (with-temp-buffer
+    (let* ((root-dir (idee/project-root-dir (buffer-file-name)))
+           (conf-dir (concat (file-name-as-directory root-dir) idee/project-conf-dir))
+           (project-templates-dir (concat (file-name-as-directory conf-dir) "templates"))
+           (templates-dir (or templates-dir project-templates-dir))
+           (body (idee/java-snippet-body-from source-file))
+           (target (concat (file-name-as-directory templates-dir) (format "java-mode/%s" key)))
+           (parent (file-name-directory target)))
+      (set-visited-file-name target)
+      (insert (format "# name: %s" name))
+      (newline)
+      (insert (format "# key: %s" key))
+      (newline)
+      (insert "# --")
+      (newline)
+      (insert body)
+      (write-file target)
+      (yas-load-directory parent)
+      (yas-compile-directory parent))))
 
 (defun idee/java-snippet-body-from (f)
   "Create snippet from file F."
   (with-temp-buffer
     (save-excursion
-        (insert-file-contents f)
-        (goto-char (point-min))
-        (idee/comment-remove-at-point java-comment-style)
-        (let* ((content (buffer-substring-no-properties (point-min) (point-max)))
-               (class-name (idee/java-class-name-of f))
-               (updated (concat
-                         "`idee/header`\n" (replace-regexp-in-string "package[ ]+[a-zA-Z0-9\.-]+;" "`idee/java-package-line`"
+      (insert-file-contents f)
+      (goto-char (point-min))
+      (idee/comment-remove-at-point java-comment-style)
+      (let* ((content (buffer-substring-no-properties (point-min) (point-max)))
+             (class-name (idee/java-class-name-of f))
+             (updated (concat
+                       "`idee/header`\n" (replace-regexp-in-string "package[ ]+[a-zA-Z0-9\.-]+;" "`idee/java-package-line`"
                                                                    (replace-regexp-in-string (regexp-quote class-name) idee/java-snippet-class-name content t) t))))
-          updated))))
+        updated))))
 
 (defun idee/filename ()
   "Return the name for the current file."
@@ -208,44 +209,62 @@ The target module will be the current, unless BASE-PATH has been specified, in w
                     (equal build-gradle x)))
               (directory-files root)))
 
+;;;###autoload
 (defun idee/java-visitor (root)
   "Check if a java project is available under the specified ROOT."
-  (if (idee/java-project-p root)
-      (idee/java-enable)))
+  (when (idee/java-project-p root)
+    (idee/lsp-java-init)
+    (idee/java-enable)))
 
 ;;;###autoload
 (defun idee/java-init ()
   "Initialize java."
   (interactive)
   ;; Dependencies
-  (idee/lsp-java-init)
-  (idee/maven-init)
-  (idee/quarkus-init)
-  (idee/spring-init)
+  (idee/only-once idee/java-initialized
+    ;; LSP
+    (idee/lsp-java-init)
 
-  (idee/visitor-register 'idee/java-visitor)
+    ;; Maven
+    (idee/visitor-register 'idee/maven-visitor)
+    (idee/project-factory-register (make-idee/project-factory
+                                    :name "Maven"
+                                    :description "New Maven project from archetype."
+                                    :func 'idee/new-maven-from-archetype-project))
+    ;; Quarkus
+    (idee/visitor-register 'idee/quarkus-visitor)
+    (idee/project-factory-register (make-idee/project-factory
+                                    :name "Quarkus"
+                                    :description "New Quarkus project created using the quarkus maven plugin."
+                                    :func 'idee/new-quarkus-rest-project))
 
-  (idee/template-factory-register (make-idee/template-factory
-                                             :mode 'java-mode
-                                             :description "A java temlate factory"
-                                             :func 'idee/java-create-template))
- (idee/archetype-register
-   (make-idee/archetype
-    :name "Java Abstract Factory"
-    :description "A simple java abstract factory"
-    :func 'idee/java-archetype-abstract-factory))
+    ;; Spring
+    (idee/project-factory-register (make-idee/project-factory
+                                    :name "Spring"
+                                    :description "New Spring project created using https://start.spring.io"
+                                    :func 'idee/new-spring-starter-project))
 
- (idee/archetype-register
-  (make-idee/archetype
-   :name "Java Annotation and Processor"
-   :description "A java annotation and a java annotation processor"
-   :func 'idee/java-archetype-annotation-processor))
+    (idee/template-factory-register (make-idee/template-factory
+                                     :mode 'java-mode
+                                     :description "A java temlate factory"
+                                     :func 'idee/java-create-template))
+    (idee/archetype-register
+     (make-idee/archetype
+      :name "Java Abstract Factory"
+      :description "A simple java abstract factory"
+      :func 'idee/java-archetype-abstract-factory))
+
+    (idee/archetype-register
+     (make-idee/archetype
+      :name "Java Annotation and Processor"
+      :description "A java annotation and a java annotation processor"
+      :func 'idee/java-archetype-annotation-processor))
 
   ;;; Hook
-  (add-hook 'java-mode-hook 'idee/java-enable)
-  (add-hook 'java-mode-hook 'idee/java-visit-file)
+    (add-hook 'java-mode-hook 'idee/java-enable)
+    (add-hook 'java-mode-hook 'idee/java-visit-file)
 
-  (advice-add 'projectile-switch-to-buffer :after #'idee/java-visit-file))
+    (advice-add 'projectile-switch-to-buffer :after #'idee/java-visit-file))))
 
 (provide 'idee-java)
 ;;; idee-java.el ends here

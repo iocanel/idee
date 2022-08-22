@@ -24,20 +24,20 @@
 ;;; Code:
 
 (require 'lsp-java)
-(require 'dap-java)
-(require 'markdown-mode)
 
 (require 'idee-visitors)
 (require 'idee-lsp)
 
-(defcustom idee/lsp-java-enabled t "Lsp Java Feature Toggle" :group 'idee/java :type 'boolean)
-(defcustom idee/lsp-java-completion-enabled t "Lsp Java Completion Feature Toggle" :group 'idee/java :type 'boolean)
+(defcustom idee/lsp-java-enabled t "Lsp Java Feature Toggle." :group 'idee/java :type 'boolean)
+(defcustom idee/lsp-java-completion-enabled t "Lsp Java Completion Feature Toggle." :group 'idee/java :type 'boolean)
 
 (defun idee/lsp-java-enable()
   "Enable lsp-java, add hooks, visitors etc."
   (interactive)
   (when idee/lsp-java-enabled
-      (lsp-workspace-folders-add (projectile-project-root))))
+    (lsp-workspace-folders-add (projectile-project-root))
+    (when idee/lsp-server-per-workspace-enabled
+      (setq lsp-java-server-install-dir (concat (file-name-as-directory (idee/project-root-dir)) ".lsp")))))
 
 (defun idee/lsp-java-disable()
   "Disable lsp-java, remove hooks, visitors etc."
@@ -52,19 +52,16 @@
   (setq idee/function-alist (delq (assoc 'idee/implementation-function idee/function-alist) idee/function-alist))
   (setq idee/function-alist (delq (assoc 'idee/optimize-imports-function idee/function-alist) idee/function-alist))
   (setq idee/function-alist (delq (assoc 'idee/indent-function idee/function-alist) idee/function-alist))
-  ;(setq idee/function-alist (delq (assoc 'idee/mode-hydra-function idee/function-alist) idee/function-alist))
-  ;(setq idee/function-alist (delq (assoc 'idee/run-or-eval-function idee/function-alist) idee/function-alist))
-  ;(setq idee/function-alist (delq (assoc 'idee/test idee/function-alist) idee/function-alist))
 
   ;; Set functions
-  ;(add-to-list 'idee/function-alist '(idee/run-or-eval-function . lsp-java-de))
   (add-to-list 'idee/function-alist '(idee/references-function . lsp-find-references))
   (add-to-list 'idee/function-alist '(idee/declaration-function . lsp-find-definition))
   (add-to-list 'idee/function-alist '(idee/implementation-function . lsp-find-implementation))
   (add-to-list 'idee/function-alist '(idee/optimize-imports-function . lsp-java-organize-imports)))
 
 (defun idee/lsp-java-on-save-buffer(&rest args)
-  "Save buffer handler."
+  "Save buffer handler.
+ARGS are ignored by this function."
   (when (and (buffer-file-name) (equal "pom.xml" (file-name-nondirectory (buffer-file-name))))
     (ignore-errors
       (lsp-java-update-project-configuration))))
@@ -72,7 +69,7 @@
 
 ;;; Visitor
 (defun idee/lsp-java-project-p (root)
-  "Check if lsp-java mode is applicable to the project."
+  "Check if lsp-java mode is applicable to the project ROOT."
   (seq-filter (lambda (x)
                 (or
                  (equal "pom.xml" x)
@@ -81,7 +78,7 @@
 
 ;;;###autoload
 (defun idee/lsp-java-switch-workspace (workspace-dir)
-  "Switch to workspace W."
+  "Switch to workspace in WORKSPACE-DIR."
   (when workspace-dir
     (setq lsp-java-workspace-dir workspace-dir)
     (setq lsp-java-workspace-cache-dir (f-join lsp-java-workspace-dir ".cache"))))
@@ -94,6 +91,7 @@
 
 ;;;###autoload
 (defun idee/lsp-java-init ()
+  "Initialize java and lsp settings."
   (idee/visitor-register 'idee/lsp-visitor-java)
   (add-hook 'java-mode-hook 'idee/lsp-java-hook)
   (advice-add 'save-buffer :after #'idee/lsp-java-on-save-buffer)

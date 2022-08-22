@@ -28,7 +28,6 @@
 ;;
 ;; Customization
 ;;
-(defconst idee/emacs-headers-dir (concat (file-name-as-directory idee/resources-dir) "headers") "The directory where header files are stored.")
 
 (defvar idee/header-selected-kind nil "The kind of header currently selcted.")
 
@@ -91,11 +90,6 @@
 (defun idee/header-source-dir ()
   "Find the headers source directory."
   (concat (file-name-as-directory (idee/source-dir)) "headers"))
-
-;;;###autoload
-(defun idee/header-init ()
-  "Initialize ide headers."
-  (advice-add 'projectile-switch-project :after 'idee/header-detect))
 
 (provide 'idee-headers)
 ;;; idee-headers.el ends here

@@ -34,9 +34,5 @@
   (dolist (v idee/list-visitor)
     (funcall v default-directory)))
 
-;;;###autoload
-(defun idee/init-visitor ()
-  (add-to-list 'projectile-after-switch-project-hook 'idee/apply-visitor))
-
 (provide 'idee-visitors)
 ;;;  idee-visitors.el ends here

@@ -34,6 +34,7 @@
 
 (defcustom idee/spring-init-group-id "org.acme" "The initial value for group-id in the spring project factory." :group 'idee/spring :type 'string)
 
+;;;###autoload
 (defun idee/new-spring-starter-project (&optional create-function)
   "Create a new project from https://start.spring.io.
 The command supports accepting an external CREATE-FUNCTION or defaults to idee/project-create-with-shell."
@@ -66,13 +67,6 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
                                                             ("dependencies" . ,(mapconcat 'identity dependencies ",")))
                     'idee/spring-starter-download-callback)))
 
-(defconst idee/spring-starter-project-factory
-  (make-idee/project-factory
-   :name "Spring"
-   :description "New Spring project created using https://start.spring.io"
-   :func 'idee/new-spring-starter-project))
-
-
 (defun idee/spring-starter-download-callback (s)
   "Download callback for spring starter http request."
   (let ((project-name) (zip (concat temporary-file-directory "spring-" (format "%06x-%06x" (random (expt 16 6)) (random (expt 16 6))) ".zip"))) 
@@ -91,10 +85,6 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
   (projectile-switch-project-by-name idee/spring-extract-dir)
   (revert-buffer)
   (dired idee/spring-extract-dir)))
-
-;;;###autoload
-(defun idee/spring-init ()
-  (idee/project-factory-register idee/spring-starter-project-factory))
 
 (provide 'idee-spring)
 ;;; idee-spring.el ends here

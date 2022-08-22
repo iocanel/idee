@@ -32,6 +32,8 @@
 (defconst glidee/yml "glide.yml")
 (defconst gopkg-toml "Gopkg.toml")
 
+(defvar idee/golang-initialized nil)
+
 (defun idee/golang-enable()
   "Enabled golang bindings."
   (interactive)
@@ -83,10 +85,11 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
 (defun idee/golang-init ()
   "Initialize IDE golang."
   (interactive)
-  (idee/visitor-register 'idee/golang-visitor)
-  (idee/project-factory-register idee/golang-module-factory)
-  ;; Hooks
-  (add-hook 'go-mode-hook 'idee/golang-hook))
+    (idee/only-once idee/golang-initialized
+      (idee/visitor-register 'idee/golang-visitor)
+      (idee/project-factory-register idee/golang-module-factory)
+      ;; Hooks
+      (add-hook 'go-mode-hook 'idee/golang-hook))
 
 (provide 'idee-golang)
-;; idee-golang.el ends here
+;;; idee-golang.el ends here

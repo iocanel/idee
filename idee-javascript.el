@@ -33,6 +33,8 @@
 (defconst jsconfig-json "jsconfig.json")
 (defconst tsconfig-json "tsconfig.json")
 
+(defvar idee/javascript-initialized nil)
+
 (defun idee/javascript-enable()
   "Enable javascript, add hooks, visitors etc."
   (interactive))
@@ -202,19 +204,20 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
 (defun idee/javascript-init ()
   "Initialize IDE javascript."
   (interactive)
-  (idee/project-factory-register idee/npm-project-factory)
-  (idee/visitor-register 'idee/javascript-visitor)
+  (idee/only-once idee/javascript-initialized
+    (idee/project-factory-register idee/npm-project-factory)
+    (idee/visitor-register 'idee/javascript-visitor)
 
-  (idee/template-factory-register (make-idee/template-factory
+    (idee/template-factory-register (make-idee/template-factory
                                              :mode 'js-mode
                                              :description "A javascript temlate factory"
                                              :func 'idee/javascript-create-template))
 
-;; Hooks
-  (add-hook 'javascipt-mode-hook 'idee/javascript-hook)
-  (add-hook 'js2-mode-hook 'idee/javascript-hook)
-  (add-hook 'js-jsx-mode-hook 'idee/javascript-hook)
-  (add-hook 'typescirpt-mode-hook 'idee/javascript-hook))
+    ;; Hooks
+    (add-hook 'javascipt-mode-hook 'idee/javascript-hook)
+    (add-hook 'js2-mode-hook 'idee/javascript-hook)
+    (add-hook 'js-jsx-mode-hook 'idee/javascript-hook)
+    (add-hook 'typescirpt-mode-hook 'idee/javascript-hook)))
 
 (provide 'idee-javascript)
 ;;; idee-javascript.el ends here

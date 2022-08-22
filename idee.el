@@ -24,18 +24,11 @@
 
 ;;; Code:
 
-(require 'idee-headers)
-(require 'idee-projects)
-(require 'idee-templates)
 (require 'idee-utils)
 (require 'idee-vars)
-(require 'idee-visitors)
-(require 'idee-views)
-(require 'idee-vterm)
-
-(require 'idee-yml)
 
 (defcustom idee/repo-url "git@github.com:iocanel/idee.git" "The repository url of the ide project." :group 'ide :type 'string)
+(defvar idee/initialized nil)
 
 (defun idee/resources-install ()
   "Initialize ide resources."
@@ -46,16 +39,52 @@
 (defun idee/init ()
   "Initialize idee."
   (interactive)
-  (idee/project-init)
-  (idee/template-init)
-  (idee/header-init)
-  (idee/init-visitor)
-  (idee/views-init)
 
-  (idee/vterm-enable)
+  (idee/only-once idee/initialized
+    (idee/when-idle
+     ;; Initialize Project
+     (add-hook 'projectile-after-switch-project-hook 'idee/project-initialize)
 
-  ;; Common staff
-  (idee/yml-init))
+     ;; Intialize templates
+     (add-hook 'projectile-after-switch-project-hook 'idee/template-load-from-project)
 
-(provide 'idee)
+     (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
+     (when (not (file-exists-p idee/resources-dir)) (mkdir idee/resources-dir t))
+
+     ;; Copy and compile templates if not there
+     (when (not (file-exists-p idee/emacs-templates-dir))
+       (copy-directory (idee/template-source-dir) idee/emacs-templates-dir)
+       (yas-compile-directory idee/emacs-templates-dir))
+
+     (yas-load-directory idee/emacs-templates-dir)
+
+     ;; Copy and compile snippets if not there
+     (when (not (file-exists-p idee/emacs-snippets-dir))
+       (copy-directory (idee/snippet-source-dir) idee/emacs-snippets-dir)
+       (yas-compile-directory idee/emacs-snippets-dir))
+
+     (yas-load-directory idee/emacs-snippets-dir)
+
+     (when (not (file-exists-p idee/emacs-headers-dir)) (copy-directory (idee/header-source-dir) idee/emacs-headers-dir))
+
+     (add-to-list 'yas-snippet-dirs idee/emacs-templates-dir)
+     (add-to-list 'yas-snippet-dirs idee/emacs-snippets-dir)
+
+     ;; Intialize visitors
+     (add-to-list 'projectile-after-switch-project-hook 'idee/apply-visitor)
+
+     ;; Initialize Headers
+     (advice-add 'projectile-switch-project :after 'idee/header-detect)
+
+     ;; Initialize vterm
+     (setq idee/function-alist (delq (assoc 'idee/shell-command-execute-in-project-function idee/function-alist) idee/function-alist))
+     (setq idee/function-alist (delq (assoc 'idee/shell-visible-window-function idee/function-alist) idee/function-alist))
+     (setq idee/function-alist (delq (assoc 'idee/shell-open-in-project-function idee/function-alist) idee/function-alist))
+
+     ;; Register vterm functions
+     (add-to-list 'idee/function-alist '(idee/shell-command-execute-in-project-function . idee/vterm-command-execute-in-project))
+     (add-to-list 'idee/function-alist '(idee/shell-visible-window-function . idee/vterm-visible-window))
+     (add-to-list 'idee/function-alist '(idee/shell-open-in-project-function . idee/vterm-open-in-project))))
+
+  (provide 'idee)
 ;;; idee.el ends here

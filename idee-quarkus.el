@@ -22,12 +22,10 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'idee-maven)
 (require 'idee-projects)
-(require 'idee-eshell)
 (require 'idee-visitors)
 
-(defcustom idee/quarkus-version "1.0.1.Final" "The quarkus version." :group 'idee/quarkus :type 'string)
+(defcustom idee/quarkus-version "2.9.1.Final" "The quarkus version." :group 'idee/quarkus :type 'string)
 (defcustom idee/quarkus-remote-dev-url nil "The remote dev url." :group 'idee/quarkus :type 'string)
 (defcustom idee/quarkus-init-group-id "org.acme" "The initial value for group-id in the quarkus project factory." :group 'idee/quarkus :type 'string)
 
@@ -57,6 +55,9 @@
                                          "kotlin"
                                          "kubernetes"
                                          "kubernetes-client"
+                                         "kubernetes-config"
+                                         "kuberntes-service-binding"
+                                         "openshift"
                                          "narayana-jta"
                                          "netty"
                                          "reactive-pg-client"
@@ -80,12 +81,8 @@
                                          "undertow-websockets"
                                          "vertx"))
 
-(defconst idee/quarkus-rest-project-factory
-  (make-idee/project-factory
-   :name "Quarkus"
-   :description "New Quarkus project created using the quarkus maven plugin."
-   :func 'idee/new-quarkus-rest-project))
 
+;;;###autoload
 (defun idee/new-quarkus-rest-project (&optional create-function)
   "Create a new quarkus rest project.
 The command supports accepting an external CREATE-FUNCTION or defaults to idee/project-create-with-shell."
@@ -110,6 +107,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
     (idee/project-version-set version)
     (idee/quarkus-init-maven-project-settings)))
 
+;;;###autoload
 (defun idee/new-quarkus-remote-dev-project (&optional create-function)
   "Create a new quarkus rest project.
 The command supports accepting an external CREATE-FUNCTION or defaults to idee/project-create-with-shell."
@@ -127,12 +125,15 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
       (idee/quarkus-init-maven-project-settings)))
 
 
+;;;###autoload
 (defun idee/quarkus-add-extension ()
   "Add a quarkus extension to the project."
   (interactive)
+  (require 'idee-eshell)
   (let ((extension (completing-read "Extension:" idee/quarkus-extensions-list)))
     (idee/eshell-command-execute-in-project (format "mvn quarkus:add-extension -Dextensions=\"io.quarkus:quarkus-%s\"" extension))))
 
+;;;###autoload
 (defun idee/quarkus-init-maven-project-settings ()
   "Initialize project with project settings."
   (interactive)
@@ -145,7 +146,7 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
           ;; Add to settings popular commands for quarkus
           (insert (format "(setq idee/maven-project-settings-commands nil)"))
           ;; Native image build
-          (insert (format "(push \"%s\" idee/maven-project-settings-commands)" "mvn clean package -Dnative=true -Dnative-image.docker-build=true"))
+          (insert (format "(push \"%s\" idee/maven-project-settings-commands)" "mvn clean package -Dnative=true"))
           ;; Dev mode
           (insert (format "(push \"%s\" idee/maven-project-settings-commands)" "mvn quarkus:dev"))
           ;; Remove Dev mode
@@ -153,40 +154,47 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
             (insert (format "(push \"%s\" idee/maven-project-settings-commands)" (format "mvn quarkus:remote-dev -Dquarkus.live-reload.url=%s" idee/quarkus-remote-dev-url))))
           (write-file maven-settings-file)))))
 
+;;;###autoload
 (defun idee/quarkus-aws-lambda-deploy ()
   "Deploy the application to aws lambda."
   (interactive)
-  (let* ((module-dir (idee/maven-module-root-dir))
-                                     (module-pom (concat module-dir pom-xml))
-                                     (artifact-id (idee/maven-pom-artifact-id module-pom)))
-    (idee/shell-command-execute-in-project "mkdir -p target/function")
-    (idee/shell-command-execute-in-project "cp target/wiring-classes/bootstrap target/*-runner target/function")
-    (idee/shell-command-execute-in-project "chmod 755 target/function/bootstrap")
-    (idee/shell-command-execute-in-project "pushd target/function")
-    (idee/shell-command-execute-in-project "zip -q function.zip bootstrap *-runner*")
-    (idee/shell-command-execute-in-project "popd")
-    (idee/shell-command-execute-in-project ,(format "aws lambda delete-function --function-name %s" artifact-id))
-    (idee/shell-command-execute-in-project ,(format "aws lambda create-function --function-name %s --timeout 10 --zip-file fileb://target/function/function.zip --handler bootstrap --runtime provided" artifact-id))))
+
+  (if (and (require 'idee-maven nil t) (idee/maven-project-p root))
+      (let* ((module-dir (if (require 'idee-maven nil t) (idee/maven-module-root-dir) default-directory))
+             (module-pom (concat module-dir pom-xml))
+             (artifact-id (idee/maven-pom-artifact-id module-pom)))
+        (idee/shell-command-execute-in-project "mkdir -p target/function")
+        (idee/shell-command-execute-in-project "cp target/wiring-classes/bootstrap target/*-runner target/function")
+        (idee/shell-command-execute-in-project "chmod 755 target/function/bootstrap")
+        (idee/shell-command-execute-in-project "pushd target/function")
+        (idee/shell-command-execute-in-project "zip -q function.zip bootstrap *-runner*")
+        (idee/shell-command-execute-in-project "popd")
+        (idee/shell-command-execute-in-project ,(format "aws lambda delete-function --function-name %s" artifact-id))
+        (idee/shell-command-execute-in-project ,(format "aws lambda create-function --function-name %s --timeout 10 --zip-file fileb://target/function/function.zip --handler bootstrap --runtime provided" artifact-id)))))
 
 ;;
 ;; Shortcuts
 ;;
+;;;###autoload
 (defun idee/quarkus-build ()
   "Run the quarkus build."
   (interactive)
   (idee/shell-command-execute-in-project "mvn clean install"))
 
+;;;###autoload
 (defun idee/quarkus-dev ()
   "Run the quarkus dev mode."
   (interactive)
   (idee/shell-command-execute-in-project "mvn clean compile quarkus:dev")
   (rename-buffer "**quarkus:dev**"))
 
+;;;###autoload
 (defun idee/quarkus-remote-dev ()
   "Run the quarkus remote dev mode."
   (interactive)
   (when idee/quarkus-remote-dev-url (idee/shell-command-execute-in-project (format "mvn quarkus:remote-dev -Dquarkus.live-reload.url=%s" idee/quarkus-remote-dev-url))))
 
+;;;###autoload
 (defun idee/quarkus-native-build ()
   "Run the quarkus native build."
   (interactive)
@@ -195,7 +203,6 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
 ;;
 ;; Utils
 ;;
-
 (defun idee/quarkus-extension-qualified-name (extension)
   "Return the qualified name of the EXTENSION."
   (format "io.quarkus:quarkus-%s" extension))
@@ -203,12 +210,13 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
 ;;; Project Visitor
 (defun idee/quarkus-project-p (root)
   "Check if ROOT is the root path of a quarkus project."
-  (if (idee/maven-project-p root)
+  (if (and (require 'idee-maven nil t) (idee/maven-project-p root))
     (let* ((pom (f-join root pom-xml))
            (content (idee/read-file pom)))
       (string-match-p (regexp-quote idee/quarkus-maven-plugin) content))
     nil))
 
+;;;###autoload
 (defun idee/quarkus-visitor (root)
   "Check if a java project is available under the specified ROOT."
   (let ((project-pom (concat root pom-xml)))
@@ -217,10 +225,6 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
       (idee/project-name-set (idee/maven-pom-artifact-id project-pom))
       (idee/quarkus-init-maven-project-settings))))
 
-;;;###autoload
-(defun idee/quarkus-init ()
-  (idee/visitor-register 'idee/quarkus-visitor) 
-  (idee/project-factory-register idee/quarkus-rest-project-factory))
 
 (provide 'idee-quarkus)
-;; idee-quarkus.el ends here
+;;; idee-quarkus.el ends here

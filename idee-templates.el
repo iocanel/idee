@@ -18,11 +18,10 @@
 
 ;;; Code:
 
+(require 'idee-utils)
 (require 'yasnippet)
 (require 'warnings)
 
-(defconst idee/emacs-templates-dir (concat (file-name-as-directory idee/resources-dir) "templates") "The directory where template files are stored.")
-(defconst idee/emacs-snippets-dir (concat (file-name-as-directory idee/resources-dir) "snippets") "The directory where snippet files are stored.")
 
 ;;
 ;; Template factories
@@ -34,13 +33,13 @@
 
 (defvar idee/template-factory-list nil "A list of all the available template factories.")
 
-;;;###autoload 
+;;;###autoload
 (defun idee/template-factory-register (template-factory)
-  "Register a TEMPLATE_FACTORY."
+  "Register a TEMPLATE-FACTORY."
   (setq idee/template-factory-list (delq template-factory idee/template-factory-list))
   (setq idee/template-factory-list (add-to-list  'idee/template-factory-list template-factory)))
 
-;;;###autoload 
+;;;###autoload
 (defun idee/template-factory-get (mode)
   "Find the matching template factory for the specified MODE."
   (car (seq-filter (lambda (f) (equal mode (idee/template-factory-mode f))) idee/template-factory-list)))
@@ -68,6 +67,7 @@
 ;; Utils
 ;;
 
+;;;###autoload
 (defun idee/template-source-dir ()
   "Find the templates source directory."
   (concat (file-name-as-directory (idee/source-dir)) "templates"))
@@ -114,7 +114,6 @@
     (funcall (intern mode))
     (yas-expand)))
 
-
 ;;
 ;; Initialization
 ;;
@@ -123,44 +122,13 @@
 (defun idee/template-load-from-project ()
   "Load project templates."
   (interactive)
-  (let* ((root-dir (idee/project-root-dir (buffer-file-name)))
-         (conf-dir (concat (file-name-as-directory root-dir) idee/project-conf-dir))
-         (template-dir (concat (file-name-as-directory conf-dir) "templates")))
-    (when (file-exists-p template-dir)
-      (yas-load-directory template-dir)
-      (yas-compile-directory template-dir))))
-
-;;;###autoload
-(defun idee/template-init ()
-  "Initialize ide templates."
-  (add-hook 'projectile-after-switch-project-hook 'idee/template-load-from-project)
-
-  (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
-  (when (not (file-exists-p idee/resources-dir)) (mkdir idee/resources-dir t))
-
-  (run-with-idle-timer 1 nil (lambda ()
-                               (if (not (file-exists-p idee/emacs-templates-dir))
-                                 (progn
-                                   (copy-directory (idee/template-source-dir) idee/emacs-templates-dir)
-                                   (run-with-idle-timer 1 nil (lambda () (progn
-                                                                           (yas-compile-directory idee/emacs-templates-dir)
-                                                                           (yas-load-directory idee/emacs-templates-dir)))))
-                                 (yas-load-directory idee/emacs-templates-dir))))
-
-  (run-with-idle-timer 1 nil (lambda ()
-                               (when (not (file-exists-p idee/emacs-snippets-dir))
-                                 (progn
-                                   (copy-directory (idee/snippet-source-dir) idee/emacs-snippets-dir)
-                                   (run-with-idle-timer 1 nil (lambda () (progn
-                                                                           (yas-compile-directory idee/emacs-snippets-dir)
-                                                                           (yas-load-directory idee/emacs-snippets-dir)))))
-                                 (yas-load-directory idee/emacs-templates-dir))))
-
-  (run-with-idle-timer 1 nil (lambda ()
-                               (when (not (file-exists-p idee/emacs-headers-dir)) (copy-directory (idee/header-source-dir) idee/emacs-headers-dir))))
-
-  (add-to-list 'yas-snippet-dirs idee/emacs-templates-dir)
-  (add-to-list 'yas-snippet-dirs idee/emacs-snippets-dir))
+  (idee/when-idle
+   (let* ((root-dir (idee/project-root-dir (buffer-file-name)))
+          (conf-dir (concat (file-name-as-directory root-dir) idee/project-conf-dir))
+          (template-dir (concat (file-name-as-directory conf-dir) "templates")))
+     (when (file-exists-p template-dir)
+       (yas-load-directory template-dir)
+       (yas-compile-directory template-dir)))))
 
 (provide 'idee-templates)
 ;;; idee-templates.el ends here

@@ -28,6 +28,7 @@
 (require 'idee-visitors)
 
 (defconst cargo-toml "Cargo.toml")
+(defvar idee/rust-initialized nil)
 
 (defun idee/rust-enable()
   "Enable rust, add hooks, visitors etc."
@@ -89,10 +90,10 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
     (idee/rust-enable)))
 
 
-(defun idee/rust-cargo-toml-version (cargo-toml)
-  "Get the project version from CARGO-TOML."
+(defun idee/rust-cargo-toml-version (c)
+  "Get the project version from C."
   (with-temp-buffer
-    (insert-file cargo-toml)
+    (insert-file c)
     (goto-char (point-min))
     (if (re-search-forward "version = \"\\(.*\\)\"" nil t)
         (match-string 1)
@@ -102,11 +103,12 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
 (defun idee/rust-init ()
   "Initialize IDE rust."
   (interactive)
-  (idee/project-factory-register idee/cargo-project-factory)
-  (idee/visitor-register 'idee/rust-visitor)
-;; Hooks
-  (add-hook 'rust-mode-hook 'idee/rust-hook)
-  (add-hook 'rustic-mode-hook 'idee/rust-hook))
+  (idee/only-once idee/rust-initialized
+    (idee/project-factory-register idee/cargo-project-factory)
+    (idee/visitor-register 'idee/rust-visitor)
+    ;; Hooks
+    (add-hook 'rust-mode-hook 'idee/rust-hook)
+    (add-hook 'rustic-mode-hook 'idee/rust-hook)))
 
 (provide 'idee-rust)
 ;;; idee-rust.el ends here

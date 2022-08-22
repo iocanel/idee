@@ -19,8 +19,13 @@
 ;;; Commentary:
 
 ;;; Code:
+
 (defcustom idee/resources-dir (locate-user-emacs-file "idee") "The directory where ide files are stored." :group 'ide :type 'string)
 (defcustom idee/project-conf-dir ".idee" "The directory where ide configuration files are stored." :group 'ide :type 'string)
+
+(defconst idee/emacs-templates-dir (concat (file-name-as-directory idee/resources-dir) "templates") "The directory where template files are stored.")
+(defconst idee/emacs-snippets-dir (concat (file-name-as-directory idee/resources-dir) "snippets") "The directory where snippet files are stored.")
+(defconst idee/emacs-headers-dir (concat (file-name-as-directory idee/resources-dir) "headers") "The directory where header files are stored.")
 
 (defvar idee/source-dir nil "The source directory of the ide project.")
 
@@ -110,6 +115,7 @@
 (defcustom idee/comment-elisp-custom-line-prefix ";; " "Custom line comment prefix to use when commenting elisp code." :group 'idee/elisp :type 'string)
 (defcustom idee/comment-shell-custom-line-prefix "# " "Custom line comment prefix to use when commenting shell code." :group 'idee/shell :type 'string)
 
+;; XML
 (defcustom idee/comment-xml-custom-block-beginning "<!--\n" "Custom block comment beginning to use when commenting xml code." :group 'idee/xml :type 'string)
 (defcustom idee/comment-xml-custom-block-ending "-->\n" "Custom block comment ending to use when commenting xml code." :group 'idee/xml :type 'string)
 (defcustom idee/comment-xml-custom-line-prefix "~ " "Custom line prefix to use when commenting xml code." :group 'idee/xml :type 'string)
@@ -118,10 +124,15 @@
 (defcustom idee/comment-yml-custom-block-beginning nil "Custom block comment beginning to use when commenting yml code." :group 'idee/yml :type 'string)
 (defcustom idee/comment-yml-custom-block-ending nil "Custom block comment ending to use when commenting yml code." :group 'idee/yml :type 'string)
 (defcustom idee/comment-yml-custom-line-prefix "# " "Custom line prefix to use when commenting yml code." :group 'idee/yml :type 'string)
+
+
+;; Comment styles
 (defconst elisp-comment-style (make-idee/comment-style :line-prefix ";" :custom-line-prefix idee/comment-elisp-custom-line-prefix))
 (defconst shell-comment-style (make-idee/comment-style :line-prefix "#" :custom-line-prefix idee/comment-shell-custom-line-prefix))
 (defconst xml-comment-style (make-idee/comment-style :block-beginning "<!-" :block-ending "-->"
                                                      :custom-block-beginning idee/comment-xml-custom-block-beginning :custom-block-ending idee/comment-xml-custom-block-ending))
+(defconst yml-comment-style (make-idee/comment-style :line-prefix " #"
+                                                      :custom-block-beginning idee/comment-yml-custom-block-beginning :custom-line-prefix idee/comment-yml-custom-line-prefix :custom-block-ending idee/comment-yml-custom-block-ending))
 
 (defvar idee/type-comment-styles-alist `(
                                          ("el" . ,elisp-comment-style)

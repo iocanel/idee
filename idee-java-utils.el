@@ -71,16 +71,19 @@
   "Return the package line for the current file."
   (idee/java-package-of default-directory))
 
+;;;###autoload
 (defun idee/java-package-line()
   "Return the full package line for the current directory."
   (let ((pkg (idee/java-package-of default-directory)))
     (when (and pkg (not (idee/string-blank pkg)))
         (concat "package " pkg ";"))))
 
+;;;###autoload
 (defun idee/java-class()
   "Return the class name for the current file."
   (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))
 
+;;;###autoload
 (defun idee/java-class-sans-suffix (suffix &optional class-name)
   "Return the class name for the current file."
   (let ((class-name (or class-name (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))))

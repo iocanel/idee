@@ -34,6 +34,8 @@
 
 (defconst clojure-comment-style (make-idee/comment-style :line-prefix ";;"))
 
+(defvar idee/clojure-initialized nil)
+
 (defun idee/clojure-enable()
   "Enable clojure bindings."
   (interactive)
@@ -77,8 +79,11 @@
     (idee/clojure-enable))) 
 
 (defun idee/clojure-init ()
-  (add-hook 'clojure-mode-hook 'idee/clojure-enable)
-  (idee/visitor-register 'idee/clojure-visitor))
+  "Initialize idee-clojure."
+  (interactive)
+    (idee/only-once idee/clojure-initialized
+      (add-hook 'clojure-mode-hook 'idee/clojure-enable)
+      (idee/visitor-register 'idee/clojure-visitor)))
 
 (provide 'idee-clojure)
 ;;; idee-clojure.el ends here

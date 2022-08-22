@@ -22,11 +22,14 @@
 (require 'idee-vars)
 (require 'projectile)
 
+(defvar idee/idle-timer-default 0.5 "The default idle timer offset to be used for command sequences.")
+(defvar idee/idle-timer-increment 0.5 "The default idle timer increment between commands.")
+
 ;;
 ;; File funtcionts
 ;;
 
-(defun idee/filename (&optional F)
+(defun idee/filename (&optional f)
   "Return the filename for the F or the current file (strips path and extension)."
   (file-name-nondirectory (file-name-sans-extension (or f (buffer-file-name)))))
 
@@ -291,9 +294,43 @@
   "Switch off the specified BOOL variable."
   (list 'setq bool nil))
 
+;;
+;; Just once
+;; 
+(defmacro idee/only-once (state &rest body)
+  "Macro that executes BODY just once.
+STATE is the variables that holds intialization state."
+  (declare (indent 1) (debug t))
+       `(when (not ,state)
+          (setq ,state t)
+          ,@body))
+;;
+;; Idle
+;;
+(defun idee/when-idle-f (cmds &optional time increment)
+  "Execute CMDS each time systems is idle of TIME seconds incrementing by INCREMENT on each step."
+  (let ((time (or time idee/idle-timer-default))
+        (increment (or increment idee/idle-timer-increment))
+        (next-time (+ time increment))
+        (first (car cmds))
+         (remaining (cdr cmds)))
+    (run-with-idle-timer time nil (lambda ()
+                                      (progn
+                                        ;;
+                                        ;; Let's keep this comment around for debuging purposes.
+                                        ;;
+                                        ;; (message "%s - First: %s - Remaining: %s" (current-time-string) first remaining)
+                                        ;;
+                                        (when first (eval first))
+                                        (when (< 0 (length remaining))
+                                          (idee/when-idle-f remaining next-time increment)))))))
 
-;;;###autoload (autoload 'idee/leader/set-key "idee-utils")
-(defmacro idee/leader/set-key (key func &optional desc)
+(defmacro idee/when-idle (&rest body)
+  "Macro that wraps BODY into a list and passes it to idee/when-idle-f."
+  `(idee/when-idle-f (car '(,body)) idee/idle-timer-default idee/idle-timer-increment))
+
+;;;###autoload (autoload 'idee/leader-set-key "idee-utils")
+(defmacro idee/leader-set-key (key func &optional desc)
 "Leader key function abstraction."
   (declare (indent 1) (debug t))
   `(cond
