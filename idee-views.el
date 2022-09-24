@@ -196,12 +196,12 @@ VISITED is an optional list with windows already visited."
 (defun idee/toggle-tree ()
   "Toggle the tree."
   (interactive)
-  (if (and idee/tree-enabled (not (eq 'visible (treemacs-current-visibility))))
+  (if (not (eq 'visible (treemacs-current-visibility)))
       (progn
-        (setq idee/tree-enabled nil)
+        (setq idee/tree-enabled t)
         (treemacs))
     (progn
-      (setq idee/tree-enabled t)
+      (setq idee/tree-enabled nil)
       (treemacs))))
 
 ;;;###autoload
