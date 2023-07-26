@@ -215,9 +215,9 @@
 (defun idee/global-set-tab-width-function (width)
   "Set the tab WIDTH."
   (when (and (require 'cc-vars nil t) (require 'evil-vars nil t))
+    (custom-set-variables evil-shift-width width)
     (setq standard-indent width
           tab-width width
-          evil-shift-width width
           c-basic-offset width)))
 
 ;;;###autoload
@@ -226,8 +226,8 @@
   (interactive)
   (when (require 'evil-vars nil t)
     (if idee/use-tabs
-        (setq evil-indent-convert-tabs t)
-      (setq evil-indent-convert-tabs nil)))
+        (custom-set-variables evil-indent-convert-tabs t)
+      (custom-set-variables evil-indent-convert-tabs nil)))
 
   (if idee/use-tabs (setq idee/use-tabs nil) (setq idee/use-tabs t))
   (setq indent-tabs-mode idee/use-tabs)

@@ -1,0 +1,69 @@
+(package "idee"
+         "0.0.1"
+         "IDE like utilities for Emacs")
+         
+(website-url "https://github.com/iocanel/idee")
+(keywords "emacs" "ide")
+
+
+(source "gnu")
+(source "melpa")
+
+(files "*.el" "headers" "snippets" "templates")
+(package-file "idee.el")
+
+
+; Common
+(depends-on "yasnippet")
+(depends-on "editorconfig")
+(depends-on "hydra")
+(depends-on "magit")
+(depends-on "projectile")
+(depends-on "helm-projectile")
+(depends-on "helm-ag")
+(depends-on "treemacs")
+(depends-on "treemacs-projectile")
+(depends-on "company")
+(depends-on "use-package")
+(depends-on "markdown-mode")
+ 
+ ; Clojure
+(depends-on "cider")
+
+; Debug
+(depends-on "dap-mode")
+
+; Evil
+(depends-on "evil")
+(depends-on "evil-leader")
+
+; Docker
+(depends-on "dockerfile-mode")
+
+; Eshell
+(depends-on "queue")
+(depends-on "counsel")
+
+; Golang
+(depends-on "go-mode")
+(depends-on "go-guru")
+ 
+; Java
+(depends-on "lsp-java")
+
+; Jshell
+(depends-on "polymode")
+
+; Javascript
+(depends-on "tide")
+
+; Python
+(depends-on "python-mode")
+(depends-on "anaconda-mode")
+
+
+(depends-on "ecukes")
+(depends-on "ert-runner")
+(depends-on "f")
+(depends-on "el-mock")
+(depends-on "emacs" "28.0")

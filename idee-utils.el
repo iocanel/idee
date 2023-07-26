@@ -18,7 +18,6 @@
 
 ;;; Code:
 (require 'seq)
-(require 'yasnippet)
 (require 'idee-vars)
 
 (defvar idee/idle-timer-default 0.5 "The default idle timer offset to be used for command sequences.")

@@ -18,7 +18,7 @@
 
 ;; Version: 0.0.1
 
-;; Package-Requires: ((emacs "25.1") (cider "0.26.1"))
+;; Package-Requires: ((emacs "28.0") (cider "0.26.1"))
 
 ;;; Commentary:
 
@@ -28,7 +28,6 @@
 
 (require 'idee-templates)
 (require 'idee-vars)
-(require 'idee-views)
 (require 'idee-visitors)
 
 (defconst clojure-comment-style (make-idee/comment-style :line-prefix ";;"))
@@ -75,7 +74,7 @@
 
 (defun idee/clojure-visitor (root)
   (when (seq-filter (lambda (x) (equal "project.clj" x)) (directory-files root))
-    (idee/clojure-enable))) 
+    (idee/clojure-enable)))
 
 (defun idee/clojure-init ()
   "Initialize idee-clojure."

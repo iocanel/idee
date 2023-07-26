@@ -17,7 +17,7 @@
 ;; Author: Ioannis Canellos
 ;; Version: 0.0.1
 
-;; Package-Requires: ((emacs "25.1"))
+;; Package-Requires: ((emacs "28.0"))
 
 ;;; Commentary:
 

@@ -17,7 +17,7 @@
 ;; Author: Ioannis Canellos
 ;; Version: 0.0.1
 
-;; Package-Requires: ((emacs "25.1") (lsp-java "2.2") (dap-mode "0.3"))
+;; Package-Requires: ((emacs "28.0") (lsp-java "2.2") (dap-mode "0.3"))
 
 ;;; Code:
 
