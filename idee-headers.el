@@ -20,10 +20,9 @@
 
 ;;; Code:
 
+(require 'idee-vars)
 (require 'idee-projects)
-(require 'idee-vars)
 (require 'idee-comments)
-(require 'idee-vars)
 
 ;;
 ;; Customization
@@ -61,7 +60,7 @@
   "Select a header for the project from the existing selection of headers."
   (interactive)
   (let* ((headers (directory-files idee/emacs-headers-dir))
-        (kind (projectile-completing-read "Select header:" headers)))
+        (kind (completing-read "Select header:" headers)))
     (setq idee/header-selected-kind kind)
     (setq idee/header-current (idee/read-and-eval-template (concat (file-name-as-directory idee/emacs-headers-dir) kind)))))
 

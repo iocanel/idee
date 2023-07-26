@@ -78,7 +78,7 @@
   :description "Create an elisp project based on Cask."
   :func ()))
 
-(defconst idee/project-root-markers '(".idee" ".projectile" ".git") "Files that indicate the root of a project")
+(defconst idee/project-root-markers '(".idee" ".git") "Files that indicate the root of a project")
 (defconst idee/module-root-markers '() "Files that indicate the root of a module")
 (defvar idee/project-factories-list `(,idee/cask-project-factory))
 
@@ -145,14 +145,14 @@
 (defvar idee/current-comment-style elisp-comment-style)
 
 ;; Functions
-(defvar idee/function-alist '((idee/open-function . projectile-switch-project)
+(defvar idee/function-alist '((idee/open-function . project-switch-project)
                               (idee/new-project-function . idee/project-new)
                               (idee/new-file-function . idee/file-new)
-                              (idee/recent-function . projectile-recentf)
-                              (idee/save-all-function . projectile-save-project-buffers)
+                              (idee/recent-function . recentf)
+                              (idee/save-all-function . idee/project-save-buffers)
                               (idee/close-function . idee/project-close-buffers)
-                              (idee/build-function . projectile-compile-project)
-                              (idee/run-or-eval-function . projectile-run-project)
+                              (idee/build-function . project-compile)
+                              (idee/run-or-eval-function . nil)
                               (idee/vcs-function . magit-status)
                               (idee/optimizie-imports-function . nil)
                               (idee/indent-function . evil-indent)
@@ -164,7 +164,7 @@
                               (idee/declaration-function . nil)
                               (idee/back-function . nil)
                               (idee/grep-function . project-find-regexp)
-                              (idee/find-file-function . projectile-find-file-dwim)
+                              (idee/find-file-function . project-find-fil)
                               (idee/find-variable-function . find-variable)
                               (idee/test-function . nil)
                               (idee/repl-view-function . nil)

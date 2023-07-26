@@ -8,7 +8,6 @@
     (yasnippet "0.13.0")
     (treemacs "2.6")
     (swiper "0.13.0")
-    (projectile "2.0.0")
     (emacs "25.1")
     (dash "2.18.0")
     (bui "1.1.0")

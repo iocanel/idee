@@ -104,7 +104,7 @@
          (filetypes (seq-filter (lambda (f) (not (string-prefix-p "." f))) (directory-files mode-path)))
          (definitions (mapcar (lambda (f) (idee/template-parse-from-file (concat mode-path f))) filetypes))
          (names (mapcar (lambda (d) (idee/snippet-name d)) definitions))
-         (name (projectile-completing-read "Select type:" names))
+         (name (completing-read "Select type:" names))
          (matches (seq-filter (lambda (d) (equal name (idee/snippet-name d))) definitions))
          (key (car (mapcar 'idee/snippet-key matches))))
 

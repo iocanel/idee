@@ -24,7 +24,6 @@
 
 ;;; Code:
 
-(require 'projectile)
 (require 'cider)
 
 (require 'idee-templates)
@@ -54,7 +53,7 @@
 (defun idee/clojure-repl ()
   "Start the clojure repl."
   (interactive)
-  (let ((repl-buffer (get-buffer (format "*cider-repl %s*" (projectile-project-name)))))
+  (let ((repl-buffer (get-buffer (format "*cider-repl %s*" (project-name (project-root (project-current)))))))
     (if repl-buffer
         (switch-to-buffer repl-buffer)
       (idee/clojure-jack-in-and-switch))))
@@ -67,7 +66,7 @@
 
 (defun idee/clojure-cider-on-connected()
   (remove-hook 'cider-connected-hook 'idee/cider-on-connected)
-  (switch-to-buffer (get-buffer (format "*cider-repl %s*" (projectile-project-name))))
+  (switch-to-buffer (get-buffer (format "*cider-repl %s*"  (project-name (project-root (project-current))))))
   (mapcar (lambda (a) (eval a))
           (alist-get 'on-repl-connected idee/on-event-command-alist)))
 

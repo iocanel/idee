@@ -25,7 +25,6 @@
 ;;; Code:
 (require 'idee-vars)
 (require 'idee-visitors)
-(require 'projectile)
 (require 'go-mode)
 
 (defconst go-mod "go.mod")

@@ -18,7 +18,7 @@
 
 ;; Version: 0.0.1
 
-;; Package-Requires: ((emacs "25.1") (projectile "2.0.0") (swiper "0.13.0") (treemacs "2.6") (yasnippet "0.13.0") (hydra "0.15.0") (magit "2.90.1") (company "0.9.10" ) (lsp-mode "6.2") (lsp-ui "6.0") (dap-mode "0.3"))
+;; Package-Requires: ((emacs "25.1") (swiper "0.13.0") (treemacs "2.6") (yasnippet "0.13.0") (hydra "0.15.0") (magit "2.90.1") (company "0.9.10" ) (lsp-mode "6.2") (lsp-ui "6.0") (dap-mode "0.3"))
 
 ;;; Commentary:
 
@@ -43,10 +43,10 @@
   (idee/only-once idee/initialized
     (idee/when-idle
      ;; Initialize Project
-     (add-hook 'projectile-after-switch-project-hook 'idee/project-initialize)
+     (advice-add 'project-switch-project :after 'idee/project-initialize)
 
      ;; Intialize templates
-     (add-hook 'projectile-after-switch-project-hook 'idee/template-load-from-project)
+     (advice-add 'project-switch-project :after 'idee/template-load-from-project)
 
      (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
      (when (not (file-exists-p idee/resources-dir)) (mkdir idee/resources-dir t))
@@ -71,10 +71,10 @@
      (add-to-list 'yas-snippet-dirs idee/emacs-snippets-dir)
 
      ;; Intialize visitors
-     (add-to-list 'projectile-after-switch-project-hook 'idee/apply-visitor)
+     (advice-add 'project-switch-project :after 'idee/apply-visitor)
 
      ;; Initialize Headers
-     (advice-add 'projectile-switch-project :after 'idee/header-detect)
+     (advice-add 'project-switch-project :after 'idee/header-detect)
 
      ;; Initialize vterm
      (setq idee/function-alist (delq (assoc 'idee/shell-command-execute-in-project-function idee/function-alist) idee/function-alist))

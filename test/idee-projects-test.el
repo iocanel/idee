@@ -35,10 +35,10 @@
    (f-mkdir ".git")
    (should (equal (idee/project-root-dir root-sandbox-path) (f-full root-sandbox-path)))))
 
-(ert-deftest project-root-dir-test/from-root-with-projectile ()
+(ert-deftest project-root-dir-test/from-root-with-project ()
   "Should use `default-directory' when no argument."
   (with-sandbox
-   (f-mkdir ".projectile")
+   (f-mkdir ".idee")
    (should (equal (idee/project-root-dir root-sandbox-path) (f-full root-sandbox-path)))))
 
 (ert-deftest project-root-dir-test/from-module ()
@@ -64,7 +64,7 @@
    (f-mkdir "test-project")
    (let ((default-directory (f-join default-directory "test-project")))
      (f-mkdir ".git")
-     (should (equal (projectile-project-root) (idee/project-info-path (idee/project-create)))))))
+     (should (equal (project-root (project-current)) (idee/project-info-path (idee/project-create)))))))
 
 (ert-deftest project-state-test/set-version ()
   "Should use `default-directory' when no argument."

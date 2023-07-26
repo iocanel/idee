@@ -23,10 +23,11 @@
 ;;; Code:
 
 (require 'ido)
-(require 'projectile)
 
 (require 'idee-vars)
 (require 'idee-views)
+
+(defcustom idee/project-fixed-buffer-name-list '("*grep*") "A list buffer names that should be considered project buffers" :group 'idee/project :type '(repeat string)) 
 
 (defun idee/project-new()
   "Create a new project."
@@ -92,7 +93,7 @@
 
 (defun idee/project-factory-select()
   "Select a project factory from the list of registered factories."
-  (let ((factory (projectile-completing-read "Select project type:"
+  (let ((factory (completing-read "Select project type:"
                                              (mapcar 'idee/project-factory-entry idee/project-factories-list))))
 
     (car (seq-filter
@@ -110,21 +111,20 @@
     (make-directory path t)
     (shell-command "git init")
     (idee/jump-to-non-idee/window)
-    (projectile-add-known-project path)
-    (setq projectile-project-root path)
-    (projectile-switch-project-by-name path)
+    (add-to-list 'project-list path)
+    (project-switch-project path)
     (delete-other-windows-internal)
     (dired path)
     (auto-revert-mode 1)
     ;; So tools don't work great when files exist in the repo (e.g. npm)
-    ;; To work around this, let's delete .projectile and recreate it afterwards.
+    ;; To work around this, let's delete .project and recreate it afterwards.
     (dolist (c commands)
       (idee/shell-command-execute-in-project c))
     (idee/jump-to-non-idee/window)))
 
 (defun idee/module-create-with-shell (path &rest commands)
   "Create a new module with in the specified PATH and the specified COMMANDS."
-  (let* ((project-path (projectile-project-root path))
+  (let* ((project-path (project-root (project-current nil path))
         (relative-path (file-relative-name path project-path))
         (dired-auto-revert-buffer t))
     (idee/shell-command-execute-in-project (format "cd %s" relative-path))
@@ -136,7 +136,7 @@
     (idee/switch-cli-on)
     (dolist (c commands)
       (idee/shell-command-execute-in-project c))
-    (idee/jump-to-non-idee/window)))
+    (idee/jump-to-non-idee/window))))
 
 (defun idee/buffers-revert-visible-dired ()
   "Revert all visible dired buffers."
@@ -149,51 +149,63 @@
             (set-buffer buffer)
             (when (derived-mode-p 'dired-mode) (revert-buffer)))))))
 
+
+(defun idee/project-buffer-p (buffer &optional project)
+  "Checks if BUFFER belongs to the project."
+  (let* ((name (buffer-name buffer))
+         (file-name (buffer-file-name buffer)))
+         (project (or project (project-current)))
+         (project-dir (or project-dir (project-root project)))
+         (project-name (project-name project))
+         (projec-buffers (project-buffers project))
+         (project-dir-name (file-name-nondirectory (directory-file-name (file-name-directory project-dir)))))
+         
+    (or (member buffer project-buffers) ;; known project buffer
+        (and project-dir (cl-search project-dir file-name)) ;; the file literaly belongs to the project
+        (name member idee/project-fixed-buffer-name-list)))
+
+(defun idee/project-save-buffers ()
+  "Save porject buvvers"
+  (interactive)
+  (dolist (buffer (project-buffers (project-current)))
+    (with-current-buffer buffer
+      (when (and (buffer-file-name) (member (buffer-file-name) project-files))
+        (save-buffer)))))
+
 ;;;###autoload
 (defun idee/project-close-buffers (&optional project-dir)
   (interactive)
-  (let* ((project-dir (or project-dir (projectile-project-root)))
-         (project (projectile-ensure-project (or project-dir (projectile-project-root))))
-         (project-name (projectile-project-name project))
+  (let* ((project (project-current))
+         (project-dir (or project-dir (project-root project)))
+         (project-name (project-name project))
          (project-dir-name (file-name-nondirectory (directory-file-name (file-name-directory project-dir)))))
+
        (when project-dir
-         (progn
-           (setq projectile-project-root project-dir)
-           (projectile-kill-buffers)
+           (project-kill-buffers t)
            ;; Kill all buffers containing the PROJECT-DIR.
-           (when (get-buffer project-dir) (kill-buffer project-dir))))
+           (when (get-buffer project-dir) (kill-buffer project-dir)))
 
        (dolist (buffer (buffer-list))
-         (let* ((name (buffer-name buffer))
-                (file-name (buffer-file-name buffer)))
-           (cond
-            ((and project-dir (cl-search project-dir name) (kill-buffer name)))
-            ((and project-dir (cl-search project-dir file-name) (kill-buffer name)))
-            ((and project-name (cl-search project-name name) (kill-buffer name)))
-            ((and project-dir-name (eq project-dir-name name) (kill-buffer name)))
-            ((cl-search "*helm-ag*" name) (kill-buffer name))
-            ((cl-search "*grep*" name) (kill-buffer name)))))))
+         (when (idee/project-buffer-p buffer project) (kill-buffer buffer))))
 
 (defun idee/project-close-other-buffers (&optional project-dir)
   (interactive)
-  (let* ((project-dir (or project-dir (projectile-project-root)))
-         (project (projectile-ensure-project (or project-dir (projectile-project-root))))
-         (project-name (projectile-project-name project))
+  (let* ((project (project-current))
+         (project-dir (or project-dir (project-root project)))
+         (project-name (project-name project))
          (project-dir-name (file-name-nondirectory (directory-file-name (file-name-directory project-dir)))))
        (when project-dir
-         (progn
            (dolist (buffer (buffer-list))
-             (let* ((name (buffer-name buffer))
-                    (file-name (buffer-file-name buffer)))
-               (when (not (projectile-project-buffer-p buffer project-dir))
+               (when (not (idee/project-buffer-p buffer) project)
                  (message "Killing buffer: %s that does not belong to project: %s." name project-dir)
-                 (kill-buffer name))))))))
+                 (kill-buffer name)))))))
 
 (defun idee/project-create (&optional path)
   "Create project in the optionally specified PATH, existing project root or current directory."
   (interactive)
-  (let* ((path (or path (or (projectile-project-root) default-directory)))
-         (name (or (projectile-project-name)  (file-name-nondirectory (directory-file-name path))))
+  (let* ((project (project-current nil))
+         (path (or path (or (project-root project) default-directory)))
+         (name (or (project-name project) (file-name-nondirectory (directory-file-name path))))
          (info (alist-get (intern name) idee/project-info-alist)))
 
     (when (not info)

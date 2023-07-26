@@ -77,12 +77,11 @@ The command supports accepting an external CREATE-FUNCTION or defaults to idee/p
   (setq default-directory (file-name-as-directory idee/spring-extract-dir))
   (message (format "default dir: %s" default-directory))
   (call-process-shell-command "git init")
-  (write-region "" nil (concat (file-name-as-directory idee/spring-extract-dir) ".projectile"))
+  (write-region "" nil (concat (file-name-as-directory idee/spring-extract-dir) ".project"))
 
-  (require 'projectile)
-  (projectile-add-known-project idee/spring-extract-dir)
-  (setq projectile-project-root idee/spring-extract-dir)
-  (projectile-switch-project-by-name idee/spring-extract-dir)
+
+  (add-to-list 'project-list path)
+  (project-switch-project path)
   (revert-buffer)
   (dired idee/spring-extract-dir)))
 

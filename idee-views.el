@@ -25,8 +25,6 @@
 (require 'idee-utils)
 
 (require 'magit)
-(require 'treemacs-projectile)
-(require 'treemacs)
 
 (require 'fringe)
 
@@ -55,7 +53,7 @@
 (defvar idee/eww-active nil)
 (defvar idee/xwidget-webkit-active nil)
 (defvar idee/side-by-side-active nil)
-(defvar idee/bottom-buffer-command 'idee/projectile-run-eshell)
+(defvar idee/bottom-buffer-command 'idee/project-run-eshell)
 
 
 (defvar idee/selected-window nil "The selected window. This should be selected after refresh.")
@@ -86,6 +84,7 @@
           (when idee/focus-center-buffer (set-fringe-mode idee/focus-fringe-mode))
           (when (and
                  (equal 'visible idee/focus-treemacs-visible)
+                 (boundp 'treemacs-current-visibility)
                  (not (equal 'visible (treemacs-current-visibility)))) (treemacs))))
     ;; Focus
     (progn
@@ -93,8 +92,7 @@
       (setq idee/focus-treemacs-visible (treemacs-current-visibility))
       (delete-other-windows)
       (when idee/focus-center-buffer (set-fringe-mode (/ (- (frame-pixel-width) (* idee/focus-center-buffer-columns (frame-char-width))) 2)))))
-  (setq idee/focus-treemacs-visible (treemacs-current-visibility)))
-
+  (setq idee/focus-treemacs-visible (and (boundp 'treemacs-current-visibility) (treemacs-current-visibility))))
 
 ;; Functions
 
@@ -106,7 +104,7 @@
 (defun idee/project-open-view(&optional path)
   "Switch to a traditional IDE view for the buffer.  (project tree, main buffer & terminal)."
   (interactive)
-  (let* ((path (or path (or (projectile-project-root) default-directory))))
+  (let* ((path (or path (or (project-root (project-current (or path default-directory))) default-directory))))
     (dired path)
     (idee/jump-to-non-idee/window)
     (magit-status-init-buffer path)))
@@ -127,7 +125,7 @@
   (delete-other-windows-internal)
   (if (and idee/tree-enabled (not (eq 'visible (treemacs-current-visibility)))
            (progn
-             (treemacs--init (projectile-project-root))
+             (treemacs--init (project-root (project-current)))
              ;; we remove the mode-line to hide the treemacs label
              (setq mode-line-format nil)))
       (idee/jump-to-non-idee/window)
@@ -144,7 +142,7 @@
 (defun idee/terminal-view()
   "Maximize terminal in the project root."
   (interactive)
-  (idee/projectile-run-eshell)
+  (idee/project-run-eshell)
   (delete-other-windows-internal))
 
 ;;
@@ -378,7 +376,8 @@ PIVOT indicates how many windows should be switched at the end of the operation.
   (if (and idee/side-by-side-buffer (get-buffer idee/side-by-side-buffer))
       (display-buffer idee/side-by-side-buffer)
     (progn
-      (projectile--find-file-dwim nil 'find-file-other-window) 
+      (split-window-horizontally)
+      (project-find-file)
       (let* ((name (buffer-name (current-buffer)))
              (actual-name (if (idee/starts-with "*side " name) (substring name 6 (- (length name)  7)) name))
              (side-name (format "*side %s*" actual-name)))

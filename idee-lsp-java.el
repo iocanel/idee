@@ -35,7 +35,7 @@
   "Enable lsp-java, add hooks, visitors etc."
   (interactive)
   (when idee/lsp-java-enabled
-    (lsp-workspace-folders-add (projectile-project-root))
+    (lsp-workspace-folders-add (project-root (project-current)))
     (when idee/lsp-server-per-workspace-enabled
       (setq lsp-java-server-install-dir (concat (file-name-as-directory (idee/project-root-dir)) ".lsp")))))
 

@@ -7,7 +7,7 @@ Unified way to perform IDEE/like tasks across multiple languages and frameworks 
 [[./doc/images/idee-ide-view.png]]
 
 ** Features
-   - Integration with [[https://github.com/bbatsov/projectile][projectile]], [[https://github.com/Alexander-Miller/treemacs][treemacs]] and [[https://github.com/jaotavora/yasnippet][yasnippet]].
+   - Integration with [[https://github.com/Alexander-Miller/treemacs][treemacs]] and [[https://github.com/jaotavora/yasnippet][yasnippet]].
    - Global shortcuts and functions for all languages and frameworks.
      - java
      - clojure
@@ -26,7 +26,6 @@ Unified way to perform IDEE/like tasks across multiple languages and frameworks 
    - Improved window management
      - eshell
      - flycheck & flymake
-     - projectile-grep
      - helm-ag
 
 ** Experimental features       

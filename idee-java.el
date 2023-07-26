@@ -26,11 +26,7 @@
 (require 'idee-templates)
 (require 'idee-java-utils)
 (require 'idee-visitors)
-(require 'idee-quarkus)
-(require 'idee-spring)
-(require 'idee-lsp-java)
-
-(require 'projectile)
+(require 'idee-lsp-java nil t)
 
 (require 'cc-vars)
 (require 'cc-cmds)
@@ -232,17 +228,19 @@ The target module will be the current, unless BASE-PATH has been specified, in w
                                     :description "New Maven project from archetype."
                                     :func 'idee/new-maven-from-archetype-project))
     ;; Quarkus
-    (idee/visitor-register 'idee/quarkus-visitor)
-    (idee/project-factory-register (make-idee/project-factory
-                                    :name "Quarkus"
-                                    :description "New Quarkus project created using the quarkus maven plugin."
-                                    :func 'idee/new-quarkus-rest-project))
+    (when (require 'idee-quarkus nil t)
+      (idee/visitor-register 'idee/quarkus-visitor)
+      (idee/project-factory-register (make-idee/project-factory
+                                      :name "Quarkus"
+                                      :description "New Quarkus project created using the quarkus maven plugin."
+                                      :func 'idee/new-quarkus-rest-project)))
 
     ;; Spring
-    (idee/project-factory-register (make-idee/project-factory
-                                    :name "Spring"
-                                    :description "New Spring project created using https://start.spring.io"
-                                    :func 'idee/new-spring-starter-project))
+    (when (require 'idee-spring nil t)
+      (idee/project-factory-register (make-idee/project-factory
+                                      :name "Spring"
+                                      :description "New Spring project created using https://start.spring.io"
+                                      :func 'idee/new-spring-starter-project)))
 
     (idee/template-factory-register (make-idee/template-factory
                                      :mode 'java-mode
@@ -264,7 +262,7 @@ The target module will be the current, unless BASE-PATH has been specified, in w
     (add-hook 'java-mode-hook 'idee/java-enable)
     (add-hook 'java-mode-hook 'idee/java-visit-file)
 
-    (advice-add 'projectile-switch-to-buffer :after #'idee/java-visit-file)))
+    (advice-add 'project-switch-to-buffer :after #'idee/java-visit-file)))
 
 (provide 'idee-java)
 ;;; idee-java.el ends here

@@ -21,12 +21,10 @@
 
 ;;; Code:
 
-(require 'treemacs-projectile)
 (require 'treemacs)
 (require 'hydra)
 (require 'idee-views)
 
-(require 'treemacs-projectile)
 (require 'treemacs)
 (require 'treemacs-bookmarks)
 (require 'hydra)
@@ -112,7 +110,7 @@
              (project (treemacs-project->path workspace))
              (path (treemacs-project->path (car project))))
         (when path
-          (projectile-switch-project-by-name path)
+          (project-switch-project path)
           (idee/reset-view)
           (idee/jump-to-non-idee/window)))))
 

@@ -20,7 +20,6 @@
 (require 'seq)
 (require 'yasnippet)
 (require 'idee-vars)
-(require 'projectile)
 
 (defvar idee/idle-timer-default 0.5 "The default idle timer offset to be used for command sequences.")
 (defvar idee/idle-timer-increment 0.5 "The default idle timer increment between commands.")
@@ -116,14 +115,16 @@
     (let ((matches)
           (index 0)
           (match " "))
-      (string-match regexp string)
       (while match
-        (setq match (match-string index string))
-        (if match
+        (if (string-match regexp string)
             (progn
-              (push match matches)
-              (setq index (+ 1 index)))))
-      matches)))
+              (setq match (match-string index string))
+              (if match
+                  (progn
+                    (push match matches)
+                    (setq index (+ 1 index)))))
+          (setq match nil)))
+        matches)))
 
 
 (defun idee/string-camelcase-split (s)
@@ -226,7 +227,7 @@
 ;;;###autoload
 (defun idee/visit-project-files (visitor &optional dir)
   "Call VISITOR with all project files or DIR files."
-  (let* ((current (or dir (projectile-project-root))))
+  (let* ((current (or dir (project-root (project-current (or dir default-directory))))))
     (dolist (extension (idee/source-file-extensions))
          (mapc (lambda (x) (funcall visitor x))
           (directory-files-recursively current (format "\\.%s$" extension))))))
@@ -250,7 +251,7 @@
 ;;;###autoload
 (defun idee/project-settings (settings-file)
   "Return the path of a local SETTINGS-FILE."
-  (concat (file-name-as-directory (concat (projectile-project-root) ".idee")) settings-file))
+  (concat (file-name-as-directory (concat (project-root (project-current)) ".idee")) settings-file))
 
 (defun idee/project-settings-set (settings-file key value)
   "Add or replace a set statement inside the SETTINGS-FILE using the specified KEY and VALUE."

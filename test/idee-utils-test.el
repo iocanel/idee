@@ -33,19 +33,13 @@
   (should (equal nil (idee/string-camelcase-to-kebabcase nil)))
   (should (equal "my" (idee/string-camelcase-to-kebabcase "My")))
   (should (equal "my-class" (idee/string-camelcase-to-kebabcase "MyClass")))
-  (should (equal "my-a-class" (idee/string-camelcase-to-kebabcase "MyAClass")))
-)
+  (should (equal "my-a-class" (idee/string-camelcase-to-kebabcase "MyAClass"))))
 
-(ert-deftest util/should-find-projectile-project-root ()
+(ert-deftest util/should-find-project-root ()
   "Should find project root."
   (with-sandbox
    (f-mkdir ".git")
-   (should (equal (file-name-as-directory root-sandbox-path) (projectile-project-root)))))
-
-;; (ert-deftest util/should-not-find-projectile-project-root ()
-;;   "Should not find project root."
-;;   (with-sandbox
-;;    (should-not (projectile-project-p (projectile-project-root)))))
+   (should (equal (file-name-as-directory root-sandbox-path) (project-root (project-current))))))
 
 (ert-deftest util/should-find-project-settings ()
   "Should find project settings."

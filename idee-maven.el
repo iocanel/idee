@@ -117,7 +117,7 @@
 (defun idee/maven-edit-project-pom-xml ()
   "Edit the current project pom."
   (interactive)
-  (let* ((project-pom (concat (projectile-project-root) pom-xml)))
+  (let* ((project-pom (concat (project-root (project-current)) pom-xml)))
     (if (file-exists-p project-pom)
         (progn (idee/jump-to-non-idee/window)
                (find-file project-pom)))))

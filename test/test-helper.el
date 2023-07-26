@@ -49,17 +49,18 @@
      ,@body))
 
 
+(require 'idee-vars (f-expand "idee-vars.el" root-code-path))
+(require 'idee-utils (f-expand "idee-utils.el" root-code-path))
+(require 'idee-navigation (f-expand "idee-navigation.el" root-code-path))
 (require 'idee-actions (f-expand "idee-actions.el" root-code-path))
 (require 'idee-arch (f-expand "idee-arch.el" root-code-path))
 (require 'idee-comments (f-expand "idee-comments.el" root-code-path))
 (require 'idee-eshell (f-expand "idee-eshell.el" root-code-path))
 (require 'idee-git (f-expand "idee-git.el" root-code-path))
-(require 'idee-headers (f-expand "idee-headers.el" root-code-path))
-(require 'idee-projects (f-expand "idee-projects.el" root-code-path))
-(require 'idee-templates (f-expand "idee-templates.el" root-code-path))
-(require 'idee-utils (f-expand "idee-utils.el" root-code-path))
-(require 'idee-vars (f-expand "idee-vars.el" root-code-path))
 (require 'idee-views (f-expand "idee-views.el" root-code-path))
+(require 'idee-projects (f-expand "idee-projects.el" root-code-path))
+(require 'idee-headers (f-expand "idee-headers.el" root-code-path))
+(require 'idee-templates (f-expand "idee-templates.el" root-code-path))
 (require 'idee-visitors (f-expand "idee-visitors.el" root-code-path))
 (require 'idee-vars (f-expand "idee-vars.el" root-code-path))
 
@@ -71,8 +72,9 @@
 (require 'idee-docker (f-expand "idee-docker.el" root-code-path))
 ;; Java
 (require 'idee-java-utils (f-expand "idee-java-utils.el" root-code-path))
-(require 'idee-java (f-expand "idee-java.el" root-code-path))
+(require 'idee-lsp (f-expand "idee-lsp.el" root-code-path))
 (require 'idee-lsp-java (f-expand "idee-lsp-java.el" root-code-path))
+(require 'idee-java (f-expand "idee-java.el" root-code-path))
 (require 'idee-dap (f-expand "idee-dap.el" root-code-path))
 (require 'idee-maven (f-expand "idee-maven.el" root-code-path))
  

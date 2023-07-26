@@ -20,7 +20,6 @@
 
 ;;; Code:
 
-(require 'projectile)
 (require 'idee-vars)
 
 ;;;###autoload

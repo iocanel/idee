@@ -31,13 +31,12 @@
 
 
 (ert-deftest dockerfile/test-exposed-ports()
-  "Should successfully extract exposes ports from Dockerfile"
   (with-sandbox
-   ;; Let's make sure we are inside a projectile project.
    (f-mkdir ".git")
    (let ((dockerfile-no-ports (f-join root-test-assets-path "Dockerfile.no-ports"))
-          (dockerfile-single-port (f-join root-test-assets-path "Dockerfile.single-port"))
-          (dockerfile-multiple-ports (f-join root-test-assets-path "Dockerfile.multiple-ports")))
+         (dockerfile-single-port (f-join root-test-assets-path "Dockerfile.single-port"))
+         (dockerfile-multiple-ports (f-join root-test-assets-path "Dockerfile.multiple-ports")))
+
 
      (should-not (idee/docker-get-exposed-ports dockerfile-no-ports))
      (should (equal "8080" (car (idee/docker-get-exposed-ports dockerfile-single-port))))

@@ -84,7 +84,7 @@
       (when (lsp-workspaces) (lsp-workspace-restart workspace)))))
 
 (defun idee/lsp-get-current-workspace ()
-  (let ((project-root (projectile-project-root)))
+  (let ((project-root (project-current)))
     (car (seq-filter (lambda (w) (eq 
                                   (file-name-as-directory (file-truename project-root))
                                   (file-name-as-directory (file-truename w)))) (lsp-session-folders (lsp-session))))))

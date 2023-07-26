@@ -12,7 +12,6 @@
 ;;; Code:
 (require 'idee-visitors)
 (require 'dockerfile-mode)
-(require 'projectile)
 
 (defvar idee/dockerfile-provider-list nil)
 (defvar idee/docker-last-edited-dockerfile nil)
@@ -30,7 +29,7 @@
   "Perform a docker build."
   (interactive)
   (let* ((dockerfile (idee/docker-find-dockerfile))
-        (dockerfile-relative-path (file-relative-name dockerfile (projectile-project-root)))
+        (dockerfile-relative-path (file-relative-name dockerfile (project-root (project-current))))
         (docker-image (idee/docker-get-image-name)))
     (idee/shell-command-execute-in-project (format "docker build -f %s -t %s ." dockerfile-relative-path docker-image))))
 
@@ -89,7 +88,7 @@
 (defun idee/docker-get-exposed-ports(dockerfile)
   "Get the port numbers that are exposed in the DOCKERFILE as list."
   (let ((abs-dockerfile
-         (if (not (file-name-absolute-p dockerfile)) dockerfile (f-join (projectile-project-root) dockerfile))))
+         (if (not (file-name-absolute-p dockerfile)) dockerfile (f-join (project-root (project-current)) dockerfile))))
     (with-temp-buffer
       (insert-file-contents abs-dockerfile)
       (let* ((begin (point-min))
@@ -125,7 +124,7 @@ The criteria are the following:
 
 (defun idee/docker-dockerfile-from-project-root ()
   "Return the path of Dockerfile at the project root."
-  (f-join (projectile-project-root) "Dockerfile"))
+  (f-join (project-root (project-current) "Dockerfile")))
 
 (defun idee/docker-init ()
   "Initialize idee/docker."

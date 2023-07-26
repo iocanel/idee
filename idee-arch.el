@@ -30,7 +30,6 @@
 ;; In most cases it should be a function that applies multiple templates to the project. 
 
 ;;; Code:
-(require 'projectile)
 (require 'idee-vars)
 
 (cl-defstruct idee/archetype
@@ -62,7 +61,7 @@
 
 (defun idee/archetype-select()
   "Select an archetype from the list of registered archetype."
-  (let ((archetype (projectile-completing-read "Select archetype:"
+  (let ((archetype (completing-read "Select archetype:"
                                              (mapcar 'idee/archetype-entry idee/archetype-list))))
     (car (seq-filter
           (lambda (a)

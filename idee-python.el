@@ -24,7 +24,6 @@
 
 ;;; Code:
 (require 'idee-vars)
-(require 'projectile)
 (require 'python-mode)
 
 (defconst pyproject-toml "pyproject.toml")

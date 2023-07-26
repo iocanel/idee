@@ -25,8 +25,6 @@
 (require 'esh-mode)
 (require 'em-alias)
 (require 'em-hist)
-(require 'projectile)
-
 
 (defvar idee/eshell-command-queue (queue-create))
 (defvar idee/eshell-command-inserting nil)
@@ -83,7 +81,7 @@
   `(let ()
   (when idee/eshell-save-on-shell-enabled (idee/save-all))
   (idee/switch-cli-on)
-  (with-current-buffer (format "*eshell %s*" (projectile-project-name))
+  (with-current-buffer (format "*eshell %s*" (project-name (project-root (project-current))))
     (let ((comint-scroll-to-bottom-on-output t))
       (eshell-send-input)
       (eshell-return-to-prompt)
@@ -94,7 +92,7 @@
 (defun idee/eshell-command-execute-in-project (command &optional new-shell)
   "Run a single COMMAND in the current project shell.
    When NEW-SHELL is specified the old eshell project buffer is killed."
-  (let* ((name (format "*eshell %s*" (projectile-project-name)))
+  (let* ((name (format "*eshell %s*" (project-name (project-root (project-current)))))
          (buf (get-buffer name))
          (eshell-scroll-to-bottom-on-input t)
          (comint-scroll-to-bottom-on-output t))
@@ -110,7 +108,7 @@
 (defun idee/eshell-command-enqueue-in-project (commands)
   "Execute COMMANDS on eshell."
   (idee/switch-cli-on)
-  (with-current-buffer (format "*eshell %s*" (projectile-project-name))
+  (with-current-buffer (format "*eshell %s*" (project-name (project-root (project-current))))
     (let ((comint-scroll-to-bottom-on-output t)
           (eshell-scroll-to-bottom-on-input t))
       (dolist (cmd (if (listp commands) commands (list commands)))
@@ -140,15 +138,14 @@
   "Invoke `eshell' in the project's root.
    Switch to the project specific eshell buffer if it already exists."
   (interactive)
-  (projectile-with-default-dir (projectile-ensure-project (projectile-project-root))
-    (let* ((eshell-buffer-name (format "*eshell %s*" (projectile-project-name)))
+    (let* ((eshell-buffer-name (format "*eshell %s*" (project-name (project-root (project-current)))))
            (buf (get-buffer eshell-buffer-name)))
       (when (and (not (idee/cli-visible-p)) (not (string-prefix-p "*eshell " (buffer-name))))
         (cond (buf (switch-to-buffer buf))
               ((fboundp '+eshell/here) (+eshell/here)) ;; If running inside doom use +eshell/here.
               (:else (eshell)))
         ;; In some cases just setting eshell-buffer-name doesn't cut it
-        (when (not (equal (buffer-file-name) eshell-buffer-name)) (rename-buffer eshell-buffer-name))))))
+        (when (not (equal (buffer-file-name) eshell-buffer-name)) (rename-buffer eshell-buffer-name)))))
 
 ;;
 ;; Aliases
@@ -189,17 +186,16 @@
         (progn
           (setq default-directory path)
           (when (not (file-exists-p git)) (shell-command "git init"))
-          (projectile-add-known-project path)
-          (setq projectile-project-root path)
-          (projectile-switch-project-by-name path))
+          (add-to-list 'project-list path)
+          (project-switch-project path)
       (idee/eshell-edit path))))
 
 (when idee/eshell-edit-alias-enabled
-  (add-hook 'eshell-mode-hook (lambda () (eshell/alias "open" "idee/eshell-open $1"))))
+  (add-hook 'eshell-mode-hook (lambda () (eshell/alias "open" "idee/eshell-open $1")))))
 
 (defun idee/eshell-find-web-port ()
   "Find the web port in the current buffer, or return 8080 if none is found."
-  (let* ((name (format "*eshell %s*" (projectile-project-name)))
+  (let* ((name (format "*eshell %s*" (project-name (project-root (project-current)))))
          (buffer (get-buffer name)))
     (if buffer
         (with-current-buffer buffer
