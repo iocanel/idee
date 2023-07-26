@@ -26,7 +26,6 @@
 ;;
 ;; Optional
 ;;
-(require 'helm-ag nil t)
 (require 'cc-vars nil t)
 (require 'evil-vars nil t)
 

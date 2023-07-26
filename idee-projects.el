@@ -44,19 +44,6 @@
     ;; Make sure we are pointing to a non ide buffer.
     (idee/jump-to-non-idee/window)))
 
-(defun idee/project-grep()
-  "Grep."
-  (interactive)
-  (when (require 'helm-ag nil t)
-    (let ((buf (buffer-name (window-buffer))))
-      (helm-do-ag (projectile-project-root))
-      (other-window 1)
-      (while (and
-              (not (equal "*grep*" (buffer-name (window-buffer))))
-              (not (equal buf (buffer-name (window-buffer)))))
-        (other-window 1)))))
-
-
 ;;;###autoload
 (defun idee/project-factory-register (project-factory)
   "Register a PROJECT-FACTORY."
