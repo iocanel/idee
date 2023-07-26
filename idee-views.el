@@ -29,7 +29,6 @@
 (require 'treemacs)
 
 (require 'fringe)
-(require 'helm-projectile nil t)
 
 ;;
 ;; State
@@ -53,7 +52,6 @@
 (defvar idee/errors-active t)
 (defvar idee/messages-active t)
 (defvar idee/grep-active nil)
-(defvar idee/helm-ag-active nil)
 (defvar idee/eww-active nil)
 (defvar idee/xwidget-webkit-active nil)
 (defvar idee/side-by-side-active nil)
@@ -205,14 +203,6 @@ VISITED is an optional list with windows already visited."
       (treemacs))))
 
 ;;;###autoload
-(defun idee/toggle-helm-ag-or-grep  ()
-  "Toggle helm-ag if helm-ag is installed or fallback to projectile-grep."
-  (interactive)
-  (if (and (require 'helm-projectile nil 'noerror) (require 'helm-ag nil 'noerror))
-      (idee/toggle-helm-ag)
-    (idee/toggle-grep)))
-
-;;;###autoload
 (defun idee/new-empty-buffer()
   "Create an empty buffer."
   (let ((fl (make-temp-file "Untitled")))
@@ -276,18 +266,6 @@ VISITED is an optional list with windows already visited."
 (defun idee/messages-visible-p ()
   "Return non-nil if messages is visible."
   (idee/messages-visible-window))
-(defun idee/grep-visible-window ()
-  "Return the grep window if visible."
-  (car (idee/windows-visible-get "*grep*")))
-(defun idee/grep-visible-p ()
-  "Return non-nil if grep is visible."
-  (idee/grep-visible-window))
-(defun idee/helm-ag-visible-window ()
-  "Return the helm-ag if visible."
-  (car (idee/windows-visible-get "*helm-ag*")))
-(defun idee/helm-ag-visible-p ()
-  "Return non-nil if helm-ag is visible."
-  (idee/helm-ag-visible-window))
 (defun idee/eww-visible-window ()
   "Return the eww window if visible."
   (car (idee/windows-visible-get "*eww*")))
@@ -441,10 +419,6 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 (idee/create-view-component "repl" idee/repl idee/repl-visible-window idee/repl-active)
 ;;;###autoload (autoload 'idee/toggle-messages "idee-views")
 (idee/create-view-component "messages" idee/messages  idee/messages-visible-window idee/messages-active)
-;;;###autoload (autoload 'idee/toggle-grep "idee-views")
-(idee/create-view-component "grep" projectile-grep idee/grep-visible-window idee/grep-active)
-;;;###autoload (autoload 'idee/toggle-helm-ag "idee-views")
-(idee/create-view-component "helm-ag" helm-do-ag-project-root  idee/helm-ag-visible-window idee/helm-ag-active)
 ;;;###autoload (autoload 'idee/toggle-eww "idee-views")
 (idee/create-view-component "eww" idee/eww idee/eww-visible-window idee/eww-active)
 ;;;###autoload (autoload 'idee/toggle-xwidget-webkit "idee-views")
@@ -526,7 +500,7 @@ PIVOT indicates how many windows should be switched at the end of the operation.
 
     (when (not (idee/display-buffer-alist-contains "shell"))
       (setq display-buffer-alist (add-to-list 'display-buffer-alist 
-                                              `("\\*\\(Async [s\\|S]hell [c\\|C]ommand.*\\|eshell.*\\|shell.*\\|vterm.*\\|helm-ag\\|helm-ag-edit\\|xref\\|.*compilation\\)\\*"
+                                              `("\\*\\(Async [s\\|S]hell [c\\|C]ommand.*\\|eshell.*\\|shell.*\\|vterm.*\\|xref\\|.*compilation\\)\\*"
                                                 (display-buffer-in-side-window)
                                                 (window-height . 0.40)
                                                 (side . bottom)

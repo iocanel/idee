@@ -181,7 +181,7 @@
   (">" idee/jump-forward :exit nil)
   ("<" idee/jump-back :exit nil)
   ("." idee/back-push :exit nil)
-  ("g" idee/toggle-helm-ag-or-grep)
+  ("g" idee/grep)
   ("f" idee/find-file)
   ("v" idee/find-variable)
 
