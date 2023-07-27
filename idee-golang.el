@@ -25,7 +25,6 @@
 ;;; Code:
 (require 'idee-vars)
 (require 'idee-visitors)
-(require 'go-mode)
 
 (defconst go-mod "go.mod")
 (defconst glidee/yml "glide.yml")
@@ -36,7 +35,6 @@
 (defun idee/golang-enable()
   "Enabled golang bindings."
   (interactive)
-  (go-set-project)
   (idee/golang-hook))
 
 (defun idee/golang-hook ()
