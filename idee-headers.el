@@ -35,16 +35,17 @@
 ;;
 ;; Functions
 ;; 
-(defun idee/header-detect ()
+(defun idee/header-detect (&optional root-dir)
   "Detect and set the value of idee/header-current, if exists."
-  (let ((h (idee/header-of-project)))
+  (let ((h (idee/header-of-project root-dir)))
     (if h
         (setq idee/header-current h))))
 
-(defun idee/header-of-project ()
+(defun idee/header-of-project (&optional root-dir)
   "Read the header from header.txt."
-  (let ((root-dir-header (concat (idee/project-root-dir (buffer-file-name)) "header.txt"))
-        (idee/dir-header (concat (idee/project-root-dir (buffer-file-name)) (file-name-as-directory idee/project-conf-dir) "header.txt")))
+  (let* ((root-dir (or root-dir (idee/project-root-dir (buffer-file-name))))
+         (root-dir-header (concat root-dir "header.txt"))
+         (idee/dir-header (concat root-dir (file-name-as-directory idee/project-conf-dir) "header.txt")))
 
        (cond ((file-exists-p root-dir-header) (idee/read-and-eval-template root-dir-header))
              ((file-exists-p idee/dir-header) (idee/read-and-eval-template idee/dir-header))

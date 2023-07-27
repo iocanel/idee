@@ -22,8 +22,6 @@
 
 ;;; Code:
 
-(require 'ido)
-
 (require 'idee-vars)
 (require 'idee-views)
 
@@ -261,11 +259,12 @@
 ;;
 ;; Initialization
 ;;
-(defun idee/project-initialize ()
+(defun idee/project-initialize (&optional root-dir)
   "Initialize ide project.
-When called this function will look at the project root for an elisp script called .idee/init.el and will load it if present."
+When called this function will look at the project root for an elisp script
+called .idee/init.el and will load it if present."
   (interactive)
-  (let* ((root-dir (idee/project-root-dir (buffer-file-name)))
+  (let* ((root-dir (or root-dir (idee/project-root-dir (buffer-file-name))))
          (conf-dir (concat (file-name-as-directory root-dir) idee/project-conf-dir))
          (init-el (concat (file-name-as-directory conf-dir) "init.el")))
     (when (file-exists-p init-el) (load-file init-el))))

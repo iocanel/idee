@@ -28,7 +28,7 @@
   (let* ((name (format "*vterm %s*" (project-name (project-current))))
          (buf (get-buffer name))
          (window (if buf (get-buffer-window buf) nil))
-         (default-directory (project-root (project-current)))
+         (default-directory (project-root (project-current))))
     (cond (window (progn
              (select-window window)))
           (buf (progn

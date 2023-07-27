@@ -28,7 +28,7 @@
   (list 'push  visitor 'idee/list-visitor))
 
 ;;;###autoload
-(defun idee/apply-visitor()
+(defun idee/apply-visitor(&optional root-dir)
   "Call all registered visitors."
   (dolist (v idee/list-visitor)
     (funcall v default-directory)))

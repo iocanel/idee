@@ -119,11 +119,11 @@
 ;;
 
 ;;;###autoload
-(defun idee/template-load-from-project ()
+(defun idee/template-load-from-project (&optional dir)
   "Load project templates."
   (interactive)
   (idee/when-idle
-   (let* ((root-dir (idee/project-root-dir (buffer-file-name)))
+   (let* ((root-dir (or dir (idee/project-root-dir (buffer-file-name))))
           (conf-dir (concat (file-name-as-directory root-dir) idee/project-conf-dir))
           (template-dir (concat (file-name-as-directory conf-dir) "templates")))
      (when (file-exists-p template-dir)
