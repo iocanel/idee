@@ -23,7 +23,7 @@
 
 ;;; Code:
 
-(require 'idee-java-utils)
+(require 'idee-java)
 (require 'idee-dap)
 (require 'idee-utils)
 (require 'idee-projects)

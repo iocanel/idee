@@ -65,7 +65,7 @@ This will load all `el` files included in the project. Alternatively, you can tr
     Using `use-package` you can enable additional modules in a similar mannner, for example:
 
 #+begin_src emacs-lisp
-  (use-package idee-java :straight (idee-java :host github :repo "iocanel/idee" :files ("idee-java.el" "idee-java-utils.el" "idee-lsp-java.el" "idee-jshell.el" "idee-maven.el" "idee-spring.el" "idee-quarkus.el"))
+  (use-package idee-java :straight (idee-java :host github :repo "iocanel/idee" :files ("idee-java.el" "idee-lsp-java.el" "idee-jshell.el" "idee-maven.el" "idee-spring.el" "idee-quarkus.el"))
   (use-package idee/javascript :straight (idee :host github :repo "iocanel/idee" :files ("idee-javascript.el") :config (idee/javascript-init))
   (use-package idee/golang :straight (idee :host github :repo "iocanel/idee": files ("idee-golang.el") :config (idee/golang-init))
 #+end_src

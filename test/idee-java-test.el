@@ -64,5 +64,44 @@
 
    (should (file-exists-p ".idee/templates/java-mode/template")))))
 
+(ert-deftest java/package-of-fqcn ()
+  "Should properly comment java."
+    (should (equal (idee/java-package-of-fqcn "org.acme.HelloWorld") "org.acme")))
+
+(defmacro with-sandbox-java-project (&rest body)
+  `(with-sandbox
+    (let* ((idee/dir (f-join root-sandbox-path ".idee"))
+           (templates-dir (f-join idee/dir "templates"))
+           (java-templates-dir (f-join templates-dir "java-mode"))
+           (relative-dir "src/main/java/org/acme")
+           (simple-class "SimpleClass.java")
+           (absolute-simple-class (f-join root-sandbox-path relative-dir simple-class))
+           (pom-xml "pom.xml")
+           (absolute-pom-xml (f-join root-sandbox-path pom-xml)))
+   (make-directory (f-join ".git"))
+   (make-directory java-templates-dir t)
+   (make-directory (f-join root-sandbox-path relative-dir) t)
+   (copy-file (f-join root-test-assets-path simple-class) absolute-simple-class)
+   (copy-file (f-join root-test-assets-path pom-xml) absolute-pom-xml)
+   ,@body)))
+ 
+(ert-deftest java/class-name-of ()
+  "Should extract the class name from the file name."
+  (with-sandbox-java-project
+   (should (equal "SimpleClass" (idee/java-class-name-of absolute-simple-class)))))
+
+(ert-deftest java/package-of ()
+  "Should extract the class name from the file name."
+  (with-sandbox-java-project
+   (should (equal "org.acme" (idee/java-package-of absolute-simple-class)))))
+
+(ert-deftest java/create-template ()
+  "Should extract the class name from the file name."
+  (with-sandbox-java-project
+     (idee/java-create-template absolute-simple-class "Hello World" "hello")
+     (let ((template (f-join java-templates-dir "hello")))
+       (should (file-exists-p template))
+       (should (string-match (regexp-quote "`idee/java-package-line`") (idee/read-file template))))))
+             
 (provide 'idee-java-test)
 ;;; idee-java-test.el ends here

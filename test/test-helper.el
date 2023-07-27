@@ -71,7 +71,6 @@
 ;;
 (require 'idee-docker (f-expand "idee-docker.el" root-code-path))
 ;; Java
-(require 'idee-java-utils (f-expand "idee-java-utils.el" root-code-path))
 (require 'idee-lsp (f-expand "idee-lsp.el" root-code-path))
 (require 'idee-lsp-java (f-expand "idee-lsp-java.el" root-code-path))
 (require 'idee-java (f-expand "idee-java.el" root-code-path))

@@ -37,7 +37,8 @@
 ;;;###autoload
 (defun idee/new-spring-starter-project (&optional create-function)
   "Create a new project from https://start.spring.io.
-The command supports accepting an external CREATE-FUNCTION or defaults to idee/project-create-with-shell."
+The command supports accepting an external CREATE-FUNCTION or defaults to
+idee/project-create-with-shell."
   (interactive)
   (let* ((language (completing-read "Select language: " idee/spring-languages))
          (project-type (completing-read "Select build tool: " idee/spring-project-types))
