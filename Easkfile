@@ -48,9 +48,6 @@
 (depends-on "go-mode")
 (depends-on "go-guru")
  
-; Java
-(depends-on "lsp-java")
-
 ; Jshell
 (depends-on "polymode")
 

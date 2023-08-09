@@ -50,8 +50,8 @@
   (setq idee/function-alist (delq (assoc 'idee/refernces-function idee/function-alist) idee/function-alist))
   (setq idee/function-alist (delq (assoc 'idee/declaration-function idee/function-alist) idee/function-alist))
   (setq idee/function-alist (delq (assoc 'idee/implementation-function idee/function-alist) idee/function-alist))
-  (setq idee/function-alist (delq (assoc 'idee/optimize-imports-function idee/function-alist) idee/function-alist))
   (setq idee/function-alist (delq (assoc 'idee/indent-function idee/function-alist) idee/function-alist))
+  ;(setq idee/function-alist (delq (assoc 'idee/optimize-imports-function idee/function-alist) idee/function-alist))
   ;(setq idee/function-alist (delq (assoc 'idee/mode-hydra-function idee/function-alist) idee/function-alist))
   ;(setq idee/function-alist (delq (assoc 'idee/run-or-eval-function idee/function-alist) idee/function-alist))
   ;(setq idee/function-alist (delq (assoc 'idee/test idee/function-alist) idee/function-alist))
@@ -59,8 +59,7 @@
   ;; Set functions
   (add-to-list 'idee/function-alist '(idee/references-function . lsp-find-references))
   (add-to-list 'idee/function-alist '(idee/declaration-function . lsp-find-definition))
-  (add-to-list 'idee/function-alist '(idee/implementation-function . lsp-find-implementation))
-  (add-to-list 'idee/function-alist '(idee/optimize-imports-function . lsp-java-organize-imports)))
+  (add-to-list 'idee/function-alist '(idee/implementation-function . lsp-find-implementation)))
 
 ;;; Project Factory
 (defun idee/new-npm-project (&optional create-function target-dir)

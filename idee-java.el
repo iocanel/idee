@@ -17,7 +17,7 @@
 ;; Author: Ioannis Canellos
 ;; Version: 0.0.1
 
-;; Package-Requires: ((emacs "28.0") (lsp-java "2.2") (dap-mode "0.3"))
+;; Package-Requires: ((emacs "28.0"))
 
 ;;; Code:
 
@@ -25,15 +25,11 @@
 (require 'idee-vars)
 (require 'idee-templates)
 (require 'idee-visitors)
-(require 'idee-lsp-java nil t)
 
 (require 'cc-vars)
 (require 'cc-cmds)
 
 (require 'term)
-(require 'dap-mode)
-(require 'dap-hydra)
-(require 'dap-ui)
 
 (defconst pom-xml "pom.xml")
 (defconst build-gradle "build.gradle")
@@ -440,7 +436,6 @@ Finally it returns the last word before '('."
 (defun idee/java-visitor (root)
   "Check if a java project is available under the specified ROOT."
   (when (idee/java-project-p root)
-    (idee/lsp-java-init)
     (idee/java-enable)))
 
 ;;;###autoload
@@ -449,8 +444,6 @@ Finally it returns the last word before '('."
   (interactive)
   ;; Dependencies
   (idee/only-once idee/java-initialized
-    ;; LSP
-    (idee/lsp-java-init)
 
     ;; Maven
     (idee/visitor-register 'idee/maven-visitor)

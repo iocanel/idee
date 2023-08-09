@@ -97,7 +97,7 @@
 (defun idee/file-new()
   "Create an empty buffer."
   (interactive)
-  (let* ((path (ido-find-file))
+  (let* ((path (find-file))
          (extension (file-name-extension (buffer-file-name path)))
          (mode (cdr (assoc extension idee/type-modes-alist)))
          (mode-path (file-name-as-directory (concat (file-name-as-directory idee/emacs-templates-dir) mode)))
