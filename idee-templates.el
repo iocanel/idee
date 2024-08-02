@@ -123,7 +123,7 @@
   "Load project templates."
   (interactive)
   (idee/when-idle
-   (let* ((root-dir (or dir (idee/project-root-dir (buffer-file-name))))
+   (let* ((root-dir (or dir (project-root (project-current)) (idee/project-root-dir (buffer-file-name))))
           (conf-dir (concat (file-name-as-directory root-dir) idee/project-conf-dir))
           (template-dir (concat (file-name-as-directory conf-dir) "templates")))
      (when (file-exists-p template-dir)

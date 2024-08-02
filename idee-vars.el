@@ -20,6 +20,7 @@
 
 ;;; Code:
 
+(defcustom idee/source-dir nil "The source directory of the ide project." :group 'ide :type 'string)
 (defcustom idee/resources-dir (locate-user-emacs-file "idee") "The directory where ide files are stored." :group 'ide :type 'string)
 (defcustom idee/project-conf-dir ".idee" "The directory where ide configuration files are stored." :group 'ide :type 'string)
 
@@ -27,7 +28,6 @@
 (defconst idee/emacs-snippets-dir (concat (file-name-as-directory idee/resources-dir) "snippets") "The directory where snippet files are stored.")
 (defconst idee/emacs-headers-dir (concat (file-name-as-directory idee/resources-dir) "headers") "The directory where header files are stored.")
 
-(defvar idee/source-dir nil "The source directory of the ide project.")
 
 ;; Tabs and indentation
 (defvar idee/tab-width 2)
