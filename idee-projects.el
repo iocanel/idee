@@ -26,6 +26,7 @@
 (require 'idee-views)
 
 (defcustom idee/project-fixed-buffer-name-list '("*grep*") "A list buffer names that should be considered project buffers" :group 'idee/project :type '(repeat string)) 
+(defvar idee/project-switch-project-hook nil "Hook run after switching to a new project.")
 
 (defun idee/project-new()
   "Create a new project."
@@ -256,6 +257,26 @@
       (setq idee/project-info-alist (delq (assoc (intern name) idee/project-info-alist) idee/project-info-alist))
       (add-to-list 'idee/project-info-alist `(,(intern name) . ,info)))))
 
+
+;;
+;; Overides from project.el
+;;
+(defun idee/project-switch-project (dir)
+  "\"Switch\" to another project by running an Emacs command.
+The available commands are presented as a dispatch menu
+made from `project-switch-commands'.
+
+When called in a program, it will use the project corresponding
+to directory DIR."
+  (interactive (list (project-prompt-project-dir)))
+  (let ((command (if (symbolp project-switch-commands)
+                     project-switch-commands
+                   (project--switch-project-command))))
+    (let ((project-current-directory-override dir))
+      (call-interactively command)
+      (run-hooks 'idee/project-switch-project-hook))))
+
+
 ;;
 ;; Initialization
 ;;
@@ -264,7 +285,7 @@
 When called this function will look at the project root for an elisp script
 called .idee/init.el and will load it if present."
   (interactive)
-  (let* ((root-dir (or root-dir (idee/project-root-dir (buffer-file-name))))
+  (let* ((root-dir (or root-dir (project-root (project-current)) (idee/project-root-dir (buffer-file-name))))
          (conf-dir (concat (file-name-as-directory root-dir) idee/project-conf-dir))
          (init-el (concat (file-name-as-directory conf-dir) "init.el")))
     (when (file-exists-p init-el) (load-file init-el))))

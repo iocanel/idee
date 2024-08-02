@@ -26,6 +26,7 @@
 
 (require 'idee-utils)
 (require 'idee-vars)
+(require 'idee-headers)
 
 (defcustom idee/repo-url "git@github.com:iocanel/idee.git" "The repository url of the ide project." :group 'ide :type 'string)
 (defvar idee/initialized nil)
@@ -43,10 +44,10 @@
   (idee/only-once idee/initialized
     (idee/when-idle
      ;; Initialize Project
-     (advice-add 'project-switch-project :after 'idee/project-initialize)
+     (add-hook 'idee/project-switch-project-hook 'idee/project-initialize)
 
      ;; Intialize templates
-     (advice-add 'project-switch-project :after 'idee/template-load-from-project)
+     (add-hook 'idee/project-switch-project :after 'idee/template-load-from-project)
 
      (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
      (when (not (file-exists-p idee/resources-dir)) (mkdir idee/resources-dir t))
@@ -71,10 +72,10 @@
      (add-to-list 'yas-snippet-dirs idee/emacs-snippets-dir)
 
      ;; Intialize visitors
-     (advice-add 'project-switch-project :after 'idee/apply-visitor)
+     (add-hook 'idee/project-switch-project :after 'idee/apply-visitor)
 
      ;; Initialize Headers
-     (advice-add 'project-switch-project :after 'idee/header-detect)
+     (add-hook 'idee/project-switch-project :after 'idee/header-detect)
 
      ;; Initialize vterm
      (setq idee/function-alist (delq (assoc 'idee/shell-command-execute-in-project-function idee/function-alist) idee/function-alist))
