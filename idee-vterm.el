@@ -25,10 +25,11 @@
   "Open vterm in project root."
   (interactive)
   (require 'vterm)
-  (let* ((name (format "*vterm %s*" (project-name (project-current))))
+  (let* ((p (project-current))
+         (name (format "*vterm %s*" (if p (project-name p) "<no project>")))
          (buf (get-buffer name))
          (window (if buf (get-buffer-window buf) nil))
-         (default-directory (project-root (project-current))))
+         (default-directory (if p (project-root p) default-directory)))
     (cond (window (progn
              (select-window window)))
           (buf (progn
@@ -43,7 +44,8 @@
   "Run a single COMMAND in the current project shell.
 When NEW-SHELL is specified the old eshell project buffer is killed."
   (require 'vterm)
-  (let* ((name (format "*vterm %s*" (project-name (project-current))))
+  (let* ((p (project-current))
+         (name (format "*vterm %s*" (if p (project-name p) "<no project>")))
          (buf (get-buffer name))
          (comint-scroll-to-bottom-on-output t))
     (when (and buf new-shell)
