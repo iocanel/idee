@@ -31,11 +31,18 @@
 
 (defcustom idee/kubernetes-kubectl-binary "kubectl" "The kubectl binary to use (e.g kubectl. oc microk8s.kubectl)." :group 'idee/kubernetes :type 'string)
 
-(defun idee/kubernetes-create-from-region(start end)
-  "Pass the selected region to kubectl/oc create."
+(defun idee/kubernetes-create-from-region (start end)
+  "Create Kubernetes resources from the selected region without using the clipboard,
+preserving all formatting by writing to a temporary file in the project root."
   (interactive (if (use-region-p) (list (region-beginning) (region-end))))
-  (clipboard-kill-ring-save (region-beginning) (region-end))
-  (idee/shell-command-execute-in-project (format "cat /dev/clip | %s create -f -" idee/kubernetes-kubectl-binary)))
+  (let* ((content (buffer-substring-no-properties start end))
+         (tmpfile (expand-file-name (make-temp-file "k8s-region-" nil ".yaml"))))
+          (with-temp-file tmpfile
+            (insert content))
+          (idee/shell-command-execute-in-project
+           (format "%s create -f %s"
+                   idee/kubernetes-kubectl-binary
+                   (shell-quote-argument tmpfile)))))
 
 (defun idee/kubernetes-create-from-buffer()
   "Pass the current to kubectl/oc create."
@@ -66,8 +73,14 @@
 (defun idee/kubernetes-delete-from-region(start end)
   "Pass the selected region to kubectl/oc delete"
   (interactive (if (use-region-p) (list (region-beginning) (region-end))))
-  (clipboard-kill-ring-save (point-min) (point-max))
-  (idee/shell-command-execute-in-project (format "cat /dev/clip | %s delete -f -" idee/kubernetes-kubectl-binary)))
+  (let* ((content (buffer-substring-no-properties start end))
+         (tmpfile (expand-file-name (make-temp-file "k8s-region-" nil ".yaml"))))
+          (with-temp-file tmpfile
+            (insert content))
+          (idee/shell-command-execute-in-project
+           (format "%s delete -f %s"
+                   idee/kubernetes-kubectl-binary
+                   (shell-quote-argument tmpfile)))))
 
 (defun idee/kubernetes-delete-dwim(&optional start end)
   "Pass the selected region or currnent buffer (if region not active) to kubectl/oc delete."
